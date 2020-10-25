@@ -23,6 +23,8 @@ IRrecv irrecv(irSensorPin);
 decode_results results;
 
 bool isMoving = false;
+bool edgeMode = false;
+int edgeDuration = 200;
 
 void setup() {
   Serial.begin(9600);
@@ -39,15 +41,17 @@ void setup() {
 }
 
 void loop() {
-  if (irrecv.decode(&results)) {
-    toggleOn(ledBluePin);
-    Serial.println(results.value, HEX);
-    irrecv.resume();
-    delay(100);
-    toggleOn(ledGreenPin);
+  if (!irrecv.decode(&results)) {
+    return;
   }
 
+  Serial.println(results.value, HEX);
+  irrecv.resume();
+
   switch(results.value) {
+    case 0xFF906F:
+      moveForward(5);
+      break;
     case 0xFF02FD:
       if (isMoving) {
         stop();
@@ -55,6 +59,57 @@ void loop() {
         moveForward(5);
       }
       break;
+    case 0xFFC23D:
+      turnRight(5);
+      break;
+    case 0xFF22DD:
+      turnLeft(5);
+      break;
+    case 0xFFE01F:
+      moveBackward(5);
+      break;
+    case 0xFF9867:
+      toggleEdgeMode();
+      break;
+    case 0xFF629D:
+      increaseEdgeDuration();
+      break;
+    case 0xFFA857:
+      decreaseEdgeDuration();
+      break;
+    case 0:
+      stop();
+      break;
+  }
+}
+
+void toggleEdgeMode() {
+  edgeMode = !edgeMode;
+  if (edgeMode) {
+    turnOn(ledBluePin);
+  } else {
+    turnOff(ledBluePin);
+  }
+}
+
+void increaseEdgeDuration() {
+  edgeDuration += 100;
+  if (edgeDuration >= 500) {
+    edgeDuration = 500;
+  }
+}
+
+void decreaseEdgeDuration() {
+  edgeDuration -= 100;
+  if (edgeDuration <= 100) {
+    edgeDuration = 100;
+  }
+}
+
+void edgeIfRequired() {
+  if (edgeMode) {
+    delay(edgeDuration);
+    stop();
   }
 }
 
@@ -100,24 +155,27 @@ void turnLeft(int speed) {
   isMoving = true;
   Serial.println("Turning left...");
   int actualSpeed = convertSpeed(speed);
-  motorLeft.forward(actualSpeed);
-  motorRight.back(actualSpeed);
+  motorLeft.back(actualSpeed);
+  motorRight.forward(actualSpeed);
+  edgeIfRequired();
 }
 
 void turnRight(int speed) {
   isMoving = true;
   Serial.println("Turning right...");
   int actualSpeed = convertSpeed(speed);
-  motorLeft.back(actualSpeed);
-  motorRight.forward(actualSpeed);
+  motorLeft.forward(actualSpeed);
+  motorRight.back(actualSpeed);
+  edgeIfRequired();
 }
 
-void moveBack(int speed) {
+void moveBackward(int speed) {
   isMoving = true;
   Serial.println("Reversing...");
   int actualSpeed = convertSpeed(speed);
   motorLeft.back(actualSpeed);
   motorRight.back(actualSpeed);
+  edgeIfRequired();
 }
 
 void moveForward(int speed) {
@@ -127,6 +185,7 @@ void moveForward(int speed) {
   Serial.println(actualSpeed);
   motorLeft.forward(actualSpeed);
   motorRight.forward(actualSpeed);
+  edgeIfRequired();
 }
 
 void stop() {
