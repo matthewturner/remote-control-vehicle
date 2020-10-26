@@ -143,7 +143,7 @@ void replayInstructions() {
   Serial.println("Replaying instructions...");
   for(int i = 0; i <= currentInstruction; i++) {
     executeInstruction(instructions[i]);
-    delay(150);
+    delay(200);
   }
 }
 
