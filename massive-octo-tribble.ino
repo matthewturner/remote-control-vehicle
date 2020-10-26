@@ -22,9 +22,14 @@ L293 motorRight(motorRightEnablePin, motorRightForwardPin, motorRightReversePin)
 IRrecv irrecv(irSensorPin);
 decode_results results;
 
+const int DEFAULT_EDGE_DURATION = 200;
 bool isMoving = false;
 bool edgeMode = false;
-int edgeDuration = 200;
+int edgeDuration = DEFAULT_EDGE_DURATION;
+bool recordMode = false;
+int currentInstruction = -1;
+int instructions[300];
+bool recordInstruction = true;
 
 void setup() {
   Serial.begin(9600);
@@ -47,8 +52,12 @@ void loop() {
 
   Serial.println(results.value, HEX);
   irrecv.resume();
+  executeInstruction(results.value);
+}
 
-  switch(results.value) {
+void executeInstruction(int instruction) {
+  recordInstruction = true;
+  switch(instruction) {
     case 0xFF906F:
       moveForward(5);
       break;
@@ -77,14 +86,60 @@ void loop() {
     case 0xFFA857:
       decreaseEdgeDuration();
       break;
+    case 0xFFB04F:
+      toggleRecordMode();
+      recordInstruction = false;
+      break;
+    case 0xFF6897:
+      replayInstructions();
+      recordInstruction = false;
+      break;
     case 0:
       stop();
       break;
   }
+  recordInstructionIfRequired(instruction);
+}
+
+void replayInstructions() {
+  Serial.println("Replaying instructions...");
+  for(int i = 0; i <= currentInstruction; i++) {
+    executeInstruction(instructions[i]);
+    delay(150);
+  }
+}
+
+void toggleRecordMode() {
+  Serial.println("Toggling record mode...");
+  recordMode = !recordMode;
+  if (recordMode) {
+    toggleOn(ledRedPin);
+    currentInstruction = 0;
+    edgeDuration = DEFAULT_EDGE_DURATION;
+    turnEdgeMode(false);
+  } else {
+    turnOff(ledRedPin);
+    edgeDuration = DEFAULT_EDGE_DURATION;
+    turnEdgeMode(false);
+  }
+}
+
+void recordInstructionIfRequired(int instruction) {
+  if (recordMode && recordInstruction) {
+    Serial.print("Recording instruction ");
+    Serial.print(instruction);
+    Serial.println("...");
+    instructions[currentInstruction] = instruction;
+    currentInstruction++;
+  }
 }
 
 void toggleEdgeMode() {
-  edgeMode = !edgeMode;
+  turnEdgeMode(!edgeMode);
+}
+
+void turnEdgeMode(bool on) {
+  edgeMode = on;
   if (edgeMode) {
     turnOn(ledBluePin);
   } else {
