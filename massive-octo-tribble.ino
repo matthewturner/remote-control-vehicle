@@ -29,7 +29,8 @@ int edgeDuration = DEFAULT_EDGE_DURATION;
 bool recordMode = false;
 int currentInstruction = -1;
 int instructions[300];
-bool recordInstruction = true;
+unsigned long timeOfPreviousInstruction;
+bool awaitingDelayInstruction = false;
 
 void setup() {
   Serial.begin(9600);
@@ -50,18 +51,25 @@ void loop() {
     return;
   }
 
-  Serial.println(results.value, HEX);
+  // Serial.println(results.value, HEX);
   irrecv.resume();
+  
   executeInstruction(results.value);
 }
 
 void executeInstruction(int instruction) {
-  recordInstruction = true;
   switch(instruction) {
+    case 0xAAAAAA:
+      awaitingDelayInstruction = true;
+      break;
     case 0xFF906F:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
       moveForward(5);
       break;
     case 0xFF02FD:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
       if (isMoving) {
         stop();
       } else {
@@ -69,36 +77,66 @@ void executeInstruction(int instruction) {
       }
       break;
     case 0xFFC23D:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
       turnRight(5);
       break;
     case 0xFF22DD:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
       turnLeft(5);
       break;
     case 0xFFE01F:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
       moveBackward(5);
       break;
     case 0xFF9867:
+      recordInstructionIfRequired(instruction);
       toggleEdgeMode();
       break;
     case 0xFF629D:
+      recordInstructionIfRequired(instruction);
       increaseEdgeDuration();
       break;
     case 0xFFA857:
+      recordInstructionIfRequired(instruction);
       decreaseEdgeDuration();
       break;
     case 0xFFB04F:
       toggleRecordMode();
-      recordInstruction = false;
       break;
     case 0xFF6897:
       replayInstructions();
-      recordInstruction = false;
       break;
     case 0:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
       stop();
       break;
+    default:
+      if (awaitingDelayInstruction) {
+        awaitingDelayInstruction = false;
+        Serial.print("Waiting for ");
+        Serial.print(instruction);
+        Serial.println("ms...");
+        delay(instruction);
+      }
   }
-  recordInstructionIfRequired(instruction);
+}
+
+void recordDurationIfRequired() {
+  if (!recordMode) {
+    return;
+  }
+  
+  unsigned long time = millis();
+  if (isMoving) {
+    int duration = time - timeOfPreviousInstruction;
+    recordInstructionIfRequired(0xAAAAAA);
+    recordInstructionIfRequired(duration);
+  }
+  timeOfPreviousInstruction = time;
 }
 
 void replayInstructions() {
@@ -125,9 +163,16 @@ void toggleRecordMode() {
 }
 
 void recordInstructionIfRequired(int instruction) {
-  if (recordMode && recordInstruction) {
+  if (recordMode) {
+    if (instruction == 0) {
+      if (currentInstruction > 0) {
+        if (instructions[currentInstruction - 1] == 0) {
+          return;
+        }
+      }
+    }
     Serial.print("Recording instruction ");
-    Serial.print(instruction);
+    Serial.print(instruction, HEX);
     Serial.println("...");
     instructions[currentInstruction] = instruction;
     currentInstruction++;
