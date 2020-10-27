@@ -280,7 +280,7 @@ void recordDurationIfRequired() {
 }
 
 void replayInstructions() {
-  turnEdgeMode(false);
+  resetEdgeMode();
   Serial.println("Replaying instructions...");
   for(int i = 0; i < currentInstruction; i++) {
     executeInstruction(instructions[i]);
@@ -300,13 +300,16 @@ void turnRecordMode(bool on) {
   if (recordMode) {
     toggleOn(ledRedPin);
     currentInstruction = 0;
-    edgeDuration = DEFAULT_EDGE_DURATION;
-    turnEdgeMode(false);
+    resetEdgeMode();
   } else {
     turnOff(ledRedPin);
-    edgeDuration = DEFAULT_EDGE_DURATION;
-    turnEdgeMode(false);
+    resetEdgeMode();
   }
+}
+
+void resetEdgeMode() {
+  edgeDuration = DEFAULT_EDGE_DURATION;
+  turnEdgeMode(false);
 }
 
 void recordInstructionIfRequired(int instruction) {
