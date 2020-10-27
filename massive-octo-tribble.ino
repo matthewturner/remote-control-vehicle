@@ -31,6 +31,7 @@ int currentInstruction = -1;
 int instructions[300];
 unsigned long timeOfPreviousInstruction;
 bool awaitingDelayInstruction = false;
+char commandBuffer[20];
 
 const int LEFT = 0xFF22DD;
 const int RIGHT = 0xFFC23D;
@@ -51,7 +52,6 @@ const int PLAY_PAUSE = 0xFF02FD;
 
 void setup() {
   Serial.begin(9600);
-  Serial.setTimeout(100);
   
   pinMode(ledRedPin, OUTPUT);
   pinMode(ledGreenPin, OUTPUT);
@@ -65,12 +65,13 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    String command = Serial.readString();
-    command.trim();
+  int commandLength = tryReadCommand();
+  
+  if (commandLength > 0) {
     Serial.println("New command:");
-    Serial.println(command);
-    int instruction = convertToInstruction(command);
+    Serial.write(commandBuffer, commandLength);
+    Serial.println();
+    int instruction = convertToInstruction(commandLength);
     Serial.println("New instruction:");
     Serial.println(instruction);
     if (instruction != -1) {
@@ -88,7 +89,29 @@ void loop() {
   }
 }
 
-int convertToInstruction(String command) {
+int tryReadCommand() {
+  int index = -1;
+  while (Serial.available()) {
+    delay(2);
+    char ch = Serial.read();
+    switch (ch) {
+      case '>':
+        index = 0;
+        break;
+      case '!':
+        commandBuffer[index] = '\0';
+        return index;
+      default:
+        commandBuffer[index] = ch;
+        index++;
+        break;
+    }
+  }
+  return -1;
+}
+
+int convertToInstruction(int commandLength) {
+  String command = String(commandBuffer);
   if (command == "forward") {
     return FORWARD;
   } else if (command == "reverse") {
