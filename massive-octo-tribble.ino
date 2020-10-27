@@ -33,7 +33,7 @@ int currentInstruction = -1;
 int instructions[300];
 unsigned long timeOfPreviousInstruction;
 bool awaitingDelayInstruction = false;
-char commandBuffer[20];
+char commandBuffer[30];
 
 const int LEFT = 0xFF22DD;
 const int RIGHT = 0xFFC23D;
