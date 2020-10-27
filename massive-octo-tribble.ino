@@ -32,8 +32,26 @@ int instructions[300];
 unsigned long timeOfPreviousInstruction;
 bool awaitingDelayInstruction = false;
 
+const int LEFT = 0xFF22DD;
+const int RIGHT = 0xFFC23D;
+const int FORWARD = 0xFF906F;
+const int REVERSE = 0xFFE01F;
+const int EDGE_LEFT = 0xFF22DC;
+const int EDGE_RIGHT = 0xFFC23C;
+const int EDGE_FORWARD = 0xFF906E;
+const int EDGE_REVERSE = 0xFFE01E;
+const int STOP = 0;
+const int REPLAY = 0xFF6897;
+const int INCREASE_EDGE_DURATION = 0xFF629D;
+const int DECREASE_EDGE_DURATION = 0xFFA857;
+const int TOGGLE_RECORD_MODE = 0xFFB04F;
+const int TOGGLE_EDGE_MODE = 0xFF9867;
+const int DELAY = 0xAAAAAA;
+const int PLAY_PAUSE = 0xFF02FD;
+
 void setup() {
   Serial.begin(9600);
+  Serial.setTimeout(100);
   
   pinMode(ledRedPin, OUTPUT);
   pinMode(ledGreenPin, OUTPUT);
@@ -47,69 +65,166 @@ void setup() {
 }
 
 void loop() {
-  if (!irrecv.decode(&results)) {
+  if (Serial.available() > 0) {
+    String command = Serial.readString();
+    command.trim();
+    Serial.println("New command:");
+    Serial.println(command);
+    int instruction = convertToInstruction(command);
+    Serial.println("New instruction:");
+    Serial.println(instruction);
+    if (instruction != -1) {
+      executeInstruction(instruction);
+    }
     return;
   }
-
-  // Serial.println(results.value, HEX);
-  irrecv.resume();
   
-  executeInstruction(results.value);
+  if (irrecv.decode(&results)) {
+    // Serial.println(results.value, HEX);
+    irrecv.resume();
+  
+    executeInstruction(results.value);
+    return;
+  }
+}
+
+int convertToInstruction(String command) {
+  if (command == "forward") {
+    return FORWARD;
+  } else if (command == "reverse") {
+    return REVERSE;
+  } else if (command == "left") {
+    return LEFT;
+  } else if (command == "right") {
+    return RIGHT;
+  } else if (command == "forward") {
+    return FORWARD;
+  } else if (command == "edge-reverse") {
+    return EDGE_REVERSE;
+  } else if (command == "edge-left") {
+    return EDGE_LEFT;
+  } else if (command == "edge-right") {
+    return EDGE_RIGHT;
+  } else if (command == "edge-forward") {
+    return EDGE_FORWARD;
+  } else if (command ==  "stop") {
+    return STOP;
+  } else if (command == "replay") {
+    return REPLAY;
+  } else if (command == "increase-edge-duration") {
+    return INCREASE_EDGE_DURATION;
+  } else if (command == "decrease-edge-duration") {
+    return DECREASE_EDGE_DURATION;
+  } else if (command == "start-record") {
+    if (recordMode) {
+      return -1;
+    } else {
+      return TOGGLE_RECORD_MODE;
+    }
+  } else if (command == "stop-record") {
+    if (recordMode) {
+      return TOGGLE_RECORD_MODE;
+    } else {
+      return -1;
+    }
+  } else if (command == "start-edge") {
+    if (edgeMode) {
+      return -1;
+    } else {
+      return TOGGLE_EDGE_MODE;
+    }
+  } else if (command == "stop-edge") {
+    if (edgeMode) {
+      return TOGGLE_EDGE_MODE;
+    } else {
+      return -1;
+    }
+  }
+  return -1;
 }
 
 void executeInstruction(int instruction) {
-  switch(instruction) {
-    case 0xAAAAAA:
+  switch (instruction) {
+    case DELAY:
       awaitingDelayInstruction = true;
       break;
-    case 0xFF906F:
-      recordDurationIfRequired();
-      recordInstructionIfRequired(instruction);
-      moveForward(5);
-      break;
-    case 0xFF02FD:
+    case PLAY_PAUSE:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
       if (isMoving) {
         stop();
       } else {
         moveForward(5);
+        edgeIfRequired();
       }
       break;
-    case 0xFFC23D:
+    case FORWARD:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      moveForward(5);
+      edgeIfRequired();
+      break;
+    case RIGHT:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
       turnRight(5);
+      edgeIfRequired();
       break;
-    case 0xFF22DD:
+    case LEFT:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
       turnLeft(5);
+      edgeIfRequired();
       break;
-    case 0xFFE01F:
+    case REVERSE:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
       moveBackward(5);
+      edgeIfRequired();
       break;
-    case 0xFF9867:
+    case EDGE_FORWARD:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      moveForward(5);
+      edge();
+      break;
+    case EDGE_RIGHT:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      turnRight(5);
+      edge();
+      break;
+    case EDGE_LEFT:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      turnLeft(5);
+      edge();
+      break;
+    case EDGE_REVERSE:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      moveBackward(5);
+      edge();
+      break;
+    case TOGGLE_EDGE_MODE:
       recordInstructionIfRequired(instruction);
       toggleEdgeMode();
       break;
-    case 0xFF629D:
+    case INCREASE_EDGE_DURATION:
       recordInstructionIfRequired(instruction);
       increaseEdgeDuration();
       break;
-    case 0xFFA857:
+    case DECREASE_EDGE_DURATION:
       recordInstructionIfRequired(instruction);
       decreaseEdgeDuration();
       break;
-    case 0xFFB04F:
+    case TOGGLE_RECORD_MODE:
       toggleRecordMode();
       break;
-    case 0xFF6897:
+    case REPLAY:
       replayInstructions();
       break;
-    case 0:
+    case STOP:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
       stop();
@@ -149,7 +264,11 @@ void replayInstructions() {
 
 void toggleRecordMode() {
   Serial.println("Toggling record mode...");
-  recordMode = !recordMode;
+  turnRecordMode(!recordMode);
+}
+
+void turnRecordMode(bool on) {
+  recordMode = on;
   if (recordMode) {
     toggleOn(ledRedPin);
     currentInstruction = 0;
@@ -208,9 +327,13 @@ void decreaseEdgeDuration() {
 
 void edgeIfRequired() {
   if (edgeMode) {
-    delay(edgeDuration);
-    stop();
+    edge();
   }
+}
+
+void edge() {
+  delay(edgeDuration);
+  stop();
 }
 
 void turnOffAllLeds() {
@@ -257,7 +380,6 @@ void turnLeft(int speed) {
   int actualSpeed = convertSpeed(speed);
   motorLeft.back(actualSpeed);
   motorRight.forward(actualSpeed);
-  edgeIfRequired();
 }
 
 void turnRight(int speed) {
@@ -266,7 +388,6 @@ void turnRight(int speed) {
   int actualSpeed = convertSpeed(speed);
   motorLeft.forward(actualSpeed);
   motorRight.back(actualSpeed);
-  edgeIfRequired();
 }
 
 void moveBackward(int speed) {
@@ -275,17 +396,15 @@ void moveBackward(int speed) {
   int actualSpeed = convertSpeed(speed);
   motorLeft.back(actualSpeed);
   motorRight.back(actualSpeed);
-  edgeIfRequired();
 }
 
 void moveForward(int speed) {
   isMoving = true;
   Serial.println("Moving forward...");
   int actualSpeed = convertSpeed(speed);
-  Serial.println(actualSpeed);
+  // Serial.println(actualSpeed);
   motorLeft.forward(actualSpeed);
   motorRight.forward(actualSpeed);
-  edgeIfRequired();
 }
 
 void stop() {
