@@ -284,7 +284,9 @@ void replayInstructions() {
   Serial.println("Replaying instructions...");
   for(int i = 0; i < currentInstruction; i++) {
     executeInstruction(instructions[i]);
-    delay(REPLAY_DELAY);
+    if (instructions[i] != DELAY && instructions[i + 1] != DELAY) {
+      delay(REPLAY_DELAY);
+    }
   }
 }
 
