@@ -1,6 +1,8 @@
 #include <L293.h>
 #include <IRremote.h>
 
+const int REPLAY_DELAY = 700;
+
 int NUMBER_OF_LEDS = 3;
 int ledRedPin = 12;
 int ledGreenPin = 10;
@@ -278,10 +280,11 @@ void recordDurationIfRequired() {
 }
 
 void replayInstructions() {
+  turnEdgeMode(false);
   Serial.println("Replaying instructions...");
-  for(int i = 0; i <= currentInstruction; i++) {
+  for(int i = 0; i < currentInstruction; i++) {
     executeInstruction(instructions[i]);
-    delay(200);
+    delay(REPLAY_DELAY);
   }
 }
 
@@ -360,7 +363,7 @@ void edge() {
 }
 
 void turnOffAllLeds() {
-  Serial.println("Turning off all leds...");
+  // Serial.println("Turning off all leds...");
   for (int i = 0; i < NUMBER_OF_LEDS; i++) {
     turnOff(leds[i]);
   }
@@ -378,7 +381,7 @@ void cycleThroughLeds() {
 void toggleOn(int pin) {
   turnOffAllLeds();
 
-  Serial.println("Toggling on led...");
+  // Serial.println("Toggling on led...");
   
   for (int i = 0; i < NUMBER_OF_LEDS; i++) {
     if(pin == leds[i]) {
