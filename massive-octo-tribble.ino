@@ -120,52 +120,67 @@ int tryReadCommand() {
 }
 
 int convertToInstruction(int commandLength) {
-  String command = String(commandBuffer);
-  if (command == "forward") {
+  if (strcmp(commandBuffer, "forward") == 0) {
     return FORWARD;
-  } else if (command == "reverse") {
+  }
+  if (strcmp(commandBuffer, "reverse") == 0) {
     return REVERSE;
-  } else if (command == "left") {
+  }
+  if (strcmp(commandBuffer, "left") == 0) {
     return LEFT;
-  } else if (command == "right") {
+  }
+  if (strcmp(commandBuffer, "right") == 0) {
     return RIGHT;
-  } else if (command == "forward") {
+  }
+  if (strcmp(commandBuffer, "forward") == 0) {
     return FORWARD;
-  } else if (command == "edge-reverse") {
+  }
+  if (strcmp(commandBuffer, "edge-reverse") == 0) {
     return EDGE_REVERSE;
-  } else if (command == "edge-left") {
+  }
+  if (strcmp(commandBuffer, "edge-left") == 0) {
     return EDGE_LEFT;
-  } else if (command == "edge-right") {
+  }
+  if (strcmp(commandBuffer, "edge-right") == 0) {
     return EDGE_RIGHT;
-  } else if (command == "edge-forward") {
+  }
+  if (strcmp(commandBuffer, "edge-forward") == 0) {
     return EDGE_FORWARD;
-  } else if (command ==  "stop") {
+  }
+  if (strcmp(commandBuffer, "stop") == 0) {
     return STOP;
-  } else if (command == "replay") {
+  }
+  if (strcmp(commandBuffer, "replay") == 0) {
     return REPLAY;
-  } else if (command == "increase-edge-duration") {
+  }
+  if (strcmp(commandBuffer, "increase-edge-duration") == 0) {
     return INCREASE_EDGE_DURATION;
-  } else if (command == "decrease-edge-duration") {
+  }
+  if (strcmp(commandBuffer, "decrease-edge-duration") == 0) {
     return DECREASE_EDGE_DURATION;
-  } else if (command == "start-record") {
+  }
+  if (strcmp(commandBuffer, "start-record") == 0) {
     if (recordMode) {
       return -1;
     } else {
       return TOGGLE_RECORD_MODE;
     }
-  } else if (command == "stop-record") {
+  }
+  if (strcmp(commandBuffer, "stop-record") == 0) {
     if (recordMode) {
       return TOGGLE_RECORD_MODE;
     } else {
       return -1;
     }
-  } else if (command == "start-edge") {
+  }
+  if (strcmp(commandBuffer, "start-edge") == 0) {
     if (edgeMode) {
       return -1;
     } else {
       return TOGGLE_EDGE_MODE;
     }
-  } else if (command == "stop-edge") {
+  }
+  if (strcmp(commandBuffer, "stop-edge") == 0) {
     if (edgeMode) {
       return TOGGLE_EDGE_MODE;
     } else {
