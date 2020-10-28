@@ -1,22 +1,30 @@
 #include <L293.h>
 #include <IRremote.h>
 
+#define DEBUG_ON 1
+#define DEBUG_OFF 0
+byte debugMode = DEBUG_OFF;
+#define DBG(...) debugMode == DEBUG_ON ? Serial.println(__VA_ARGS__) : NULL
+#define DBG_PRNT(...) debugMode == DEBUG_ON ? Serial.print(__VA_ARGS__) : NULL
+#define DBG_WRT(...) debugMode == DEBUG_ON ? Serial.write(__VA_ARGS__) : NULL
+
 const int REPLAY_DELAY = 700;
+const int DEFAULT_EDGE_DURATION = 200;
 
-int NUMBER_OF_LEDS = 3;
-int ledRedPin = 12;
-int ledGreenPin = 10;
-int ledBluePin = 11;
-int leds[] = { ledGreenPin, ledRedPin, ledBluePin };
+const byte NUMBER_OF_LEDS = 3;
+const byte ledRedPin = 12;
+const byte ledGreenPin = 10;
+const byte ledBluePin = 11;
+byte leds[] = { ledGreenPin, ledRedPin, ledBluePin };
 
-int irSensorPin = 4;
-int ledOnboardPin = 13;
-int motorLeftEnablePin = 9;
-int motorLeftForwardPin = 7;
-int motorLeftReversePin = 8;
-int motorRightEnablePin = 3;
-int motorRightForwardPin = 6;
-int motorRightReversePin = 5;
+const byte irSensorPin = 4;
+const byte ledOnboardPin = 13;
+const byte motorLeftEnablePin = 9;
+const byte motorLeftForwardPin = 7;
+const byte motorLeftReversePin = 8;
+const byte motorRightEnablePin = 3;
+const byte motorRightForwardPin = 6;
+const byte motorRightReversePin = 5;
 
 L293 motorLeft(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin);
 L293 motorRight(motorRightEnablePin, motorRightForwardPin, motorRightReversePin);
@@ -24,7 +32,6 @@ L293 motorRight(motorRightEnablePin, motorRightForwardPin, motorRightReversePin)
 IRrecv irrecv(irSensorPin);
 decode_results results;
 
-const int DEFAULT_EDGE_DURATION = 200;
 bool isMoving = false;
 bool edgeMode = false;
 int edgeDuration = DEFAULT_EDGE_DURATION;
@@ -70,12 +77,12 @@ void loop() {
   int commandLength = tryReadCommand();
   
   if (commandLength > 0) {
-    Serial.println("New command:");
-    Serial.write(commandBuffer, commandLength);
-    Serial.println();
+    DBG("New command:");
+    DBG_WRT(commandBuffer, commandLength);
+    DBG();
     int instruction = convertToInstruction(commandLength);
-    Serial.println("New instruction:");
-    Serial.println(instruction);
+    DBG("New instruction:");
+    DBG(instruction);
     if (instruction != -1) {
       executeInstruction(instruction);
     }
@@ -83,7 +90,7 @@ void loop() {
   }
   
   if (irrecv.decode(&results)) {
-    // Serial.println(results.value, HEX);
+    // DBG(results.value, HEX);
     irrecv.resume();
   
     executeInstruction(results.value);
@@ -257,9 +264,9 @@ void executeInstruction(int instruction) {
     default:
       if (awaitingDelayInstruction) {
         awaitingDelayInstruction = false;
-        Serial.print("Waiting for ");
-        Serial.print(instruction);
-        Serial.println("ms...");
+        DBG_PRNT("Waiting for ");
+        DBG_PRNT(instruction);
+        DBG("ms...");
         delay(instruction);
       }
   }
@@ -281,7 +288,7 @@ void recordDurationIfRequired() {
 
 void replayInstructions() {
   resetEdgeMode();
-  Serial.println("Replaying instructions...");
+  DBG("Replaying instructions...");
   for(int i = 0; i < currentInstruction; i++) {
     executeInstruction(instructions[i]);
     if (instructions[i] != DELAY && instructions[i + 1] != DELAY) {
@@ -291,7 +298,7 @@ void replayInstructions() {
 }
 
 void toggleRecordMode() {
-  Serial.println("Toggling record mode...");
+  DBG("Toggling record mode...");
   turnRecordMode(!recordMode);
 }
 
@@ -321,9 +328,9 @@ void recordInstructionIfRequired(int instruction) {
         }
       }
     }
-    Serial.print("Recording instruction ");
-    Serial.print(instruction, HEX);
-    Serial.println("...");
+    DBG_PRNT("Recording instruction ");
+    DBG_PRNT(instruction, HEX);
+    DBG("...");
     instructions[currentInstruction] = instruction;
     currentInstruction++;
   }
@@ -368,14 +375,14 @@ void edge() {
 }
 
 void turnOffAllLeds() {
-  // Serial.println("Turning off all leds...");
+  // DBG("Turning off all leds...");
   for (int i = 0; i < NUMBER_OF_LEDS; i++) {
     turnOff(leds[i]);
   }
 }
 
 void cycleThroughLeds() {
-  Serial.println("Cycling through all leds...");
+  DBG("Cycling through all leds...");
   for (int i = 0; i < NUMBER_OF_LEDS; i++) {
     turnOn(leds[i]);
     delay(200);
@@ -386,7 +393,7 @@ void cycleThroughLeds() {
 void toggleOn(int pin) {
   turnOffAllLeds();
 
-  // Serial.println("Toggling on led...");
+  // DBG("Toggling on led...");
   
   for (int i = 0; i < NUMBER_OF_LEDS; i++) {
     if(pin == leds[i]) {
@@ -396,12 +403,12 @@ void toggleOn(int pin) {
 }
 
 void turnOn(int pin) {
-  // Serial.println("Turning on led...");
+  // DBG("Turning on led...");
   digitalWrite(pin, HIGH);
 }
 
 void turnOff(int pin) {
-  // Serial.println("Turning off led...");
+  // DBG("Turning off led...");
   digitalWrite(pin, LOW);
 }
 
@@ -415,7 +422,7 @@ void turnLeft(int speed) {
 
 void turnRight(int speed) {
   isMoving = true;
-  Serial.println("Turning right...");
+  DBG("Turning right...");
   int actualSpeed = convertSpeed(speed);
   motorLeft.forward(actualSpeed);
   motorRight.back(actualSpeed);
@@ -423,7 +430,7 @@ void turnRight(int speed) {
 
 void moveBackward(int speed) {
   isMoving = true;
-  Serial.println("Reversing...");
+  DBG("Reversing...");
   int actualSpeed = convertSpeed(speed);
   motorLeft.back(actualSpeed);
   motorRight.back(actualSpeed);
@@ -431,16 +438,16 @@ void moveBackward(int speed) {
 
 void moveForward(int speed) {
   isMoving = true;
-  Serial.println("Moving forward...");
+  DBG("Moving forward...");
   int actualSpeed = convertSpeed(speed);
-  // Serial.println(actualSpeed);
+  // DBG(actualSpeed);
   motorLeft.forward(actualSpeed);
   motorRight.forward(actualSpeed);
 }
 
 void stop() {
   isMoving = false;
-  Serial.println("Stopping...");
+  DBG("Stopping...");
   motorLeft.stop();
   motorRight.stop();
 }
