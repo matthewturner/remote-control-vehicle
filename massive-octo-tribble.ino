@@ -8,6 +8,9 @@ byte debugMode = DEBUG_OFF;
 #define DBG_PRNT(...) debugMode == DEBUG_ON ? Serial.print(__VA_ARGS__) : NULL
 #define DBG_WRT(...) debugMode == DEBUG_ON ? Serial.write(__VA_ARGS__) : NULL
 
+#define DIR_FORWARD true
+#define DIR_REVERSE false
+
 const int REPLAY_DELAY = 700;
 const int DEFAULT_EDGE_DURATION = 200;
 
@@ -50,6 +53,10 @@ const int EDGE_LEFT = 0xFF22DC;
 const int EDGE_RIGHT = 0xFFC23C;
 const int EDGE_FORWARD = 0xFF906E;
 const int EDGE_REVERSE = 0xFFE01E;
+const int BEAR_LEFT_FORWARD = 0xFF22DB;
+const int BEAR_RIGHT_FORWARD = 0xFFC23B;
+const int BEAR_LEFT_REVERSE = 0xFF906D;
+const int BEAR_RIGHT_REVERSE = 0xFFE01D;
 const int STOP = 0;
 const int REPLAY = 0xFF6897;
 const int INCREASE_EDGE_DURATION = 0xFF629D;
@@ -120,6 +127,9 @@ int tryReadCommand() {
 }
 
 int convertToInstruction(int commandLength) {
+  if (strcmp(commandBuffer, "stop") == 0) {
+    return STOP;
+  }
   if (strcmp(commandBuffer, "forward") == 0) {
     return FORWARD;
   }
@@ -132,8 +142,17 @@ int convertToInstruction(int commandLength) {
   if (strcmp(commandBuffer, "right") == 0) {
     return RIGHT;
   }
-  if (strcmp(commandBuffer, "forward") == 0) {
-    return FORWARD;
+  if (strcmp(commandBuffer, "bear-left-forward") == 0) {
+    return BEAR_LEFT_FORWARD;
+  }
+  if (strcmp(commandBuffer, "bear-right-forward") == 0) {
+    return BEAR_RIGHT_FORWARD;
+  }
+  if (strcmp(commandBuffer, "bear-left-reverse") == 0) {
+    return BEAR_LEFT_REVERSE;
+  }
+  if (strcmp(commandBuffer, "bear-right-reverse") == 0) {
+    return BEAR_RIGHT_REVERSE;
   }
   if (strcmp(commandBuffer, "edge-reverse") == 0) {
     return EDGE_REVERSE;
@@ -146,9 +165,6 @@ int convertToInstruction(int commandLength) {
   }
   if (strcmp(commandBuffer, "edge-forward") == 0) {
     return EDGE_FORWARD;
-  }
-  if (strcmp(commandBuffer, "stop") == 0) {
-    return STOP;
   }
   if (strcmp(commandBuffer, "replay") == 0) {
     return REPLAY;
@@ -252,6 +268,26 @@ void executeInstruction(int instruction) {
       recordInstructionIfRequired(instruction);
       moveBackward(5);
       edge();
+      break;
+    case BEAR_LEFT_FORWARD:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      bearLeft(5, DIR_FORWARD);
+      break;
+    case BEAR_RIGHT_FORWARD:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      bearRight(5, DIR_FORWARD);
+      break;
+    case BEAR_LEFT_REVERSE:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      bearLeft(5, DIR_REVERSE);
+      break;
+    case BEAR_RIGHT_REVERSE:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      bearRight(5, DIR_REVERSE);
       break;
     case TOGGLE_EDGE_MODE:
       recordInstructionIfRequired(instruction);
@@ -425,6 +461,34 @@ void turnOn(int pin) {
 void turnOff(int pin) {
   // DBG("Turning off led...");
   digitalWrite(pin, LOW);
+}
+
+void bearLeft(int speed, bool forward) {
+  isMoving = true;
+  DBG("Bearing left...");
+  int actualSpeed = convertSpeed(speed);
+  int reducedSpeed = convertSpeed(speed - 4);
+  if (forward) {
+    motorLeft.forward(reducedSpeed);
+    motorRight.forward(actualSpeed);
+  } else {
+    motorLeft.back(reducedSpeed);
+    motorRight.back(actualSpeed);
+  }
+}
+
+void bearRight(int speed, bool forward) {
+  isMoving = true;
+  DBG("Bearing left...");
+  int actualSpeed = convertSpeed(speed);
+  int reducedSpeed = convertSpeed(speed - 4);
+  if (forward) {
+    motorLeft.forward(actualSpeed);
+    motorRight.forward(reducedSpeed);
+  } else {
+    motorLeft.back(actualSpeed);
+    motorRight.back(reducedSpeed);
+  }
 }
 
 void turnLeft(int speed) {
