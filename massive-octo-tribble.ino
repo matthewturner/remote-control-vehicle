@@ -429,7 +429,7 @@ void turnOff(int pin) {
 
 void turnLeft(int speed) {
   isMoving = true;
-  Serial.println("Turning left...");
+  DBG("Turning left...");
   int actualSpeed = convertSpeed(speed);
   motorLeft.back(actualSpeed);
   motorRight.forward(actualSpeed);
