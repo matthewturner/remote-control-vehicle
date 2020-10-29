@@ -3,13 +3,16 @@
 
 #define DEBUG_ON 1
 #define DEBUG_OFF 0
-byte debugMode = DEBUG_OFF;
+const byte debugMode = DEBUG_OFF;
 #define DBG(...) debugMode == DEBUG_ON ? Serial.println(__VA_ARGS__) : NULL
 #define DBG_PRNT(...) debugMode == DEBUG_ON ? Serial.print(__VA_ARGS__) : NULL
 #define DBG_WRT(...) debugMode == DEBUG_ON ? Serial.write(__VA_ARGS__) : NULL
 
 #define DIR_FORWARD true
 #define DIR_REVERSE false
+#define IR_ON true
+#define IR_OFF false
+const byte enableIR = IR_OFF;
 
 const int REPLAY_DELAY = 700;
 const int DEFAULT_EDGE_DURATION = 200;
@@ -74,7 +77,9 @@ void setup() {
   pinMode(ledBluePin, OUTPUT);
   pinMode(ledOnboardPin, OUTPUT);
 
-  irrecv.enableIRIn();
+  if (enableIR) {
+    irrecv.enableIRIn();
+  }
 
   turnOffAllLeds();
   cycleThroughLeds();
@@ -95,13 +100,15 @@ void loop() {
     }
     return;
   }
-  
-  if (irrecv.decode(&results)) {
-    // DBG(results.value, HEX);
-    irrecv.resume();
-  
-    executeInstruction(results.value);
-    return;
+
+  if (enableIR) {
+    if (irrecv.decode(&results)) {
+      // DBG(results.value, HEX);
+      irrecv.resume();
+    
+      executeInstruction(results.value);
+      return;
+    }
   }
 }
 
@@ -535,5 +542,5 @@ int convertSpeed(int speed) {
   if (speed == 0) {
     return 0;
   }
-  return map(speed, 1, 5, 150, 255);
+  return map(speed, 1, 5, 100, 255);
 }
