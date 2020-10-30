@@ -1,5 +1,4 @@
 #include <L293.h>
-#include <IRremote.h>
 
 #define DEBUG_ON 1
 #define DEBUG_OFF 0
@@ -10,9 +9,6 @@ const byte debugMode = DEBUG_OFF;
 
 #define DIR_FORWARD true
 #define DIR_REVERSE false
-#define IR_ON true
-#define IR_OFF false
-const byte enableIR = IR_OFF;
 
 const int REPLAY_DELAY = 700;
 const int DEFAULT_EDGE_DURATION = 200;
@@ -23,7 +19,6 @@ const byte ledGreenPin = 10;
 const byte ledBluePin = 11;
 byte leds[] = { ledGreenPin, ledRedPin, ledBluePin };
 
-const byte irSensorPin = 4;
 const byte ledOnboardPin = 13;
 const byte motorLeftEnablePin = 9;
 const byte motorLeftForwardPin = 7;
@@ -35,9 +30,6 @@ const byte motorRightReversePin = 5;
 L293 motorLeft(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin);
 L293 motorRight(motorRightEnablePin, motorRightForwardPin, motorRightReversePin);
 
-IRrecv irrecv(irSensorPin);
-decode_results results;
-
 bool isMoving = false;
 bool edgeMode = false;
 int edgeDuration = DEFAULT_EDGE_DURATION;
@@ -47,6 +39,7 @@ int instructions[300];
 unsigned long timeOfPreviousInstruction;
 bool awaitingDelayInstruction = false;
 char commandBuffer[30];
+byte currentSpeed = 5;
 
 const int LEFT = 0xFF22DD;
 const int RIGHT = 0xFFC23D;
@@ -68,6 +61,11 @@ const int TOGGLE_RECORD_MODE = 0xFFB04F;
 const int TOGGLE_EDGE_MODE = 0xFF9867;
 const int DELAY = 0xAAAAAA;
 const int PLAY_PAUSE = 0xFF02FD;
+const int SET_SPEED_1 = 0xAAAAAB;
+const int SET_SPEED_2 = 0xAAAAAC;
+const int SET_SPEED_3 = 0xAAAAAD;
+const int SET_SPEED_4 = 0xAAAAAE;
+const int SET_SPEED_5 = 0xAAAAAF;
 
 void setup() {
   Serial.begin(9600);
@@ -76,10 +74,6 @@ void setup() {
   pinMode(ledGreenPin, OUTPUT);
   pinMode(ledBluePin, OUTPUT);
   pinMode(ledOnboardPin, OUTPUT);
-
-  if (enableIR) {
-    irrecv.enableIRIn();
-  }
 
   turnOffAllLeds();
   cycleThroughLeds();
@@ -97,17 +91,6 @@ void loop() {
     DBG(instruction);
     if (instruction != -1) {
       executeInstruction(instruction);
-    }
-    return;
-  }
-
-  if (enableIR) {
-    if (irrecv.decode(&results)) {
-      // DBG(results.value, HEX);
-      irrecv.resume();
-    
-      executeInstruction(results.value);
-      return;
     }
   }
 }
@@ -160,6 +143,21 @@ int convertToInstruction(int commandLength) {
   }
   if (strcmp(commandBuffer, "bear-right-reverse") == 0) {
     return BEAR_RIGHT_REVERSE;
+  }
+  if (strcmp(commandBuffer, "set-speed-1") == 0) {
+    return SET_SPEED_1;
+  }
+  if (strcmp(commandBuffer, "set-speed-2") == 0) {
+    return SET_SPEED_2;
+  }
+  if (strcmp(commandBuffer, "set-speed-3") == 0) {
+    return SET_SPEED_3;
+  }
+  if (strcmp(commandBuffer, "set-speed-4") == 0) {
+    return SET_SPEED_4;
+  }
+  if (strcmp(commandBuffer, "set-speed-5") == 0) {
+    return SET_SPEED_5;
   }
   if (strcmp(commandBuffer, "edge-reverse") == 0) {
     return EDGE_REVERSE;
@@ -224,77 +222,77 @@ void executeInstruction(int instruction) {
       if (isMoving) {
         stop();
       } else {
-        moveForward(5);
+        moveForward(currentSpeed);
         edgeIfRequired();
       }
       break;
     case FORWARD:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      moveForward(5);
+      moveForward(currentSpeed);
       edgeIfRequired();
       break;
     case RIGHT:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      turnRight(5);
+      turnRight(currentSpeed);
       edgeIfRequired();
       break;
     case LEFT:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      turnLeft(5);
+      turnLeft(currentSpeed);
       edgeIfRequired();
       break;
     case REVERSE:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      moveBackward(5);
+      moveBackward(currentSpeed);
       edgeIfRequired();
       break;
     case EDGE_FORWARD:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      moveForward(5);
+      moveForward(currentSpeed);
       edge();
       break;
     case EDGE_RIGHT:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      turnRight(5);
+      turnRight(currentSpeed);
       edge();
       break;
     case EDGE_LEFT:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      turnLeft(5);
+      turnLeft(currentSpeed);
       edge();
       break;
     case EDGE_REVERSE:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      moveBackward(5);
+      moveBackward(currentSpeed);
       edge();
       break;
     case BEAR_LEFT_FORWARD:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      bearLeft(5, DIR_FORWARD);
+      bearLeft(currentSpeed, DIR_FORWARD);
       break;
     case BEAR_RIGHT_FORWARD:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      bearRight(5, DIR_FORWARD);
+      bearRight(currentSpeed, DIR_FORWARD);
       break;
     case BEAR_LEFT_REVERSE:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      bearLeft(5, DIR_REVERSE);
+      bearLeft(currentSpeed, DIR_REVERSE);
       break;
     case BEAR_RIGHT_REVERSE:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
-      bearRight(5, DIR_REVERSE);
+      bearRight(currentSpeed, DIR_REVERSE);
       break;
     case TOGGLE_EDGE_MODE:
       recordInstructionIfRequired(instruction);
@@ -366,9 +364,11 @@ void turnRecordMode(bool on) {
     toggleOn(ledRedPin);
     currentInstruction = 0;
     resetEdgeMode();
+    currentSpeed = 5;
   } else {
     turnOff(ledRedPin);
     resetEdgeMode();
+    currentSpeed = 5;
   }
 }
 
@@ -448,7 +448,7 @@ void cycleThroughLeds() {
   }
 }
 
-void toggleOn(int pin) {
+void toggleOn(byte pin) {
   turnOffAllLeds();
 
   // DBG("Toggling on led...");
@@ -460,21 +460,24 @@ void toggleOn(int pin) {
   }
 }
 
-void turnOn(int pin) {
+void turnOn(byte pin) {
   // DBG("Turning on led...");
   digitalWrite(pin, HIGH);
 }
 
-void turnOff(int pin) {
+void turnOff(byte pin) {
   // DBG("Turning off led...");
   digitalWrite(pin, LOW);
 }
 
-void bearLeft(int speed, bool forward) {
+void bearLeft(byte speed, bool forward) {
   isMoving = true;
   DBG("Bearing left...");
-  int actualSpeed = convertSpeed(speed);
-  int reducedSpeed = convertSpeed(speed - 4);
+  byte actualSpeed = convertSpeed(speed);
+  byte reducedSpeed = 0;
+  if (speed > 4) {
+    reducedSpeed = convertSpeed(speed - 4);
+  }
   if (forward) {
     motorLeft.forward(reducedSpeed);
     motorRight.forward(actualSpeed);
@@ -484,11 +487,14 @@ void bearLeft(int speed, bool forward) {
   }
 }
 
-void bearRight(int speed, bool forward) {
+void bearRight(byte speed, bool forward) {
   isMoving = true;
   DBG("Bearing left...");
-  int actualSpeed = convertSpeed(speed);
-  int reducedSpeed = convertSpeed(speed - 4);
+  byte actualSpeed = convertSpeed(speed);
+  byte reducedSpeed = 0;
+  if (speed > 4) {
+    reducedSpeed = convertSpeed(speed - 4);
+  }
   if (forward) {
     motorLeft.forward(actualSpeed);
     motorRight.forward(reducedSpeed);
@@ -498,34 +504,34 @@ void bearRight(int speed, bool forward) {
   }
 }
 
-void turnLeft(int speed) {
+void turnLeft(byte speed) {
   isMoving = true;
   DBG("Turning left...");
-  int actualSpeed = convertSpeed(speed);
+  byte actualSpeed = convertSpeed(speed);
   motorLeft.back(actualSpeed);
   motorRight.forward(actualSpeed);
 }
 
-void turnRight(int speed) {
+void turnRight(byte speed) {
   isMoving = true;
   DBG("Turning right...");
-  int actualSpeed = convertSpeed(speed);
+  byte actualSpeed = convertSpeed(speed);
   motorLeft.forward(actualSpeed);
   motorRight.back(actualSpeed);
 }
 
-void moveBackward(int speed) {
+void moveBackward(byte speed) {
   isMoving = true;
   DBG("Reversing...");
-  int actualSpeed = convertSpeed(speed);
+  byte actualSpeed = convertSpeed(speed);
   motorLeft.back(actualSpeed);
   motorRight.back(actualSpeed);
 }
 
-void moveForward(int speed) {
+void moveForward(byte speed) {
   isMoving = true;
   DBG("Moving forward...");
-  int actualSpeed = convertSpeed(speed);
+  byte actualSpeed = convertSpeed(speed);
   // DBG(actualSpeed);
   motorLeft.forward(actualSpeed);
   motorRight.forward(actualSpeed);
@@ -538,9 +544,9 @@ void stop() {
   motorRight.stop();
 }
 
-int convertSpeed(int speed) {
+byte convertSpeed(byte speed) {
   if (speed == 0) {
     return 0;
   }
-  return map(speed, 1, 5, 100, 255);
+  return map(speed, 1, 5, 50, 255);
 }
