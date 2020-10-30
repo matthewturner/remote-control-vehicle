@@ -226,6 +226,31 @@ void executeInstruction(int instruction) {
         edgeIfRequired();
       }
       break;
+    case SET_SPEED_1:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      currentSpeed = 1;
+      break;
+    case SET_SPEED_2:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      currentSpeed = 2;
+      break;
+    case SET_SPEED_3:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      currentSpeed = 3;
+      break;
+    case SET_SPEED_4:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      currentSpeed = 4;
+      break;
+    case SET_SPEED_5:
+      recordDurationIfRequired();
+      recordInstructionIfRequired(instruction);
+      currentSpeed = 5;
+      break;
     case FORWARD:
       recordDurationIfRequired();
       recordInstructionIfRequired(instruction);
