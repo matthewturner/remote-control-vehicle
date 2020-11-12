@@ -4,7 +4,9 @@ The bluetooth remote-controlled car
 
 ![car](https://user-images.githubusercontent.com/1783027/97975863-ab042000-1dc1-11eb-807a-c870f89b6db3.jpg)
 
-[Video](https://youtu.be/ySsLElAfF24)
+![Video](https://media.giphy.com/media/VY4mH3ABTiCAt8fhKN/giphy.gif)
+
+[Full Video](https://youtu.be/ySsLElAfF24)
 
 * [Chassis/motors](https://www.amazon.co.uk/gp/product/B071CF3NXM/ref=ppx_yo_dt_b_asin_title_o05_s00?ie=UTF8&psc=1)
 * [Elegoo Nano](https://www.amazon.co.uk/gp/product/B072BMYZ18/ref=ppx_yo_dt_b_asin_title_o08_s00?ie=UTF8&psc=1)
