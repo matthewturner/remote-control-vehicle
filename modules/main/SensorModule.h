@@ -3,7 +3,7 @@
 
 struct sensorResult
 {
-    byte Forward;
+    byte Front;
     byte Back;
     byte Left;
     byte Right;

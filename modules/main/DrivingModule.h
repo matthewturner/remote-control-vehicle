@@ -6,23 +6,25 @@
 #define DIR_FORWARD true
 #define DIR_REVERSE false
 
+#define DEFAULT_SPEED 5
+
 class DrivingModule
 {
 public:
     DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, byte motorLeftReversePin,
                   byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin);
 
-    void bearLeft(byte speed, bool forward);
+    void bearLeft(bool forward);
 
-    void bearRight(byte speed, bool forward);
+    void bearRight(bool forward);
 
-    void turnLeft(byte speed);
+    void turnLeft();
 
-    void turnRight(byte speed);
+    void turnRight();
 
-    void moveBackward(byte speed);
+    void moveBackward();
 
-    void moveForward(byte speed);
+    void moveForward();
 
     void stop();
 
@@ -30,10 +32,15 @@ public:
 
     bool isMoving();
 
+    void setSpeed(byte speed);
+
+    void resetSpeed();
+
 private:
     L293 _motorLeft;
     L293 _motorRight;
     bool _isMoving;
+    byte _speed;
 };
 
 #endif

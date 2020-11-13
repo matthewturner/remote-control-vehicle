@@ -23,11 +23,6 @@ int CommandModule::tryReadInstruction()
     return instruction;
 }
 
-void CommandModule::turnEdgeMode(bool on)
-{
-    _edgeMode = on;
-}
-
 void CommandModule::turnRecordMode(bool on)
 {
     _recordMode = on;
@@ -36,11 +31,6 @@ void CommandModule::turnRecordMode(bool on)
 void CommandModule::turnSelfDriveMode(bool on)
 {
     _selfDriveMode = on;
-}
-
-bool CommandModule::edgeMode()
-{
-    return _edgeMode;
 }
 
 bool CommandModule::recordMode()
@@ -201,28 +191,6 @@ int CommandModule::convertToInstruction(int commandLength)
         if (_recordMode)
         {
             return TOGGLE_RECORD_MODE;
-        }
-        else
-        {
-            return -1;
-        }
-    }
-    if (strcmp(_commandBuffer, "start-edge") == 0)
-    {
-        if (_edgeMode)
-        {
-            return -1;
-        }
-        else
-        {
-            return TOGGLE_EDGE_MODE;
-        }
-    }
-    if (strcmp(_commandBuffer, "stop-edge") == 0)
-    {
-        if (_edgeMode)
-        {
-            return TOGGLE_EDGE_MODE;
         }
         else
         {

@@ -35,18 +35,15 @@ public:
     int tryReadCommand();
     int tryReadInstruction();
     int convertToInstruction(int commandLength);
-    void turnEdgeMode(bool on);
     void turnRecordMode(bool on);
     void turnSelfDriveMode(bool on);
 
-    bool edgeMode();
     bool recordMode();
     bool selfDriveMode();
 
 private:
     char _commandBuffer[30];
     bool _selfDriveMode;
-    bool _edgeMode;
     bool _recordMode;
 };
 

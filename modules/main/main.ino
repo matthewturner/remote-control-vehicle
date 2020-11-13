@@ -3,10 +3,10 @@
 #include "LedModule.h"
 #include "CommandModule.h"
 #include "RecordModule.h"
+#include "EdgeModule.h"
 #include "Debug.h"
 
 #define REPLAY_DELAY 700
-#define DEFAULT_EDGE_DURATION 200
 #define SENSOR_I2C_ADDR 8
 
 const byte ledRedPin = 12;
@@ -28,11 +28,10 @@ SensorModule sensorModule(SENSOR_I2C_ADDR);
 SensorResult sensorResult;
 
 CommandModule commandModule;
+EdgeModule edgeModule;
 RecordModule recordModule(REPLAY_DELAY);
 
-int edgeDuration = DEFAULT_EDGE_DURATION;
 bool awaitingDelayInstruction = false;
-byte currentSpeed = 5;
 
 void setup()
 {
@@ -52,13 +51,10 @@ void loop()
   }
 
   sensorModule.detect(&sensorResult);
-  if (sensorResult.Age > 100)
-  {
-    drivingModule.stop();
-  }
+
   Serial.println("Sensor Module Result:");
   Serial.print("   ");
-  Serial.println(sensorResult.Forward);
+  Serial.println(sensorResult.Front);
   Serial.print(sensorResult.Left);
   Serial.print("       ");
   Serial.println(sensorResult.Right);
@@ -66,6 +62,15 @@ void loop()
   Serial.println(sensorResult.Back);
   Serial.print("   ~");
   Serial.println(sensorResult.Age);
+
+  if (sensorResult.Age > 100)
+  {
+    drivingModule.stop();
+  }
+  if (sensorResult.Front < 10)
+  {
+    drivingModule.stop();
+  }
 }
 
 void executeInstruction(int instruction)
@@ -75,126 +80,112 @@ void executeInstruction(int instruction)
   case DELAY:
     awaitingDelayInstruction = true;
     break;
-  case PLAY_PAUSE:
-    recordDurationIfRequired();
-    recordInstructionIfRequired(instruction);
-    if (drivingModule.isMoving())
-    {
-      drivingModule.stop();
-    }
-    else
-    {
-      drivingModule.moveForward(currentSpeed);
-      edgeIfRequired();
-    }
-    break;
   case SET_SPEED_1:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    currentSpeed = 1;
+    drivingModule.setSpeed(1);
     break;
   case SET_SPEED_2:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    currentSpeed = 2;
+    drivingModule.setSpeed(2);
     break;
   case SET_SPEED_3:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    currentSpeed = 3;
+    drivingModule.setSpeed(3);
     break;
   case SET_SPEED_4:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    currentSpeed = 4;
+    drivingModule.setSpeed(4);
     break;
   case SET_SPEED_5:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    currentSpeed = 5;
+    drivingModule.setSpeed(5);
     break;
   case FORWARD:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.moveForward(currentSpeed);
-    edgeIfRequired();
+    drivingModule.moveForward();
     break;
   case RIGHT:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.turnRight(currentSpeed);
-    edgeIfRequired();
+    drivingModule.turnRight();
     break;
   case LEFT:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.turnLeft(currentSpeed);
-    edgeIfRequired();
+    drivingModule.turnLeft();
     break;
   case REVERSE:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.moveBackward(currentSpeed);
-    edgeIfRequired();
+    drivingModule.moveBackward();
     break;
   case EDGE_FORWARD:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.moveForward(currentSpeed);
-    edge();
+    drivingModule.moveForward();
+    edgeModule.wait();
+    drivingModule.stop();
     break;
   case EDGE_RIGHT:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.turnRight(currentSpeed);
-    edge();
+    drivingModule.turnRight();
+    edgeModule.wait();
+    drivingModule.stop();
     break;
   case EDGE_LEFT:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.turnLeft(currentSpeed);
-    edge();
+    drivingModule.turnLeft();
+    edgeModule.wait();
+    drivingModule.stop();
     break;
   case EDGE_REVERSE:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.moveBackward(currentSpeed);
-    edge();
+    drivingModule.moveBackward();
+    edgeModule.wait();
+    drivingModule.stop();
     break;
   case BEAR_LEFT_FORWARD:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.bearLeft(currentSpeed, DIR_FORWARD);
+    drivingModule.bearLeft(DIR_FORWARD);
     break;
   case BEAR_RIGHT_FORWARD:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.bearRight(currentSpeed, DIR_FORWARD);
+    drivingModule.bearRight(DIR_FORWARD);
     break;
   case BEAR_LEFT_REVERSE:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.bearLeft(currentSpeed, DIR_REVERSE);
+    drivingModule.bearLeft(DIR_REVERSE);
     break;
   case BEAR_RIGHT_REVERSE:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    drivingModule.bearRight(currentSpeed, DIR_REVERSE);
-    break;
-  case TOGGLE_EDGE_MODE:
-    recordInstructionIfRequired(instruction);
-    toggleEdgeMode();
+    drivingModule.bearRight(DIR_REVERSE);
     break;
   case INCREASE_EDGE_DURATION:
     recordInstructionIfRequired(instruction);
-    increaseEdgeDuration();
+    edgeModule.increase();
     break;
   case DECREASE_EDGE_DURATION:
     recordInstructionIfRequired(instruction);
-    decreaseEdgeDuration();
+    edgeModule.decrease();
     break;
   case TOGGLE_RECORD_MODE:
     toggleRecordMode();
+    break;
+  case TOGGLE_SELF_DRIVE_MODE:
+    toggleSelfDriveMode();
     break;
   case REPLAY:
     replayInstructions();
@@ -235,7 +226,7 @@ void recordDurationIfRequired()
 
 void replayInstructions()
 {
-  resetEdgeMode();
+  edgeModule.reset();
   DBG("Replaying instructions...");
   recordModule.replay();
   int instruction;
@@ -246,6 +237,25 @@ void replayInstructions()
     {
       delay(REPLAY_DELAY);
     }
+  }
+}
+
+void toggleSelfDriveMode()
+{
+  DBG("Toggling self-drive mode...");
+  turnSelfDriveMode(!commandModule.selfDriveMode());
+}
+
+void turnSelfDriveMode(bool on)
+{
+  commandModule.turnSelfDriveMode(on);
+  if (commandModule.selfDriveMode())
+  {
+    ledModule.toggleOn(ledGreenPin);
+  }
+  else
+  {
+    ledModule.turnOff(ledGreenPin);
   }
 }
 
@@ -262,21 +272,15 @@ void turnRecordMode(bool on)
   {
     ledModule.toggleOn(ledRedPin);
     recordModule.reset();
-    resetEdgeMode();
-    currentSpeed = 5;
+    edgeModule.reset();
+    drivingModule.resetSpeed();
   }
   else
   {
     ledModule.turnOff(ledRedPin);
-    resetEdgeMode();
-    currentSpeed = 5;
+    edgeModule.reset();
+    drivingModule.resetSpeed();
   }
-}
-
-void resetEdgeMode()
-{
-  edgeDuration = DEFAULT_EDGE_DURATION;
-  turnEdgeMode(false);
 }
 
 void recordInstructionIfRequired(int instruction)
@@ -285,54 +289,4 @@ void recordInstructionIfRequired(int instruction)
   {
     recordModule.recordInstruction(instruction);
   }
-}
-
-void toggleEdgeMode()
-{
-  turnEdgeMode(!commandModule.edgeMode());
-}
-
-void turnEdgeMode(bool on)
-{
-  commandModule.turnEdgeMode(on);
-  if (commandModule.edgeMode())
-  {
-    ledModule.turnOn(ledBluePin);
-  }
-  else
-  {
-    ledModule.turnOff(ledBluePin);
-  }
-}
-
-void increaseEdgeDuration()
-{
-  edgeDuration += 100;
-  if (edgeDuration >= 500)
-  {
-    edgeDuration = 500;
-  }
-}
-
-void decreaseEdgeDuration()
-{
-  edgeDuration -= 100;
-  if (edgeDuration <= 100)
-  {
-    edgeDuration = 100;
-  }
-}
-
-void edgeIfRequired()
-{
-  if (commandModule.edgeMode())
-  {
-    edge();
-  }
-}
-
-void edge()
-{
-  delay(edgeDuration);
-  drivingModule.stop();
 }
