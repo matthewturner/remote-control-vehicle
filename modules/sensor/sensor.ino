@@ -31,7 +31,12 @@ void loop()
 {
   for (int i = 0; i < 3; i++)
   {
-    distances[i] = sensors.dist(i);
+    int distance = sensors.dist(i);
+    if (distance > 250)
+    {
+      distance = 250;
+    }
+    distances[i] = distance;
   }
 
   lastReading = millis();
