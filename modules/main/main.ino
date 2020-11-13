@@ -1,28 +1,16 @@
-#include <L293.h>
+#include "DrivingModule.h"
 #include "SensorModule.h"
-
-#define DEBUG_ON 1
-#define DEBUG_OFF 0
-const byte debugMode = DEBUG_OFF;
-#define DBG(...) debugMode == DEBUG_ON ? Serial.println(__VA_ARGS__) : NULL
-#define DBG_PRNT(...) debugMode == DEBUG_ON ? Serial.print(__VA_ARGS__) : NULL
-#define DBG_WRT(...) debugMode == DEBUG_ON ? Serial.write(__VA_ARGS__) : NULL
-
-#define DIR_FORWARD true
-#define DIR_REVERSE false
+#include "Debug.h"
 
 #define REPLAY_DELAY 700
 #define DEFAULT_EDGE_DURATION 200
-
 #define SENSOR_I2C_ADDR 8
 
-#define NUMBER_OF_LEDS 3
 const byte ledRedPin = 12;
 const byte ledGreenPin = 10;
 const byte ledBluePin = 11;
-byte leds[] = {ledGreenPin, ledRedPin, ledBluePin};
+LedModule ledModule(ledRedPin, ledGreenPin, ledBluePin);
 
-const byte ledOnboardPin = 13;
 const byte motorLeftEnablePin = 9;
 const byte motorLeftForwardPin = 7;
 const byte motorLeftReversePin = 8;
@@ -30,12 +18,12 @@ const byte motorRightEnablePin = 3;
 const byte motorRightForwardPin = 6;
 const byte motorRightReversePin = 5;
 
-L293 motorLeft(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin);
-L293 motorRight(motorRightEnablePin, motorRightForwardPin, motorRightReversePin);
+DrivingModule drivingModule(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin,
+                            motorRightEnablePin, motorRightForwardPin, motorRightReversePin);
 
 SensorModule sensorModule(SENSOR_I2C_ADDR);
+SensorResult sensorResult;
 
-bool isMoving = false;
 bool edgeMode = false;
 int edgeDuration = DEFAULT_EDGE_DURATION;
 bool recordMode = false;
@@ -79,13 +67,8 @@ void setup()
   Serial.begin(9600);
   sensorModule.begin();
 
-  pinMode(ledRedPin, OUTPUT);
-  pinMode(ledGreenPin, OUTPUT);
-  pinMode(ledBluePin, OUTPUT);
-  pinMode(ledOnboardPin, OUTPUT);
-
-  turnOffAllLeds();
-  cycleThroughLeds();
+  ledModule.turnOffAllLeds();
+  ledModule.cycleThroughLeds();
 }
 
 void loop()
@@ -106,10 +89,10 @@ void loop()
     }
   }
 
-  SensorResult sensorResult = sensorModule.detect();
+  sensorModule.detect(&sensorResult);
   if (sensorResult.Age > 100)
   {
-    stop();
+    drivingModule.stop();
   }
   Serial.println("Sensor Module Result:");
   Serial.print("   ");
@@ -312,13 +295,13 @@ void executeInstruction(int instruction)
   case PLAY_PAUSE:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    if (isMoving)
+    if (drivingModule.isMoving())
     {
-      stop();
+      drivingModule.stop();
     }
     else
     {
-      moveForward(currentSpeed);
+      drivingModule.moveForward(currentSpeed);
       edgeIfRequired();
     }
     break;
@@ -350,70 +333,70 @@ void executeInstruction(int instruction)
   case FORWARD:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    moveForward(currentSpeed);
+    drivingModule.moveForward(currentSpeed);
     edgeIfRequired();
     break;
   case RIGHT:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    turnRight(currentSpeed);
+    drivingModule.turnRight(currentSpeed);
     edgeIfRequired();
     break;
   case LEFT:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    turnLeft(currentSpeed);
+    drivingModule.turnLeft(currentSpeed);
     edgeIfRequired();
     break;
   case REVERSE:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    moveBackward(currentSpeed);
+    drivingModule.moveBackward(currentSpeed);
     edgeIfRequired();
     break;
   case EDGE_FORWARD:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    moveForward(currentSpeed);
+    drivingModule.moveForward(currentSpeed);
     edge();
     break;
   case EDGE_RIGHT:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    turnRight(currentSpeed);
+    drivingModule.turnRight(currentSpeed);
     edge();
     break;
   case EDGE_LEFT:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    turnLeft(currentSpeed);
+    drivingModule.turnLeft(currentSpeed);
     edge();
     break;
   case EDGE_REVERSE:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    moveBackward(currentSpeed);
+    drivingModule.moveBackward(currentSpeed);
     edge();
     break;
   case BEAR_LEFT_FORWARD:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    bearLeft(currentSpeed, DIR_FORWARD);
+    drivingModule.bearLeft(currentSpeed, DIR_FORWARD);
     break;
   case BEAR_RIGHT_FORWARD:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    bearRight(currentSpeed, DIR_FORWARD);
+    drivingModule.bearRight(currentSpeed, DIR_FORWARD);
     break;
   case BEAR_LEFT_REVERSE:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    bearLeft(currentSpeed, DIR_REVERSE);
+    drivingModule.bearLeft(currentSpeed, DIR_REVERSE);
     break;
   case BEAR_RIGHT_REVERSE:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    bearRight(currentSpeed, DIR_REVERSE);
+    drivingModule.bearRight(currentSpeed, DIR_REVERSE);
     break;
   case TOGGLE_EDGE_MODE:
     recordInstructionIfRequired(instruction);
@@ -436,7 +419,7 @@ void executeInstruction(int instruction)
   case STOP:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
-    stop();
+    drivingModule.stop();
     break;
   default:
     if (awaitingDelayInstruction)
@@ -458,7 +441,7 @@ void recordDurationIfRequired()
   }
 
   unsigned long time = millis();
-  if (isMoving)
+  if (drivingModule.isMoving())
   {
     int duration = time - timeOfPreviousInstruction;
     recordInstructionIfRequired(0xAAAAAA);
@@ -492,14 +475,14 @@ void turnRecordMode(bool on)
   recordMode = on;
   if (recordMode)
   {
-    toggleOn(ledRedPin);
+    ledModule.toggleOn(ledRedPin);
     currentInstruction = 0;
     resetEdgeMode();
     currentSpeed = 5;
   }
   else
   {
-    turnOff(ledRedPin);
+    ledModule.turnOff(ledRedPin);
     resetEdgeMode();
     currentSpeed = 5;
   }
@@ -543,11 +526,11 @@ void turnEdgeMode(bool on)
   edgeMode = on;
   if (edgeMode)
   {
-    turnOn(ledBluePin);
+    ledModule.turnOn(ledBluePin);
   }
   else
   {
-    turnOff(ledBluePin);
+    ledModule.turnOff(ledBluePin);
   }
 }
 
@@ -580,150 +563,5 @@ void edgeIfRequired()
 void edge()
 {
   delay(edgeDuration);
-  stop();
-}
-
-void turnOffAllLeds()
-{
-  // DBG("Turning off all leds...");
-  for (int i = 0; i < NUMBER_OF_LEDS; i++)
-  {
-    turnOff(leds[i]);
-  }
-}
-
-void cycleThroughLeds()
-{
-  DBG("Cycling through all leds...");
-  for (int i = 0; i < NUMBER_OF_LEDS; i++)
-  {
-    turnOn(leds[i]);
-    delay(200);
-    turnOff(leds[i]);
-  }
-}
-
-void toggleOn(byte pin)
-{
-  turnOffAllLeds();
-
-  // DBG("Toggling on led...");
-
-  for (int i = 0; i < NUMBER_OF_LEDS; i++)
-  {
-    if (pin == leds[i])
-    {
-      turnOn(leds[i]);
-    }
-  }
-}
-
-void turnOn(byte pin)
-{
-  // DBG("Turning on led...");
-  digitalWrite(pin, HIGH);
-}
-
-void turnOff(byte pin)
-{
-  // DBG("Turning off led...");
-  digitalWrite(pin, LOW);
-}
-
-void bearLeft(byte speed, bool forward)
-{
-  isMoving = true;
-  DBG("Bearing left...");
-  byte actualSpeed = convertSpeed(speed);
-  byte reducedSpeed = 0;
-  if (speed > 4)
-  {
-    reducedSpeed = convertSpeed(speed - 4);
-  }
-  if (forward)
-  {
-    motorLeft.forward(reducedSpeed);
-    motorRight.forward(actualSpeed);
-  }
-  else
-  {
-    motorLeft.back(reducedSpeed);
-    motorRight.back(actualSpeed);
-  }
-}
-
-void bearRight(byte speed, bool forward)
-{
-  isMoving = true;
-  DBG("Bearing left...");
-  byte actualSpeed = convertSpeed(speed);
-  byte reducedSpeed = 0;
-  if (speed > 4)
-  {
-    reducedSpeed = convertSpeed(speed - 4);
-  }
-  if (forward)
-  {
-    motorLeft.forward(actualSpeed);
-    motorRight.forward(reducedSpeed);
-  }
-  else
-  {
-    motorLeft.back(actualSpeed);
-    motorRight.back(reducedSpeed);
-  }
-}
-
-void turnLeft(byte speed)
-{
-  isMoving = true;
-  DBG("Turning left...");
-  byte actualSpeed = convertSpeed(speed);
-  motorLeft.back(actualSpeed);
-  motorRight.forward(actualSpeed);
-}
-
-void turnRight(byte speed)
-{
-  isMoving = true;
-  DBG("Turning right...");
-  byte actualSpeed = convertSpeed(speed);
-  motorLeft.forward(actualSpeed);
-  motorRight.back(actualSpeed);
-}
-
-void moveBackward(byte speed)
-{
-  isMoving = true;
-  DBG("Reversing...");
-  byte actualSpeed = convertSpeed(speed);
-  motorLeft.back(actualSpeed);
-  motorRight.back(actualSpeed);
-}
-
-void moveForward(byte speed)
-{
-  isMoving = true;
-  DBG("Moving forward...");
-  byte actualSpeed = convertSpeed(speed);
-  // DBG(actualSpeed);
-  motorLeft.forward(actualSpeed);
-  motorRight.forward(actualSpeed);
-}
-
-void stop()
-{
-  isMoving = false;
-  DBG("Stopping...");
-  motorLeft.stop();
-  motorRight.stop();
-}
-
-byte convertSpeed(byte speed)
-{
-  if (speed == 0)
-  {
-    return 0;
-  }
-  return map(speed, 1, 5, 50, 255);
+  drivingModule.stop();
 }

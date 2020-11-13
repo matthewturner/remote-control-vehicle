@@ -17,7 +17,7 @@ class SensorModule
 public:
     SensorModule(byte i2cAddress);
     void begin();
-    SensorResult detect();
+    byte detect(SensorResult *r);
 
 private:
     int _i2cAddress;
