@@ -1,5 +1,8 @@
 #include "DrivingModule.h"
 #include "SensorModule.h"
+#include "LedModule.h"
+#include "CommandModule.h"
+#include "RecordModule.h"
 #include "Debug.h"
 
 #define REPLAY_DELAY 700
@@ -25,16 +28,11 @@ SensorModule sensorModule(SENSOR_I2C_ADDR);
 SensorResult sensorResult;
 
 CommandModule commandModule;
+RecordModule recordModule(REPLAY_DELAY);
 
-bool edgeMode = false;
 int edgeDuration = DEFAULT_EDGE_DURATION;
-bool recordMode = false;
-int currentInstruction = -1;
-int instructions[300];
-unsigned long timeOfPreviousInstruction;
 bool awaitingDelayInstruction = false;
 byte currentSpeed = 5;
-bool selfDriveMode = false;
 
 void setup()
 {
@@ -47,20 +45,10 @@ void setup()
 
 void loop()
 {
-  int commandLength = commandModule.tryReadCommand();
-
-  if (commandLength > 0)
+  int instruction = commandModule.tryReadInstruction();
+  if (instruction != -1)
   {
-    DBG("New command:");
-    DBG_WRT(commandBuffer, commandLength);
-    DBG();
-    int instruction = convertToInstruction(commandLength);
-    DBG("New instruction:");
-    DBG(instruction);
-    if (instruction != -1)
-    {
-      executeInstruction(instruction);
-    }
+    executeInstruction(instruction);
   }
 
   sensorModule.detect(&sensorResult);
@@ -230,7 +218,7 @@ void executeInstruction(int instruction)
 
 void recordDurationIfRequired()
 {
-  if (!recordMode)
+  if (!commandModule.recordMode())
   {
     return;
   }
@@ -238,21 +226,23 @@ void recordDurationIfRequired()
   unsigned long time = millis();
   if (drivingModule.isMoving())
   {
-    int duration = time - timeOfPreviousInstruction;
-    recordInstructionIfRequired(0xAAAAAA);
-    recordInstructionIfRequired(duration);
+    int duration = recordModule.timeSinceLastInstruction(time);
+    recordModule.recordInstruction(0xAAAAAA);
+    recordModule.recordInstruction(duration);
   }
-  timeOfPreviousInstruction = time;
+  recordModule.setTimeOfLastInstruction(time);
 }
 
 void replayInstructions()
 {
   resetEdgeMode();
   DBG("Replaying instructions...");
-  for (int i = 0; i < currentInstruction; i++)
+  recordModule.replay();
+  int instruction;
+  while (instruction = recordModule.next() != -1)
   {
-    executeInstruction(instructions[i]);
-    if (instructions[i] != DELAY && instructions[i + 1] != DELAY)
+    executeInstruction(instruction);
+    if (instruction != DELAY && recordModule.peek() != DELAY)
     {
       delay(REPLAY_DELAY);
     }
@@ -262,16 +252,16 @@ void replayInstructions()
 void toggleRecordMode()
 {
   DBG("Toggling record mode...");
-  turnRecordMode(!recordMode);
+  turnRecordMode(!commandModule.recordMode());
 }
 
 void turnRecordMode(bool on)
 {
-  recordMode = on;
-  if (recordMode)
+  commandModule.turnRecordMode(on);
+  if (commandModule.recordMode())
   {
     ledModule.toggleOn(ledRedPin);
-    currentInstruction = 0;
+    recordModule.reset();
     resetEdgeMode();
     currentSpeed = 5;
   }
@@ -291,35 +281,21 @@ void resetEdgeMode()
 
 void recordInstructionIfRequired(int instruction)
 {
-  if (recordMode)
+  if (commandModule.recordMode())
   {
-    if (instruction == 0)
-    {
-      if (currentInstruction > 0)
-      {
-        if (instructions[currentInstruction - 1] == 0)
-        {
-          return;
-        }
-      }
-    }
-    DBG_PRNT("Recording instruction ");
-    DBG_PRNT(instruction, HEX);
-    DBG("...");
-    instructions[currentInstruction] = instruction;
-    currentInstruction++;
+    recordModule.recordInstruction(instruction);
   }
 }
 
 void toggleEdgeMode()
 {
-  turnEdgeMode(!edgeMode);
+  turnEdgeMode(!commandModule.edgeMode());
 }
 
 void turnEdgeMode(bool on)
 {
-  edgeMode = on;
-  if (edgeMode)
+  commandModule.turnEdgeMode(on);
+  if (commandModule.edgeMode())
   {
     ledModule.turnOn(ledBluePin);
   }
@@ -349,7 +325,7 @@ void decreaseEdgeDuration()
 
 void edgeIfRequired()
 {
-  if (edgeMode)
+  if (commandModule.edgeMode())
   {
     edge();
   }

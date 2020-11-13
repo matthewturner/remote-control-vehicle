@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include <L293.h>
 #include "DrivingModule.h"
+#include "Debug.h"
 
 DrivingModule::DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, byte motorLeftReversePin,
                              byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin)
+    : _motorLeft(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin),
+      _motorRight(motorRightEnablePin, motorRightForwardPin, motorRightReversePin)
 {
-    _motorLeft = L293(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin);
-    _motorRight = L293(motorRightEnablePin, motorRightForwardPin, motorRightReversePin);
 }
 
 void DrivingModule::bearLeft(byte speed, bool forward)
@@ -21,13 +22,13 @@ void DrivingModule::bearLeft(byte speed, bool forward)
     }
     if (forward)
     {
-        motorLeft.forward(reducedSpeed);
-        motorRight.forward(actualSpeed);
+        _motorLeft.forward(reducedSpeed);
+        _motorRight.forward(actualSpeed);
     }
     else
     {
-        motorLeft.back(reducedSpeed);
-        motorRight.back(actualSpeed);
+        _motorLeft.back(reducedSpeed);
+        _motorRight.back(actualSpeed);
     }
 }
 
@@ -43,13 +44,13 @@ void DrivingModule::bearRight(byte speed, bool forward)
     }
     if (forward)
     {
-        motorLeft.forward(actualSpeed);
-        motorRight.forward(reducedSpeed);
+        _motorLeft.forward(actualSpeed);
+        _motorRight.forward(reducedSpeed);
     }
     else
     {
-        motorLeft.back(actualSpeed);
-        motorRight.back(reducedSpeed);
+        _motorLeft.back(actualSpeed);
+        _motorRight.back(reducedSpeed);
     }
 }
 
@@ -58,8 +59,8 @@ void DrivingModule::turnLeft(byte speed)
     _isMoving = true;
     DBG("Turning left...");
     byte actualSpeed = convertSpeed(speed);
-    motorLeft.back(actualSpeed);
-    motorRight.forward(actualSpeed);
+    _motorLeft.back(actualSpeed);
+    _motorRight.forward(actualSpeed);
 }
 
 void DrivingModule::turnRight(byte speed)
@@ -67,8 +68,8 @@ void DrivingModule::turnRight(byte speed)
     _isMoving = true;
     DBG("Turning right...");
     byte actualSpeed = convertSpeed(speed);
-    motorLeft.forward(actualSpeed);
-    motorRight.back(actualSpeed);
+    _motorLeft.forward(actualSpeed);
+    _motorRight.back(actualSpeed);
 }
 
 void DrivingModule::moveBackward(byte speed)
@@ -76,8 +77,8 @@ void DrivingModule::moveBackward(byte speed)
     _isMoving = true;
     DBG("Reversing...");
     byte actualSpeed = convertSpeed(speed);
-    motorLeft.back(actualSpeed);
-    motorRight.back(actualSpeed);
+    _motorLeft.back(actualSpeed);
+    _motorRight.back(actualSpeed);
 }
 
 void DrivingModule::moveForward(byte speed)
@@ -86,19 +87,19 @@ void DrivingModule::moveForward(byte speed)
     DBG("Moving forward...");
     byte actualSpeed = convertSpeed(speed);
     // DBG(actualSpeed);
-    motorLeft.forward(actualSpeed);
-    motorRight.forward(actualSpeed);
+    _motorLeft.forward(actualSpeed);
+    _motorRight.forward(actualSpeed);
 }
 
 void DrivingModule::stop()
 {
     _isMoving = false;
     DBG("Stopping...");
-    motorLeft.stop();
-    motorRight.stop();
+    _motorLeft.stop();
+    _motorRight.stop();
 }
 
-bool isMoving()
+bool DrivingModule::isMoving()
 {
     return _isMoving;
 }

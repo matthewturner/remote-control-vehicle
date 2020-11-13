@@ -1,11 +1,15 @@
 #include <Arduino.h>
 #include "LedModule.h"
+#include "Debug.h"
 
 LedModule::LedModule(byte ledRedPin, byte ledGreenPin, byte ledBluePin)
 {
     _ledRedPin = ledRedPin;
     _ledGreenPin = ledGreenPin;
     _ledBluePin = ledBluePin;
+    _leds[0] = _ledRedPin;
+    _leds[1] = _ledGreenPin;
+    _leds[2] = _ledBluePin;
 
     pinMode(ledRedPin, OUTPUT);
     pinMode(ledGreenPin, OUTPUT);
@@ -17,7 +21,7 @@ void LedModule::turnOffAllLeds()
     // DBG("Turning off all leds...");
     for (int i = 0; i < NUMBER_OF_LEDS; i++)
     {
-        turnOff(leds[i]);
+        turnOff(_leds[i]);
     }
 }
 
@@ -26,9 +30,9 @@ void LedModule::cycleThroughLeds()
     DBG("Cycling through all leds...");
     for (int i = 0; i < NUMBER_OF_LEDS; i++)
     {
-        turnOn(leds[i]);
+        turnOn(_leds[i]);
         delay(200);
-        turnOff(leds[i]);
+        turnOff(_leds[i]);
     }
 }
 
@@ -40,9 +44,9 @@ void LedModule::toggleOn(byte pin)
 
     for (int i = 0; i < NUMBER_OF_LEDS; i++)
     {
-        if (pin == leds[i])
+        if (pin == _leds[i])
         {
-            turnOn(leds[i]);
+            turnOn(_leds[i]);
         }
     }
 }

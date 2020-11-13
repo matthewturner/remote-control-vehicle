@@ -1,8 +1,56 @@
 #include <Arduino.h>
 #include "CommandModule.h"
+#include "Debug.h"
 
 CommandModule::CommandModule()
 {
+}
+
+int CommandModule::tryReadInstruction()
+{
+    int commandLength = tryReadCommand();
+    if (commandLength == 0)
+    {
+        DBG("No command to process");
+        return -1;
+    }
+    DBG("New command:");
+    DBG_WRT(_commandBuffer, commandLength);
+    DBG();
+    int instruction = convertToInstruction(commandLength);
+    DBG("New instruction:");
+    DBG(instruction);
+    return instruction;
+}
+
+void CommandModule::turnEdgeMode(bool on)
+{
+    _edgeMode = on;
+}
+
+void CommandModule::turnRecordMode(bool on)
+{
+    _recordMode = on;
+}
+
+void CommandModule::turnSelfDriveMode(bool on)
+{
+    _selfDriveMode = on;
+}
+
+bool CommandModule::edgeMode()
+{
+    return _edgeMode;
+}
+
+bool CommandModule::recordMode()
+{
+    return _recordMode;
+}
+
+bool CommandModule::selfDriveMode()
+{
+    return _selfDriveMode;
 }
 
 int CommandModule::tryReadCommand()
@@ -105,7 +153,7 @@ int CommandModule::convertToInstruction(int commandLength)
     }
     if (strcmp(_commandBuffer, "start-self-drive") == 0)
     {
-        if (selfDriveMode)
+        if (_selfDriveMode)
         {
             return -1;
         }
@@ -116,7 +164,7 @@ int CommandModule::convertToInstruction(int commandLength)
     }
     if (strcmp(_commandBuffer, "stop-self-drive") == 0)
     {
-        if (selfDriveMode)
+        if (_selfDriveMode)
         {
             return TOGGLE_SELF_DRIVE_MODE;
         }
@@ -139,7 +187,7 @@ int CommandModule::convertToInstruction(int commandLength)
     }
     if (strcmp(_commandBuffer, "start-record") == 0)
     {
-        if (recordMode)
+        if (_recordMode)
         {
             return -1;
         }
@@ -150,7 +198,7 @@ int CommandModule::convertToInstruction(int commandLength)
     }
     if (strcmp(_commandBuffer, "stop-record") == 0)
     {
-        if (recordMode)
+        if (_recordMode)
         {
             return TOGGLE_RECORD_MODE;
         }
@@ -161,7 +209,7 @@ int CommandModule::convertToInstruction(int commandLength)
     }
     if (strcmp(_commandBuffer, "start-edge") == 0)
     {
-        if (edgeMode)
+        if (_edgeMode)
         {
             return -1;
         }
@@ -172,7 +220,7 @@ int CommandModule::convertToInstruction(int commandLength)
     }
     if (strcmp(_commandBuffer, "stop-edge") == 0)
     {
-        if (edgeMode)
+        if (_edgeMode)
         {
             return TOGGLE_EDGE_MODE;
         }
