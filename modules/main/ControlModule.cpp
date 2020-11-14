@@ -180,7 +180,7 @@ void ControlModule::replayInstructions()
     DBGP("Replaying instructions...");
     _recordModule->replay();
     int instruction;
-    while (instruction = _recordModule->next() != -1)
+    while ((instruction = _recordModule->next()) != -1)
     {
         executeInstruction(instruction);
         if (instruction != DELAY && _recordModule->peek() != DELAY)
