@@ -10,7 +10,7 @@ public:
     void increase();
     void decrease();
     void reset();
-    void wait();
+    short duration();
 
 private:
     short _duration;

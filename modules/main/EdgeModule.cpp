@@ -30,7 +30,7 @@ void EdgeModule::reset()
     _duration = DEFAULT_DURATION;
 }
 
-void EdgeModule::wait()
+short EdgeModule::duration()
 {
-    delay(_duration);
+    return _duration;
 }

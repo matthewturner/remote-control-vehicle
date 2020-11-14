@@ -2,8 +2,9 @@
 #include "CommandModule.h"
 #include "Debug.h"
 
-CommandModule::CommandModule()
+CommandModule::CommandModule(HardwareSerial *stream)
 {
+    _stream = stream;
 }
 
 int CommandModule::tryReadInstruction()
@@ -46,10 +47,10 @@ bool CommandModule::selfDriveMode()
 int CommandModule::tryReadCommand()
 {
     int index = -1;
-    while (Serial.available())
+    while (_stream->available())
     {
         delay(2);
-        char ch = Serial.read();
+        char ch = _stream->read();
         switch (ch)
         {
         case '>':

@@ -27,7 +27,7 @@ DrivingModule drivingModule(motorLeftEnablePin, motorLeftForwardPin, motorLeftRe
 SensorModule sensorModule(SENSOR_I2C_ADDR);
 SensorResult sensorResult;
 
-CommandModule commandModule;
+CommandModule commandModule(&Serial);
 EdgeModule edgeModule;
 RecordModule recordModule(REPLAY_DELAY);
 
@@ -50,31 +50,32 @@ void loop()
     executeInstruction(instruction);
   }
 
-  sensorModule.detect(&sensorResult);
+  // sensorModule.detect(&sensorResult);
 
-  Serial.println("Sensor Module Result:");
-  Serial.print("   ");
-  Serial.println(sensorResult.Front);
-  Serial.print(sensorResult.Left);
-  Serial.print("       ");
-  Serial.println(sensorResult.Right);
-  Serial.print("   ");
-  Serial.println(sensorResult.Back);
-  Serial.print("   ~");
-  Serial.println(sensorResult.Age);
+  // Serial.println("Sensor Module Result:");
+  // Serial.print("   ");
+  // Serial.println(sensorResult.Front);
+  // Serial.print(sensorResult.Left);
+  // Serial.print("       ");
+  // Serial.println(sensorResult.Right);
+  // Serial.print("   ");
+  // Serial.println(sensorResult.Back);
+  // Serial.print("   ~");
+  // Serial.println(sensorResult.Age);
 
-  if (sensorResult.Age > 100)
-  {
-    drivingModule.stop();
-  }
-  if (sensorResult.Front < 10)
-  {
-    drivingModule.stop();
-  }
+  // if (sensorResult.Age > 100)
+  // {
+  //   drivingModule.stop();
+  // }
+  // if (sensorResult.Front < 10)
+  // {
+  //   drivingModule.stop();
+  // }
 }
 
 void executeInstruction(int instruction)
 {
+  Serial.println(instruction);
   switch (instruction)
   {
   case DELAY:
@@ -129,28 +130,29 @@ void executeInstruction(int instruction)
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
     drivingModule.moveForward();
-    edgeModule.wait();
+    Serial.println(edgeModule.duration());
+    delay(edgeModule.duration());
     drivingModule.stop();
     break;
   case EDGE_RIGHT:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
     drivingModule.turnRight();
-    edgeModule.wait();
+    delay(edgeModule.duration());
     drivingModule.stop();
     break;
   case EDGE_LEFT:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
     drivingModule.turnLeft();
-    edgeModule.wait();
+    delay(edgeModule.duration());
     drivingModule.stop();
     break;
   case EDGE_REVERSE:
     recordDurationIfRequired();
     recordInstructionIfRequired(instruction);
     drivingModule.moveBackward();
-    edgeModule.wait();
+    delay(edgeModule.duration());
     drivingModule.stop();
     break;
   case BEAR_LEFT_FORWARD:

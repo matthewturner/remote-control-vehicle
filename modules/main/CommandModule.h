@@ -31,7 +31,7 @@ const int SET_SPEED_5 = 0xAAAAAF;
 class CommandModule
 {
 public:
-    CommandModule();
+    CommandModule(HardwareSerial *stream);
     int tryReadCommand();
     int tryReadInstruction();
     int convertToInstruction(int commandLength);
@@ -45,6 +45,7 @@ private:
     char _commandBuffer[30];
     bool _selfDriveMode;
     bool _recordMode;
+    HardwareSerial *_stream;
 };
 
 #endif
