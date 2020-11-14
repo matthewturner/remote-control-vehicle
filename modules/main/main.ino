@@ -48,26 +48,4 @@ void loop()
 {
   int instruction = commandModule.tryReadInstruction();
   controlModule.executeInstruction(instruction);
-
-  // sensorModule.detect(&sensorResult);
-
-  // Serial.println("Sensor Module Result:");
-  // Serial.print("   ");
-  // Serial.println(sensorResult.Front);
-  // Serial.print(sensorResult.Left);
-  // Serial.print("       ");
-  // Serial.println(sensorResult.Right);
-  // Serial.print("   ");
-  // Serial.println(sensorResult.Back);
-  // Serial.print("   ~");
-  // Serial.println(sensorResult.Age);
-
-  // if (sensorResult.Age > 100)
-  // {
-  //   drivingModule.stop();
-  // }
-  // if (sensorResult.Front < 10)
-  // {
-  //   drivingModule.stop();
-  // }
 }
