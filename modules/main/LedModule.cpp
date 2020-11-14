@@ -4,12 +4,12 @@
 
 LedModule::LedModule(byte ledRedPin, byte ledGreenPin, byte ledBluePin)
 {
-    _ledRedPin = ledRedPin;
-    _ledGreenPin = ledGreenPin;
-    _ledBluePin = ledBluePin;
-    _leds[0] = _ledRedPin;
-    _leds[1] = _ledGreenPin;
-    _leds[2] = _ledBluePin;
+    _redPin = ledRedPin;
+    _greenPin = ledGreenPin;
+    _bluePin = ledBluePin;
+    _leds[0] = _redPin;
+    _leds[1] = _greenPin;
+    _leds[2] = _bluePin;
 
     pinMode(ledRedPin, OUTPUT);
     pinMode(ledGreenPin, OUTPUT);
@@ -18,7 +18,6 @@ LedModule::LedModule(byte ledRedPin, byte ledGreenPin, byte ledBluePin)
 
 void LedModule::turnOffAllLeds()
 {
-    // DBG("Turning off all leds...");
     for (int i = 0; i < NUMBER_OF_LEDS; i++)
     {
         turnOff(_leds[i]);
@@ -27,7 +26,6 @@ void LedModule::turnOffAllLeds()
 
 void LedModule::cycleThroughLeds()
 {
-    DBG("Cycling through all leds...");
     for (int i = 0; i < NUMBER_OF_LEDS; i++)
     {
         turnOn(_leds[i]);
@@ -40,8 +38,6 @@ void LedModule::toggleOn(byte pin)
 {
     turnOffAllLeds();
 
-    // DBG("Toggling on led...");
-
     for (int i = 0; i < NUMBER_OF_LEDS; i++)
     {
         if (pin == _leds[i])
@@ -53,12 +49,25 @@ void LedModule::toggleOn(byte pin)
 
 void LedModule::turnOn(byte pin)
 {
-    // DBG("Turning on led...");
     digitalWrite(pin, HIGH);
 }
 
 void LedModule::turnOff(byte pin)
 {
-    // DBG("Turning off led...");
     digitalWrite(pin, LOW);
+}
+
+byte LedModule::redPin()
+{
+    return _redPin;
+}
+
+byte LedModule::greenPin()
+{
+    return _greenPin;
+}
+
+byte LedModule::bluePin()
+{
+    return _bluePin;
 }

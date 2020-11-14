@@ -1,6 +1,8 @@
 #ifndef RecordModule_h
 #define RecordModule_h
 
+#define REPLAY_DELAY 700
+
 class RecordModule
 {
 public:

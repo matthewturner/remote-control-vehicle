@@ -18,10 +18,16 @@ public:
 
     void turnOff(byte pin);
 
+    byte redPin();
+
+    byte greenPin();
+
+    byte bluePin();
+
 private:
-    byte _ledRedPin;
-    byte _ledGreenPin;
-    byte _ledBluePin;
+    byte _redPin;
+    byte _greenPin;
+    byte _bluePin;
     byte _leds[3];
 };
 
