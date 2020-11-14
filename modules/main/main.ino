@@ -6,6 +6,7 @@
 #include "EdgeModule.h"
 #include "Debug.h"
 #include "ControlModule.h"
+#include "AutoPilotModule.h"
 
 #define SENSOR_I2C_ADDR 8
 
@@ -35,6 +36,8 @@ RecordModule recordModule(REPLAY_DELAY, &Serial);
 ControlModule controlModule(&Serial, &drivingModule, &recordModule,
                             &edgeModule, &ledModule, &commandModule);
 
+AutoPilotModule autoPilotModule(&Serial, &drivingModule);
+
 void setup()
 {
   Serial.begin(9600);
@@ -48,4 +51,8 @@ void loop()
 {
   int instruction = commandModule.tryReadInstruction();
   controlModule.executeInstruction(instruction);
+
+  sensorModule.detect(&sensorResult);
+
+  autoPilotModule.handle(&sensorResult);
 }

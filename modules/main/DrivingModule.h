@@ -6,6 +6,12 @@
 #define DIR_FORWARD true
 #define DIR_REVERSE false
 
+#define MOVE_STOPPED 0
+#define MOVE_FORWARD 1
+#define MOVE_LEFT 2
+#define MOVE_RIGHT 3
+#define MOVE_BACKWARD 4
+
 #define DEFAULT_SPEED 5
 
 class DrivingModule
@@ -33,6 +39,8 @@ public:
 
     bool isMoving();
 
+    byte directionOfMotion();
+
     void setSpeed(byte speed);
 
     void resetSpeed();
@@ -40,7 +48,7 @@ public:
 private:
     L293 _motorLeft;
     L293 _motorRight;
-    bool _isMoving;
+    byte _directionOfMotion;
     byte _speed;
     HardwareSerial *_stream;
 };
