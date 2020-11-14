@@ -58,14 +58,14 @@ int CommandModule::tryReadCommand()
             break;
         case '!':
             _commandBuffer[index] = '\0';
-            return index;
+            return index + 1;
         default:
             _commandBuffer[index] = ch;
             index++;
             break;
         }
     }
-    return -1;
+    return 0;
 }
 
 int CommandModule::convertToInstruction(int commandLength)
