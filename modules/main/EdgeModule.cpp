@@ -2,8 +2,9 @@
 #include "EdgeModule.h"
 #include "Debug.h"
 
-EdgeModule::EdgeModule()
+EdgeModule::EdgeModule(HardwareSerial *stream)
 {
+    _stream = stream;
     reset();
 }
 

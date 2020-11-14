@@ -2,9 +2,10 @@
 #include "RecordModule.h"
 #include "Debug.h"
 
-RecordModule::RecordModule(short replayDelay)
+RecordModule::RecordModule(short replayDelay, HardwareSerial *stream)
 {
     _replayDelay = replayDelay;
+    _stream = stream;
 }
 
 void RecordModule::setTimeOfLastInstruction(unsigned long time)
@@ -41,7 +42,7 @@ short RecordModule::replay()
 void RecordModule::reset()
 {
     _replayIndex = -1;
-    _currentIndex = -1;
+    _currentIndex = 0;
 }
 
 void RecordModule::recordInstruction(int instruction)
@@ -56,9 +57,9 @@ void RecordModule::recordInstruction(int instruction)
             }
         }
     }
-    DBG_PRNT("Recording instruction ");
-    DBG_PRNT(instruction, HEX);
-    DBG("...");
+    DBGP_PRNT("Recording instruction ");
+    DBGP_PRNT(instruction, HEX);
+    DBGP("...");
     _instructions[_currentIndex] = instruction;
     _currentIndex++;
 }

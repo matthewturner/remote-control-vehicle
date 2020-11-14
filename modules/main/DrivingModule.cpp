@@ -4,17 +4,19 @@
 #include "Debug.h"
 
 DrivingModule::DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, byte motorLeftReversePin,
-                             byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin)
+                             byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin,
+                             HardwareSerial *stream)
     : _motorLeft(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin),
       _motorRight(motorRightEnablePin, motorRightForwardPin, motorRightReversePin)
 {
     _speed = DEFAULT_SPEED;
+    _stream = stream;
 }
 
 void DrivingModule::bearLeft(bool forward)
 {
     _isMoving = true;
-    DBG("Bearing left...");
+    DBGP("Bearing left...");
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
     if (_speed > 4)
@@ -36,7 +38,7 @@ void DrivingModule::bearLeft(bool forward)
 void DrivingModule::bearRight(bool forward)
 {
     _isMoving = true;
-    DBG("Bearing left...");
+    DBGP("Bearing left...");
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
     if (_speed > 4)
@@ -58,7 +60,7 @@ void DrivingModule::bearRight(bool forward)
 void DrivingModule::turnLeft()
 {
     _isMoving = true;
-    DBG("Turning left...");
+    DBGP("Turning left...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.back(actualSpeed);
     _motorRight.forward(actualSpeed);
@@ -67,7 +69,7 @@ void DrivingModule::turnLeft()
 void DrivingModule::turnRight()
 {
     _isMoving = true;
-    DBG("Turning right...");
+    DBGP("Turning right...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.forward(actualSpeed);
     _motorRight.back(actualSpeed);
@@ -76,7 +78,7 @@ void DrivingModule::turnRight()
 void DrivingModule::moveBackward()
 {
     _isMoving = true;
-    DBG("Reversing...");
+    DBGP("Reversing...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.back(actualSpeed);
     _motorRight.back(actualSpeed);
@@ -85,9 +87,9 @@ void DrivingModule::moveBackward()
 void DrivingModule::moveForward()
 {
     _isMoving = true;
-    DBG("Moving forward...");
+    DBGP("Moving forward...");
     byte actualSpeed = convertSpeed(_speed);
-    // DBG(actualSpeed);
+    // DBGP(actualSpeed);
     _motorLeft.forward(actualSpeed);
     _motorRight.forward(actualSpeed);
 }
@@ -95,7 +97,7 @@ void DrivingModule::moveForward()
 void DrivingModule::stop()
 {
     _isMoving = false;
-    DBG("Stopping...");
+    DBGP("Stopping...");
     _motorLeft.stop();
     _motorRight.stop();
 }

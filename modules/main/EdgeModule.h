@@ -6,7 +6,7 @@
 class EdgeModule
 {
 public:
-    EdgeModule();
+    EdgeModule(HardwareSerial *stream);
     void increase();
     void decrease();
     void reset();
@@ -14,6 +14,7 @@ public:
 
 private:
     short _duration;
+    HardwareSerial *_stream;
 };
 
 #endif

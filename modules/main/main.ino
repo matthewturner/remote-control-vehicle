@@ -22,14 +22,15 @@ const byte motorRightForwardPin = 6;
 const byte motorRightReversePin = 5;
 
 DrivingModule drivingModule(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin,
-                            motorRightEnablePin, motorRightForwardPin, motorRightReversePin);
+                            motorRightEnablePin, motorRightForwardPin, motorRightReversePin,
+                            &Serial);
 
-SensorModule sensorModule(SENSOR_I2C_ADDR);
+SensorModule sensorModule(SENSOR_I2C_ADDR, &Serial);
 SensorResult sensorResult;
 
 CommandModule commandModule(&Serial);
-EdgeModule edgeModule;
-RecordModule recordModule(REPLAY_DELAY);
+EdgeModule edgeModule(&Serial);
+RecordModule recordModule(REPLAY_DELAY, &Serial);
 
 ControlModule controlModule(&Serial, &drivingModule, &recordModule,
                             &edgeModule, &ledModule, &commandModule);

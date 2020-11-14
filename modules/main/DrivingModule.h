@@ -12,7 +12,8 @@ class DrivingModule
 {
 public:
     DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, byte motorLeftReversePin,
-                  byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin);
+                  byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin,
+                  HardwareSerial *stream);
 
     void bearLeft(bool forward);
 
@@ -41,6 +42,7 @@ private:
     L293 _motorRight;
     bool _isMoving;
     byte _speed;
+    HardwareSerial *_stream;
 };
 
 #endif

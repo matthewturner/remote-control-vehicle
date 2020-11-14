@@ -6,7 +6,7 @@
 class RecordModule
 {
 public:
-    RecordModule(short replayDelay);
+    RecordModule(short replayDelay, HardwareSerial *stream);
 
     void recordInstruction(int instruction);
     void recordDelay();
@@ -21,9 +21,10 @@ public:
 private:
     int _currentIndex = -1;
     int _replayIndex = -1;
-    int _instructions[300];
+    int _instructions[5];
     short _replayDelay;
     unsigned long _timeOfLastInstruction;
+    HardwareSerial *_stream;
 };
 
 #endif

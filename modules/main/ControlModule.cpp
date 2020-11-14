@@ -21,6 +21,10 @@ void ControlModule::executeInstruction(int instruction)
         return;
     }
 
+    DBGP_PRNT("Executing instruction ");
+    DBGP_PRNT(instruction, HEX);
+    DBGP("...");
+
     switch (instruction)
     {
     case DELAY:
@@ -145,9 +149,9 @@ void ControlModule::executeInstruction(int instruction)
         if (_awaitingDelayInstruction)
         {
             _awaitingDelayInstruction = false;
-            DBG_PRNT("Waiting for ");
-            DBG_PRNT(instruction);
-            DBG("ms...");
+            DBGP_PRNT("Waiting for ");
+            DBGP_PRNT(instruction);
+            DBGP("ms...");
             delay(instruction);
         }
     }
@@ -173,7 +177,7 @@ void ControlModule::recordDurationIfRequired()
 void ControlModule::replayInstructions()
 {
     _edgeModule->reset();
-    DBG("Replaying instructions...");
+    DBGP("Replaying instructions...");
     _recordModule->replay();
     int instruction;
     while (instruction = _recordModule->next() != -1)
@@ -188,7 +192,7 @@ void ControlModule::replayInstructions()
 
 void ControlModule::toggleSelfDriveMode()
 {
-    DBG("Toggling self-drive mode...");
+    DBGP("Toggling self-drive mode...");
     turnSelfDriveMode(!_commandModule->selfDriveMode());
 }
 
@@ -207,7 +211,7 @@ void ControlModule::turnSelfDriveMode(bool on)
 
 void ControlModule::toggleRecordMode()
 {
-    DBG("Toggling record mode...");
+    DBGP("Toggling record mode...");
     turnRecordMode(!_commandModule->recordMode());
 }
 

@@ -2,9 +2,10 @@
 #include <Arduino.h>
 #include "SensorModule.h"
 
-SensorModule::SensorModule(byte i2cAddress)
+SensorModule::SensorModule(byte i2cAddress, HardwareSerial *stream)
 {
     _i2cAddress = i2cAddress;
+    _stream = stream;
 }
 
 void SensorModule::begin()

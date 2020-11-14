@@ -12,15 +12,15 @@ int CommandModule::tryReadInstruction()
     int commandLength = tryReadCommand();
     if (commandLength == 0)
     {
-        DBG("No command to process");
+        // DBGP("No command to process");
         return -1;
     }
-    DBG("New command:");
-    DBG_WRT(_commandBuffer, commandLength);
-    DBG();
+    DBGP("New command:");
+    DBGP_WRT(_commandBuffer, commandLength);
+    DBGP();
     int instruction = convertToInstruction(commandLength);
-    DBG("New instruction:");
-    DBG(instruction);
+    DBGP("New instruction:");
+    DBGP(instruction, HEX);
     return instruction;
 }
 
