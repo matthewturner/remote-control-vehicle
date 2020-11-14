@@ -36,7 +36,7 @@ RecordModule recordModule(REPLAY_DELAY, &Serial);
 ControlModule controlModule(&Serial, &drivingModule, &recordModule,
                             &edgeModule, &ledModule, &commandModule);
 
-AutoPilotModule autoPilotModule(&Serial, &drivingModule);
+AutoPilotModule autoPilotModule(&Serial, &drivingModule, &commandModule);
 
 void setup()
 {

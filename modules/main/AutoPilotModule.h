@@ -4,18 +4,21 @@
 #include <Arduino.h>
 #include "SensorModule.h"
 #include "DrivingModule.h"
+#include "CommandModule.h"
 
 class AutoPilotModule
 {
 public:
     AutoPilotModule(HardwareSerial *stream,
-                    DrivingModule *drivingModule);
+                    DrivingModule *drivingModule,
+                    CommandModule *commandModule);
 
     void handle(SensorResult *sensorResult);
 
 private:
     HardwareSerial *_stream;
     DrivingModule *_drivingModule;
+    CommandModule *_commandModule;
 };
 
 #endif
