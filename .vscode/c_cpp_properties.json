@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Users/matt/development/arduino/Arduino_L293/src",
+                "C:/Users/matt/development/arduino/ArduinoCore-avr/cores/arduino",
+                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/EEPROM/src",
+                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/HID/src",
+                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/SoftwareSerial/src",
+                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/SPI/src",
+                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/Wire/src",
+                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/SPI/src"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.18362.0",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Tools/MSVC/14.27.29110/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "msvc-x64"
+        }
+    ],
+    "version": 4
+}
