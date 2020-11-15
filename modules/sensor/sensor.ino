@@ -2,9 +2,18 @@
 
 #include <HCSR04.h>
 
-HCSR04 sensors(2, new int[3]{5, 6, 7}, 3);
+#define NUMBER_OF_SENSORS 2
+
+HCSR04 sensors(8, new int[NUMBER_OF_SENSORS]{10, 11}, NUMBER_OF_SENSORS);
 byte distances[6];
 unsigned long lastReading;
+
+#define SENSOR_FRONT_INDEX 0
+#define SENSOR_LEFT_INDEX 0
+#define SENSOR_RIGHT_INDEX 1
+#define SENSOR_BACK_INDEX 0
+
+#define MAX_SENSOR_DISTANCE 250
 
 #define FRONT_INDEX 0
 #define LEFT_INDEX 1
@@ -15,9 +24,10 @@ unsigned long lastReading;
 
 void setup()
 {
+  Serial.begin(9600);
   Wire.begin(8);
 
-  distances[FRONT_INDEX] = -1;
+  distances[FRONT_INDEX] = 100;
   distances[LEFT_INDEX] = -1;
   distances[RIGHT_INDEX] = -1;
   distances[BACK_INDEX] = 100;
@@ -29,28 +39,23 @@ void setup()
 
 void loop()
 {
-  for (int i = 0; i < 3; i++)
-  {
-    int distance = sensors.dist(i);
-    if (distance > 250)
-    {
-      distance = 250;
-    }
-    distances[i] = distance;
-  }
+  distances[LEFT_INDEX] = min(sensors.dist(SENSOR_LEFT_INDEX), MAX_SENSOR_DISTANCE);
+  distances[RIGHT_INDEX] = min(sensors.dist(SENSOR_RIGHT_INDEX), MAX_SENSOR_DISTANCE);
+
+  Serial.print("Left: ");
+  Serial.print(distances[LEFT_INDEX]);
+  Serial.print("cm; Right: ");
+  Serial.print(distances[RIGHT_INDEX]);
+  Serial.println("cm");
 
   lastReading = millis();
-  delay(100);
+  delay(1000);
 }
 
 void requestEvent()
 {
   unsigned long time = millis();
-  unsigned long age = time - lastReading;
-  if (age > 250)
-  {
-    age = 250;
-  }
+  unsigned long age = min(time - lastReading, 250);
   distances[AGE_INDEX] = age;
   Wire.write(distances, 6);
 }
