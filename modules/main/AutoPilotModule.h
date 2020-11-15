@@ -19,6 +19,10 @@ private:
     HardwareSerial *_stream;
     DrivingModule *_drivingModule;
     CommandModule *_commandModule;
+
+    bool isCentered(SensorResult *sensorResult);
+    bool spaceAhead(SensorResult *sensorResult);
+    bool isTrapped(SensorResult *sensorResult);
 };
 
 #endif

@@ -24,7 +24,7 @@ void AutoPilotModule::handle(SensorResult *sensorResult)
     DBGP_PRNT("   ~");
     DBGP(sensorResult->Age);
 
-    if (sensorResult->Front <= 7)
+    if (!spaceAhead(sensorResult))
     {
         if (!_commandModule->selfDriveMode())
         {
@@ -34,52 +34,95 @@ void AutoPilotModule::handle(SensorResult *sensorResult)
             }
             return;
         }
+        if (isTrapped(sensorResult))
+        {
+            _drivingModule->stop();
+            return;
+        }
         if (sensorResult->Right > sensorResult->Left)
         {
             _drivingModule->turnRight();
+            return;
         }
-        else if (sensorResult->Left > sensorResult->Right)
+        if (sensorResult->Left > sensorResult->Right)
         {
             _drivingModule->turnLeft();
+            return;
         }
+        // bias for right
+        _drivingModule->turnRight();
+        return;
     }
-    else if (sensorResult->Front > 7)
+
+    if (sensorResult->Left < 4)
     {
-        if (sensorResult->Left < 4)
-        {
-            _drivingModule->turnRight();
-        }
-        else if (sensorResult->Right < 4)
-        {
-            _drivingModule->turnLeft();
-        }
-        else if (sensorResult->Left < 7)
-        {
-            _drivingModule->bearRight(DIR_FORWARD);
-        }
-        else if (sensorResult->Right < 7)
-        {
-            _drivingModule->bearLeft(DIR_FORWARD);
-        }
-        else if (sensorResult->Left - 2 < sensorResult->Right < sensorResult->Left + 2)
-        {
-            _drivingModule->moveForward();
-        }
-        else if (sensorResult->Right - 2 < sensorResult->Left < sensorResult->Right + 2)
-        {
-            _drivingModule->moveForward();
-        }
-        else if (sensorResult->Left > 20 || sensorResult->Right > 20)
-        {
-            _drivingModule->moveForward();
-        }
-        else if (sensorResult->Left < sensorResult->Right)
-        {
-            _drivingModule->bearRight(DIR_FORWARD);
-        }
-        else
-        {
-            _drivingModule->bearLeft(DIR_FORWARD);
-        }
+        _drivingModule->turnRight();
+        return;
     }
+    if (sensorResult->Right < 4)
+    {
+        _drivingModule->turnLeft();
+        return;
+    }
+    if (sensorResult->Left < 7)
+    {
+        _drivingModule->bearRight(DIR_FORWARD);
+        return;
+    }
+    if (sensorResult->Right < 7)
+    {
+        _drivingModule->bearLeft(DIR_FORWARD);
+        return;
+    }
+    if (isCentered(sensorResult))
+    {
+        _drivingModule->moveForward();
+        return;
+    }
+    if (sensorResult->Left > 20 || sensorResult->Right > 20)
+    {
+        _drivingModule->moveForward();
+        return;
+    }
+    if (sensorResult->Left < sensorResult->Right)
+    {
+        _drivingModule->bearRight(DIR_FORWARD);
+        return;
+    }
+    else
+    {
+        _drivingModule->bearLeft(DIR_FORWARD);
+        return;
+    }
+}
+
+bool AutoPilotModule::isCentered(SensorResult *sensorResult)
+{
+    if (sensorResult->Left - 2 < sensorResult->Right < sensorResult->Left + 2)
+    {
+        return true;
+    }
+    if (sensorResult->Right - 2 < sensorResult->Left < sensorResult->Right + 2)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool AutoPilotModule::spaceAhead(SensorResult *sensorResult)
+{
+    return sensorResult->Front > 7;
+}
+
+bool AutoPilotModule::isTrapped(SensorResult *sensorResult)
+{
+    if (spaceAhead(sensorResult))
+    {
+        return false;
+    }
+    if (sensorResult->Right > 4 || sensorResult->Left > 4)
+    {
+        return false;
+    }
+    return true;
 }
