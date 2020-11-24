@@ -38,16 +38,15 @@ void loop()
   payload[LEFT_INDEX] = min(sensors.dist(LEFT_INDEX), MAX_SENSOR_DISTANCE);
   payload[RIGHT_INDEX] = min(sensors.dist(RIGHT_INDEX), MAX_SENSOR_DISTANCE);
 
-  Serial.print("Front: ");
-  Serial.print(payload[FRONT_INDEX]);
-  Serial.print("cm; Left: ");
   Serial.print(payload[LEFT_INDEX]);
-  Serial.print("cm; Right: ");
+  Serial.print("cm <-- ^ ");
+  Serial.print(payload[FRONT_INDEX]);
+  Serial.print("cm ^ --> ");
   Serial.print(payload[RIGHT_INDEX]);
   Serial.println("cm");
 
   lastReading = millis();
-  delay(1000);
+  delay(100);
 }
 
 void requestEvent()
