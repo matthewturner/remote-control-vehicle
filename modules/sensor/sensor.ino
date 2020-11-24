@@ -2,16 +2,11 @@
 
 #include <HCSR04.h>
 
-#define NUMBER_OF_SENSORS 2
+#define NUMBER_OF_SENSORS 3
 
-HCSR04 sensors(8, new int[NUMBER_OF_SENSORS]{10, 11}, NUMBER_OF_SENSORS);
+HCSR04 sensors(8, new int[NUMBER_OF_SENSORS]{9, 10, 11}, NUMBER_OF_SENSORS);
 byte distances[6];
 unsigned long lastReading;
-
-#define SENSOR_FRONT_INDEX 0
-#define SENSOR_LEFT_INDEX 0
-#define SENSOR_RIGHT_INDEX 1
-#define SENSOR_BACK_INDEX 0
 
 #define MAX_SENSOR_DISTANCE 250
 
@@ -27,7 +22,7 @@ void setup()
   Serial.begin(9600);
   Wire.begin(8);
 
-  distances[FRONT_INDEX] = 100;
+  distances[FRONT_INDEX] = -1;
   distances[LEFT_INDEX] = -1;
   distances[RIGHT_INDEX] = -1;
   distances[BACK_INDEX] = 100;
@@ -39,10 +34,13 @@ void setup()
 
 void loop()
 {
-  distances[LEFT_INDEX] = min(sensors.dist(SENSOR_LEFT_INDEX), MAX_SENSOR_DISTANCE);
-  distances[RIGHT_INDEX] = min(sensors.dist(SENSOR_RIGHT_INDEX), MAX_SENSOR_DISTANCE);
+  distances[FRONT_INDEX] = min(sensors.dist(FRONT_INDEX), MAX_SENSOR_DISTANCE);
+  distances[LEFT_INDEX] = min(sensors.dist(LEFT_INDEX), MAX_SENSOR_DISTANCE);
+  distances[RIGHT_INDEX] = min(sensors.dist(RIGHT_INDEX), MAX_SENSOR_DISTANCE);
 
-  Serial.print("Left: ");
+  Serial.print("Front: ");
+  Serial.print(distances[FRONT_INDEX]);
+  Serial.print("cm; Left: ");
   Serial.print(distances[LEFT_INDEX]);
   Serial.print("cm; Right: ");
   Serial.print(distances[RIGHT_INDEX]);
@@ -56,6 +54,6 @@ void requestEvent()
 {
   unsigned long time = millis();
   unsigned long age = min(time - lastReading, 250);
-  distances[AGE_INDEX] = age;
+  distances[AGE_INDEX] = (byte)age;
   Wire.write(distances, 6);
 }
