@@ -5,7 +5,7 @@
 #define NUMBER_OF_SENSORS 3
 
 HCSR04 sensors(8, new int[NUMBER_OF_SENSORS]{9, 10, 11}, NUMBER_OF_SENSORS);
-byte distances[6];
+byte payload[6];
 unsigned long lastReading;
 
 #define MAX_SENSOR_DISTANCE 250
@@ -22,28 +22,28 @@ void setup()
   Serial.begin(9600);
   Wire.begin(8);
 
-  distances[FRONT_INDEX] = -1;
-  distances[LEFT_INDEX] = -1;
-  distances[RIGHT_INDEX] = -1;
-  distances[BACK_INDEX] = 100;
-  distances[AGE_INDEX] = 250;
-  distances[SENTINEL_INDEX] = 255;
+  payload[FRONT_INDEX] = -1;
+  payload[LEFT_INDEX] = -1;
+  payload[RIGHT_INDEX] = -1;
+  payload[BACK_INDEX] = 100;
+  payload[AGE_INDEX] = 250;
+  payload[SENTINEL_INDEX] = 255;
 
   Wire.onRequest(requestEvent);
 }
 
 void loop()
 {
-  distances[FRONT_INDEX] = min(sensors.dist(FRONT_INDEX), MAX_SENSOR_DISTANCE);
-  distances[LEFT_INDEX] = min(sensors.dist(LEFT_INDEX), MAX_SENSOR_DISTANCE);
-  distances[RIGHT_INDEX] = min(sensors.dist(RIGHT_INDEX), MAX_SENSOR_DISTANCE);
+  payload[FRONT_INDEX] = min(sensors.dist(FRONT_INDEX), MAX_SENSOR_DISTANCE);
+  payload[LEFT_INDEX] = min(sensors.dist(LEFT_INDEX), MAX_SENSOR_DISTANCE);
+  payload[RIGHT_INDEX] = min(sensors.dist(RIGHT_INDEX), MAX_SENSOR_DISTANCE);
 
   Serial.print("Front: ");
-  Serial.print(distances[FRONT_INDEX]);
+  Serial.print(payload[FRONT_INDEX]);
   Serial.print("cm; Left: ");
-  Serial.print(distances[LEFT_INDEX]);
+  Serial.print(payload[LEFT_INDEX]);
   Serial.print("cm; Right: ");
-  Serial.print(distances[RIGHT_INDEX]);
+  Serial.print(payload[RIGHT_INDEX]);
   Serial.println("cm");
 
   lastReading = millis();
@@ -54,6 +54,6 @@ void requestEvent()
 {
   unsigned long time = millis();
   unsigned long age = min(time - lastReading, 250);
-  distances[AGE_INDEX] = (byte)age;
-  Wire.write(distances, 6);
+  payload[AGE_INDEX] = (byte)age;
+  Wire.write(payload, 6);
 }
