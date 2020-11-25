@@ -24,16 +24,20 @@ void AutoPilotModule::handle(SensorResult *sensorResult)
     DBGP_PRNT("   ~");
     DBGP(sensorResult->Age);
 
-    if (!spaceAhead(sensorResult))
+    if (!_commandModule->selfDriveMode())
     {
-        if (!_commandModule->selfDriveMode())
+        if (!spaceAhead(sensorResult))
         {
             if (_drivingModule->directionOfMotion() == MOVE_FORWARD)
             {
                 _drivingModule->stop();
             }
-            return;
         }
+        return;
+    }
+
+    if (!spaceAhead(sensorResult))
+    {
         if (isTrapped(sensorResult))
         {
             _drivingModule->stop();
@@ -54,22 +58,22 @@ void AutoPilotModule::handle(SensorResult *sensorResult)
         return;
     }
 
-    if (sensorResult->Left < 4)
+    if (sensorResult->Left < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
         _drivingModule->turnRight();
         return;
     }
-    if (sensorResult->Right < 4)
+    if (sensorResult->Right < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
         _drivingModule->turnLeft();
         return;
     }
-    if (sensorResult->Left < 7)
+    if (sensorResult->Left < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
         _drivingModule->bearRight(DIR_FORWARD);
         return;
     }
-    if (sensorResult->Right < 7)
+    if (sensorResult->Right < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
         _drivingModule->bearLeft(DIR_FORWARD);
         return;
@@ -79,7 +83,7 @@ void AutoPilotModule::handle(SensorResult *sensorResult)
         _drivingModule->moveForward();
         return;
     }
-    if (sensorResult->Left > 20 || sensorResult->Right > 20)
+    if (sensorResult->Left > SIDE_SENSOR_CLEAR_THRESHOLD || sensorResult->Right > SIDE_SENSOR_CLEAR_THRESHOLD)
     {
         _drivingModule->moveForward();
         return;
@@ -98,11 +102,11 @@ void AutoPilotModule::handle(SensorResult *sensorResult)
 
 bool AutoPilotModule::isCentered(SensorResult *sensorResult)
 {
-    if (sensorResult->Left - 2 < sensorResult->Right < sensorResult->Left + 2)
+    if (sensorResult->Left - CENTER_TOLERANCE < sensorResult->Right < sensorResult->Left + CENTER_TOLERANCE)
     {
         return true;
     }
-    if (sensorResult->Right - 2 < sensorResult->Left < sensorResult->Right + 2)
+    if (sensorResult->Right - CENTER_TOLERANCE < sensorResult->Left < sensorResult->Right + CENTER_TOLERANCE)
     {
         return true;
     }
@@ -111,7 +115,7 @@ bool AutoPilotModule::isCentered(SensorResult *sensorResult)
 
 bool AutoPilotModule::spaceAhead(SensorResult *sensorResult)
 {
-    return sensorResult->Front > 7;
+    return sensorResult->Front > FRONT_SENSOR_COLLISION_THRESHOLD;
 }
 
 bool AutoPilotModule::isTrapped(SensorResult *sensorResult)
@@ -120,7 +124,7 @@ bool AutoPilotModule::isTrapped(SensorResult *sensorResult)
     {
         return false;
     }
-    if (sensorResult->Right > 4 || sensorResult->Left > 4)
+    if (sensorResult->Right > SIDE_SENSOR_COLLISION_THRESHOLD || sensorResult->Left > SIDE_SENSOR_COLLISION_THRESHOLD)
     {
         return false;
     }
