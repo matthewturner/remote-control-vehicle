@@ -36,13 +36,14 @@ void AutoPilotModule::handle(SensorResult *sensorResult)
         return;
     }
 
+    if (isTrapped(sensorResult))
+    {
+        _drivingModule->stop();
+        return;
+    }
+
     if (!spaceAhead(sensorResult))
     {
-        if (isTrapped(sensorResult))
-        {
-            _drivingModule->stop();
-            return;
-        }
         if (sensorResult->Right > sensorResult->Left)
         {
             _drivingModule->turnRight();
@@ -53,7 +54,7 @@ void AutoPilotModule::handle(SensorResult *sensorResult)
             _drivingModule->turnLeft();
             return;
         }
-        // bias for right
+        // if equal, bias for right
         _drivingModule->turnRight();
         return;
     }
@@ -83,7 +84,7 @@ void AutoPilotModule::handle(SensorResult *sensorResult)
         _drivingModule->moveForward();
         return;
     }
-    if (sensorResult->Left > SIDE_SENSOR_CLEAR_THRESHOLD || sensorResult->Right > SIDE_SENSOR_CLEAR_THRESHOLD)
+    if (isOneSideClear(sensorResult))
     {
         _drivingModule->moveForward();
         return;
@@ -113,6 +114,19 @@ bool AutoPilotModule::isCentered(SensorResult *sensorResult)
     return false;
 }
 
+bool AutoPilotModule::isOneSideClear(SensorResult *sensorResult)
+{
+    if (sensorResult->Left > SIDE_SENSOR_CLEAR_THRESHOLD)
+    {
+        return true;
+    }
+    if (sensorResult->Right > SIDE_SENSOR_CLEAR_THRESHOLD)
+    {
+        return true;
+    }
+    return false;
+}
+
 bool AutoPilotModule::spaceAhead(SensorResult *sensorResult)
 {
     return sensorResult->Front > FRONT_SENSOR_COLLISION_THRESHOLD;
@@ -120,11 +134,11 @@ bool AutoPilotModule::spaceAhead(SensorResult *sensorResult)
 
 bool AutoPilotModule::isTrapped(SensorResult *sensorResult)
 {
-    if (spaceAhead(sensorResult))
+    if (sensorResult->Right > SIDE_SENSOR_COLLISION_THRESHOLD)
     {
         return false;
     }
-    if (sensorResult->Right > SIDE_SENSOR_COLLISION_THRESHOLD || sensorResult->Left > SIDE_SENSOR_COLLISION_THRESHOLD)
+    if (sensorResult->Left > SIDE_SENSOR_COLLISION_THRESHOLD)
     {
         return false;
     }
