@@ -3,7 +3,7 @@
 #include <HCSR04.h>
 
 #define NUMBER_OF_SENSORS 3
-#define NUMBER_OF_READINGS 3
+#define NUMBER_OF_READINGS 1
 #define INDEX_OF_LAST_READING NUMBER_OF_READINGS - 1
 
 HCSR04 sensors(8, new int[NUMBER_OF_SENSORS]{9, 10, 11}, NUMBER_OF_SENSORS);
@@ -42,12 +42,12 @@ void loop()
   readFrom(LEFT_INDEX, readingIndex);
   readFrom(RIGHT_INDEX, readingIndex);
 
-  Serial.print(readings[LEFT_INDEX][readingIndex]);
-  Serial.print("cm <-- ^ ");
-  Serial.print(readings[FRONT_INDEX][readingIndex]);
-  Serial.print("cm ^ --> ");
-  Serial.print(readings[RIGHT_INDEX][readingIndex]);
-  Serial.println("cm");
+  // Serial.print(readings[LEFT_INDEX][readingIndex]);
+  // Serial.print("cm <-- ^ ");
+  // Serial.print(readings[FRONT_INDEX][readingIndex]);
+  // Serial.print("cm ^ --> ");
+  // Serial.print(readings[RIGHT_INDEX][readingIndex]);
+  // Serial.println("cm");
 
   if (readingIndex >= INDEX_OF_LAST_READING)
   {
@@ -59,7 +59,6 @@ void loop()
   }
 
   lastReading = millis();
-  delay(100);
 }
 
 void requestEvent()
@@ -77,7 +76,7 @@ void requestEvent()
 
 byte readFrom(byte sensorIndex, byte readingIndex)
 {
-  byte reading = min(sensors.dist(index), MAX_SENSOR_DISTANCE);
+  byte reading = min(sensors.dist(sensorIndex), MAX_SENSOR_DISTANCE);
   if (reading == 0)
   {
     Serial.println("Skipping reading...");
