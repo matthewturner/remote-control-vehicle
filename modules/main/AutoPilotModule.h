@@ -31,6 +31,7 @@ private:
     bool isCentered(SensorResult *sensorResult);
     bool spaceAhead(SensorResult *sensorResult);
     bool isTrapped(SensorResult *sensorResult);
+    bool isOneSideClear(SensorResult *sensorResult);
 };
 
 #endif
