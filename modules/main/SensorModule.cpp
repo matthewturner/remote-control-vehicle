@@ -2,15 +2,22 @@
 #include <Arduino.h>
 #include "SensorModule.h"
 
-SensorModule::SensorModule(byte i2cAddress, HardwareSerial *stream)
+SensorModule::SensorModule(byte i2cAddress, byte interruptPin,
+                           HardwareSerial *stream)
 {
     _i2cAddress = i2cAddress;
+    _interruptPin = interruptPin;
     _stream = stream;
 }
 
 void SensorModule::begin()
 {
     Wire.begin();
+}
+
+bool SensorModule::signalled()
+{
+    return digitalRead(_interruptPin) == HIGH;
 }
 
 byte SensorModule::detect(SensorResult *r)

@@ -2,6 +2,8 @@
 
 #include <HCSR04.h>
 
+#define SIGNAL_THRESHOLD 7
+
 #define NUMBER_OF_SENSORS 3
 #define NUMBER_OF_READINGS 1
 #define INDEX_OF_LAST_READING NUMBER_OF_READINGS - 1
@@ -21,10 +23,15 @@ byte readingIndex = 0;
 #define AGE_INDEX 4
 #define SENTINEL_INDEX 5
 
+#define SIGNAL_PIN 12
+
 void setup()
 {
   Serial.begin(9600);
   Wire.begin(8);
+
+  pinMode(SIGNAL_PIN, OUTPUT);
+  digitalWrite(SIGNAL_PIN, LOW);
 
   payload[FRONT_INDEX] = -1;
   payload[LEFT_INDEX] = -1;
@@ -59,6 +66,8 @@ void loop()
   }
 
   lastReading = millis();
+
+  delay(100);
 }
 
 void requestEvent()
@@ -70,8 +79,10 @@ void requestEvent()
   unsigned long time = millis();
   unsigned long age = min(time - lastReading, 250);
   payload[AGE_INDEX] = (byte)age;
-  
+
   Wire.write(payload, 6);
+
+  digitalWrite(SIGNAL_PIN, LOW);
 }
 
 byte readFrom(byte sensorIndex, byte readingIndex)
@@ -84,6 +95,10 @@ byte readFrom(byte sensorIndex, byte readingIndex)
   else
   {
     readings[sensorIndex][readingIndex] = reading;
+    if (reading <= SIGNAL_THRESHOLD)
+    {
+      digitalWrite(SIGNAL_PIN, HIGH);
+    }
   }
 }
 

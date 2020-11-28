@@ -4,25 +4,36 @@
 
 AutoPilotModule::AutoPilotModule(HardwareSerial *stream,
                                  DrivingModule *drivingModule,
-                                 CommandModule *commandModule)
+                                 CommandModule *commandModule,
+                                 SensorModule *sensorModule)
 {
     _stream = stream;
     _drivingModule = drivingModule;
     _commandModule = commandModule;
+    _sensorModule = sensorModule;
 }
 
-void AutoPilotModule::handle(SensorResult *sensorResult)
+void AutoPilotModule::handle()
 {
-    DBGP("Sensor Module Result:");
-    DBGP_PRNT("   ");
-    DBGP(sensorResult->Front);
-    DBGP_PRNT(sensorResult->Left);
-    DBGP_PRNT("       ");
-    DBGP(sensorResult->Right);
-    DBGP_PRNT("   ");
-    DBGP(sensorResult->Back);
-    DBGP_PRNT("   ~");
-    DBGP(sensorResult->Age);
+    SensorResult *sensorResult = &_sensorResult;
+
+    if ((_sampleAge + sensorResult->Age > MAX_SENSOR_RESULT_AGE) || _sensorModule->signalled())
+    {
+        _sensorModule->detect(sensorResult);
+
+        _sampleAge = millis();
+
+        DBGP("Sensor Module Result:");
+        DBGP_PRNT("   ");
+        DBGP(sensorResult->Front);
+        DBGP_PRNT(sensorResult->Left);
+        DBGP_PRNT("       ");
+        DBGP(sensorResult->Right);
+        DBGP_PRNT("   ");
+        DBGP(sensorResult->Back);
+        DBGP_PRNT("   ~");
+        DBGP(sensorResult->Age);
+    }
 
     if (!_commandModule->selfDriveMode())
     {

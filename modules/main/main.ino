@@ -10,6 +10,8 @@
 
 #define SENSOR_I2C_ADDR 8
 
+const byte sensorInterruptPin = 13;
+
 const byte ledRedPin = 12;
 const byte ledGreenPin = 10;
 const byte ledBluePin = 11;
@@ -26,7 +28,7 @@ DrivingModule drivingModule(motorLeftEnablePin, motorLeftForwardPin, motorLeftRe
                             motorRightEnablePin, motorRightForwardPin, motorRightReversePin,
                             &Serial);
 
-SensorModule sensorModule(SENSOR_I2C_ADDR, &Serial);
+SensorModule sensorModule(SENSOR_I2C_ADDR, sensorInterruptPin, &Serial);
 SensorResult sensorResult;
 
 CommandModule commandModule(&Serial);
@@ -36,7 +38,8 @@ RecordModule recordModule(REPLAY_DELAY, &Serial);
 ControlModule controlModule(&Serial, &drivingModule, &recordModule,
                             &edgeModule, &ledModule, &commandModule);
 
-AutoPilotModule autoPilotModule(&Serial, &drivingModule, &commandModule);
+AutoPilotModule autoPilotModule(&Serial, &drivingModule,
+  &commandModule, &sensorModule);
 
 void setup()
 {
@@ -52,7 +55,5 @@ void loop()
   int instruction = commandModule.tryReadInstruction();
   controlModule.executeInstruction(instruction);
 
-  sensorModule.detect(&sensorResult);
-
-  autoPilotModule.handle(&sensorResult);
+  autoPilotModule.handle();
 }

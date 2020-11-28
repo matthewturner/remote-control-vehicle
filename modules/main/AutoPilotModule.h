@@ -12,20 +12,25 @@
 #define FRONT_SENSOR_COLLISION_THRESHOLD 10
 #define SIDE_SENSOR_CLEAR_THRESHOLD 20 + SIDE_SENSOR_PADDING
 #define CENTER_TOLERANCE 2
+#define MAX_SENSOR_RESULT_AGE 300
 
 class AutoPilotModule
 {
 public:
     AutoPilotModule(HardwareSerial *stream,
                     DrivingModule *drivingModule,
-                    CommandModule *commandModule);
+                    CommandModule *commandModule,
+                    SensorModule *sensorModule);
 
-    void handle(SensorResult *sensorResult);
+    void handle();
 
 private:
     HardwareSerial *_stream;
     DrivingModule *_drivingModule;
     CommandModule *_commandModule;
+    SensorModule *_sensorModule;
+    SensorResult _sensorResult;
+    unsigned long _sampleAge;
 
     bool isCentered(SensorResult *sensorResult);
     bool spaceAhead(SensorResult *sensorResult);
