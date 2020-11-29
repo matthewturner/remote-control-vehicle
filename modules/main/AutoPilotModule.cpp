@@ -11,6 +11,7 @@ AutoPilotModule::AutoPilotModule(HardwareSerial *stream,
     _drivingModule = drivingModule;
     _commandModule = commandModule;
     _sensorModule = sensorModule;
+    _sampleAge = MAX_SENSOR_RESULT_AGE + 10;
 }
 
 void AutoPilotModule::handle()
