@@ -6,7 +6,6 @@
 
 #define NUMBER_OF_SENSORS 3
 #define NUMBER_OF_READINGS 1
-#define INDEX_OF_LAST_READING NUMBER_OF_READINGS - 1
 
 HCSR04 sensors(8, new int[NUMBER_OF_SENSORS]{9, 10, 11}, NUMBER_OF_SENSORS);
 byte payload[6];
@@ -45,6 +44,8 @@ void setup()
 
 void loop()
 {
+  readingIndex = readingIndex % NUMBER_OF_READINGS;
+  
   readFrom(FRONT_INDEX, readingIndex);
   readFrom(LEFT_INDEX, readingIndex);
   readFrom(RIGHT_INDEX, readingIndex);
@@ -56,14 +57,7 @@ void loop()
   // Serial.print(readings[RIGHT_INDEX][readingIndex]);
   // Serial.println("cm");
 
-  if (readingIndex >= INDEX_OF_LAST_READING)
-  {
-    readingIndex = 0;
-  }
-  else
-  {
-    readingIndex++;
-  }
+  readingIndex++;
 
   lastReading = millis();
 
