@@ -7,6 +7,7 @@ SensorModule::SensorModule(byte i2cAddress, byte interruptPin,
 {
     _i2cAddress = i2cAddress;
     _interruptPin = interruptPin;
+    pinMode(_interruptPin, INPUT);
     _stream = stream;
 }
 
@@ -22,7 +23,7 @@ bool SensorModule::signalled()
 
 byte SensorModule::detect(SensorResult *r)
 {
-    Wire.requestFrom(_i2cAddress, 6);
+    Wire.requestFrom(_i2cAddress, (byte)6);
 
     byte counter = 0;
     while (Wire.available())
