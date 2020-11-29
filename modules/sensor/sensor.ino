@@ -44,8 +44,6 @@ void setup()
 
 void loop()
 {
-  readingIndex = readingIndex % NUMBER_OF_READINGS;
-  
   readFrom(FRONT_INDEX, readingIndex);
   readFrom(LEFT_INDEX, readingIndex);
   readFrom(RIGHT_INDEX, readingIndex);
@@ -58,6 +56,10 @@ void loop()
   // Serial.println("cm");
 
   readingIndex++;
+  if (readingIndex >= NUMBER_OF_READINGS)
+  {
+    readingIndex = 0;
+  }
 
   lastReading = millis();
 
