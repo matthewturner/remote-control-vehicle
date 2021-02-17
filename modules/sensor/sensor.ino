@@ -104,7 +104,7 @@ void loop()
 
   lastReading = millis();
 
-  delay(50);
+  delay(20);
 }
 
 void requestEvent()
