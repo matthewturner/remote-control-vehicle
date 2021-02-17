@@ -18,7 +18,7 @@ void AutoPilotModule::handle()
 {
     SensorResult *sensorResult = &_sensorResult;
 
-    if ((_sampleAge + sensorResult->Age > MAX_SENSOR_RESULT_AGE) || _sensorModule->signalled())
+    if (_sensorModule->signalled() || (_sampleAge + sensorResult->Age > MAX_SENSOR_RESULT_AGE))
     {
         _sensorModule->detect(sensorResult);
 

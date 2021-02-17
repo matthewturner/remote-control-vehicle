@@ -2,9 +2,8 @@
 
 #include <HCSR04.h>
 
-#define SIGNAL_THRESHOLD 7
-#define COLLISION_THRESHOLD 7
-#define WARNING_THRESHOLD 14
+#define COLLISION_THRESHOLD 10
+#define WARNING_THRESHOLD 20
 #define PENDING_DATA_PIN 13
 
 #define NUMBER_OF_SENSORS 3
@@ -37,6 +36,8 @@ byte readingIndex = 0;
 byte indicators[NUMBER_OF_SENSORS][2];
 
 #define SIGNAL_PIN 12
+
+byte counter = 0;
 
 void setup()
 {
@@ -73,9 +74,20 @@ void setup()
 
 void loop()
 {
+  counter++;
+
   readFrom(FRONT_INDEX, readingIndex);
-  readFrom(LEFT_INDEX, readingIndex);
-  readFrom(RIGHT_INDEX, readingIndex);
+
+  if (counter == 10)
+  {
+    readFrom(RIGHT_INDEX, readingIndex);
+  }
+
+  if (counter >= 20)
+  {
+    counter = 0;
+    readFrom(LEFT_INDEX, readingIndex);
+  }
 
   // Serial.print(readings[LEFT_INDEX][readingIndex]);
   // Serial.print("cm <-- ^ ");
