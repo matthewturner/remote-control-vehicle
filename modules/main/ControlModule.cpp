@@ -206,6 +206,7 @@ void ControlModule::turnSelfDriveMode(bool on)
     else
     {
         _ledModule->turnOff(_ledModule->greenPin());
+        _drivingModule->stop();
     }
 }
 
