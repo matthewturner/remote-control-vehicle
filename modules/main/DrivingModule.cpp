@@ -15,7 +15,7 @@ DrivingModule::DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, 
 
 void DrivingModule::bearLeft(bool forward)
 {
-    _isMoving = true;
+    _directionOfMotion = MOVE_FORWARD;
     DBGP("Bearing left...");
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
@@ -37,7 +37,6 @@ void DrivingModule::bearLeft(bool forward)
 
 void DrivingModule::bearRight(bool forward)
 {
-    _isMoving = true;
     DBGP("Bearing left...");
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
@@ -47,11 +46,13 @@ void DrivingModule::bearRight(bool forward)
     }
     if (forward)
     {
+        _directionOfMotion = MOVE_FORWARD;
         _motorLeft.forward(actualSpeed);
         _motorRight.forward(reducedSpeed);
     }
     else
     {
+        _directionOfMotion = MOVE_BACKWARD;
         _motorLeft.back(actualSpeed);
         _motorRight.back(reducedSpeed);
     }
@@ -59,7 +60,7 @@ void DrivingModule::bearRight(bool forward)
 
 void DrivingModule::turnLeft()
 {
-    _isMoving = true;
+    _directionOfMotion = MOVE_LEFT;
     DBGP("Turning left...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.back(actualSpeed);
@@ -68,7 +69,7 @@ void DrivingModule::turnLeft()
 
 void DrivingModule::turnRight()
 {
-    _isMoving = true;
+    _directionOfMotion = MOVE_RIGHT;
     DBGP("Turning right...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.forward(actualSpeed);
@@ -77,7 +78,7 @@ void DrivingModule::turnRight()
 
 void DrivingModule::moveBackward()
 {
-    _isMoving = true;
+    _directionOfMotion = MOVE_BACKWARD;
     DBGP("Reversing...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.back(actualSpeed);
@@ -86,7 +87,7 @@ void DrivingModule::moveBackward()
 
 void DrivingModule::moveForward()
 {
-    _isMoving = true;
+    _directionOfMotion = MOVE_FORWARD;
     DBGP("Moving forward...");
     byte actualSpeed = convertSpeed(_speed);
     // DBGP(actualSpeed);
@@ -96,7 +97,7 @@ void DrivingModule::moveForward()
 
 void DrivingModule::stop()
 {
-    _isMoving = false;
+    _directionOfMotion = MOVE_STOPPED;
     DBGP("Stopping...");
     _motorLeft.stop();
     _motorRight.stop();
@@ -104,7 +105,12 @@ void DrivingModule::stop()
 
 bool DrivingModule::isMoving()
 {
-    return _isMoving;
+    return _directionOfMotion > 0;
+}
+
+byte DrivingModule::directionOfMotion()
+{
+    return _directionOfMotion;
 }
 
 byte DrivingModule::convertSpeed(byte speed)

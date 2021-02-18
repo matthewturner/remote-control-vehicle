@@ -4,14 +4,17 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/Users/matt/development/arduino/Arduino_L293/src",
-                "C:/Users/matt/development/arduino/ArduinoCore-avr/cores/arduino",
-                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/EEPROM/src",
-                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/HID/src",
-                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/SoftwareSerial/src",
-                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/SPI/src",
-                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/Wire/src",
-                "C:/Users/matt/development/arduino/ArduinoCore-avr/libraries/SPI/src"
+                "${workspaceFolder}/../arduino/Arduino_L293/src",
+                "${workspaceFolder}/../arduino/ArduinoCore-avr/cores/arduino",
+                "${workspaceFolder}/../arduino/ArduinoCore-avr/variants/standard",
+                "${workspaceFolder}/../arduino/avr-libc/avr-libc/include",
+                "${workspaceFolder}/../arduino/avr-libc/avr-libc/include/util",
+                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/EEPROM/src",
+                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/HID/src",
+                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/SoftwareSerial/src",
+                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/SPI/src",
+                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/Wire/src",
+                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/SPI/src"
             ],
             "defines": [
                 "_DEBUG",

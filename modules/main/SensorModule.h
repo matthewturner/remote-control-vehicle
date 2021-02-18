@@ -15,12 +15,14 @@ typedef struct sensorResult SensorResult;
 class SensorModule
 {
 public:
-    SensorModule(byte i2cAddress, HardwareSerial *stream);
+    SensorModule(byte i2cAddress, byte interruptPin, HardwareSerial *stream);
     void begin();
     byte detect(SensorResult *r);
+    bool signalled();
 
 private:
-    int _i2cAddress;
+    byte _i2cAddress;
+    byte _interruptPin;
     byte _sensorBuffer[6];
     HardwareSerial *_stream;
 };
