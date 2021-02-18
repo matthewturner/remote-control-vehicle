@@ -7,14 +7,11 @@
 #define PENDING_DATA_PIN 13
 
 #define NUMBER_OF_SENSORS 3
-#define NUMBER_OF_READINGS 1
-#define AVERAGE_READING_INDEX NUMBER_OF_READINGS
 
 HCSR04 sensors(8, new int[NUMBER_OF_SENSORS]{9, 10, 11}, NUMBER_OF_SENSORS);
 byte payload[6];
-byte readings[NUMBER_OF_SENSORS][NUMBER_OF_READINGS + 1];
+byte readings[NUMBER_OF_SENSORS];
 unsigned long lastReading;
-byte readingIndex = 0;
 
 #define MAX_SENSOR_DISTANCE 250
 
@@ -36,8 +33,6 @@ byte readingIndex = 0;
 byte indicators[NUMBER_OF_SENSORS][2];
 
 #define SIGNAL_PIN 12
-
-byte counter = 0;
 
 void setup()
 {
@@ -74,20 +69,9 @@ void setup()
 
 void loop()
 {
-  counter++;
-
-  readFrom(FRONT_INDEX, readingIndex);
-
-  if (counter == 10)
-  {
-    readFrom(RIGHT_INDEX, readingIndex);
-  }
-
-  if (counter >= 20)
-  {
-    counter = 0;
-    readFrom(LEFT_INDEX, readingIndex);
-  }
+  readFrom(FRONT_INDEX);
+  readFrom(RIGHT_INDEX);
+  readFrom(LEFT_INDEX);
 
   // Serial.print(readings[LEFT_INDEX][readingIndex]);
   // Serial.print("cm <-- ^ ");
@@ -96,22 +80,14 @@ void loop()
   // Serial.print(readings[RIGHT_INDEX][readingIndex]);
   // Serial.println("cm");
 
-  readingIndex++;
-  if (readingIndex >= NUMBER_OF_READINGS)
-  {
-    readingIndex = 0;
-  }
-
   lastReading = millis();
-
-  delay(20);
 }
 
 void requestEvent()
 {
-  payload[FRONT_INDEX] = average(readings[FRONT_INDEX]);
-  payload[LEFT_INDEX] = average(readings[LEFT_INDEX]);
-  payload[RIGHT_INDEX] = average(readings[RIGHT_INDEX]);
+  payload[FRONT_INDEX] = readings[FRONT_INDEX];
+  payload[LEFT_INDEX] = readings[LEFT_INDEX];
+  payload[RIGHT_INDEX] = readings[RIGHT_INDEX];
 
   unsigned long time = millis();
   unsigned long age = min(time - lastReading, 250);
@@ -123,7 +99,7 @@ void requestEvent()
   digitalWrite(PENDING_DATA_PIN, LOW);
 }
 
-byte readFrom(byte sensorIndex, byte readingIndex)
+byte readFrom(byte sensorIndex)
 {
   byte reading = min(sensors.dist(sensorIndex), MAX_SENSOR_DISTANCE);
   if (reading == 0)
@@ -132,26 +108,24 @@ byte readFrom(byte sensorIndex, byte readingIndex)
     return;
   }
 
-  byte previousAverageReading = readings[sensorIndex][AVERAGE_READING_INDEX];
-  readings[sensorIndex][readingIndex] = reading;
-  byte averageReading = average(readings[sensorIndex]);
-  readings[sensorIndex][AVERAGE_READING_INDEX] = averageReading;
+  byte previousReading = readings[sensorIndex];
+  readings[sensorIndex] = reading;
 
-  if (averageReading <= COLLISION_THRESHOLD)
+  if (reading <= COLLISION_THRESHOLD)
   {
     digitalWrite(indicators[sensorIndex][WARNING_INDEX], LOW);
     digitalWrite(indicators[sensorIndex][COLLISION_INDEX], HIGH);
-    if (previousAverageReading > COLLISION_THRESHOLD)
+    if (previousReading > COLLISION_THRESHOLD)
     {
       digitalWrite(SIGNAL_PIN, HIGH);
       digitalWrite(PENDING_DATA_PIN, HIGH);
     }
   }
-  else if (averageReading <= WARNING_THRESHOLD)
+  else if (reading <= WARNING_THRESHOLD)
   {
     digitalWrite(indicators[sensorIndex][COLLISION_INDEX], LOW);
     digitalWrite(indicators[sensorIndex][WARNING_INDEX], HIGH);
-    if (previousAverageReading > WARNING_THRESHOLD)
+    if (previousReading > WARNING_THRESHOLD)
     {
       digitalWrite(SIGNAL_PIN, HIGH);
       digitalWrite(PENDING_DATA_PIN, HIGH);
@@ -162,14 +136,4 @@ byte readFrom(byte sensorIndex, byte readingIndex)
     digitalWrite(indicators[sensorIndex][WARNING_INDEX], LOW);
     digitalWrite(indicators[sensorIndex][COLLISION_INDEX], LOW);
   }
-}
-
-byte average(byte readingArray[])
-{
-  int sum = 0;
-  for (byte i = 0; i < NUMBER_OF_READINGS; i++)
-  {
-    sum += readingArray[i];
-  }
-  return (byte)(sum / NUMBER_OF_READINGS);
 }
