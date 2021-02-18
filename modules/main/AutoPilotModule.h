@@ -13,6 +13,9 @@
 #define SIDE_SENSOR_CLEAR_THRESHOLD 20 + SIDE_SENSOR_PADDING
 #define CENTER_TOLERANCE 2
 #define MAX_SENSOR_RESULT_AGE 3000
+#define MAX_SENSOR_AGE_FOR_TURN 100
+#define MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR 10
+#define MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD 10
 
 class AutoPilotModule
 {
@@ -31,6 +34,7 @@ private:
     SensorModule *_sensorModule;
     SensorResult _sensorResult;
     unsigned long _sampleAge;
+    unsigned int _maxSensorResultAge;
 
     bool isCentered(SensorResult *sensorResult);
     bool spaceAhead(SensorResult *sensorResult);
