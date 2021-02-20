@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <Arduino.h>
 
-#define COLLISION_THRESHOLD 10
+#define COLLISION_THRESHOLD 8
 #define LEFT_COLLISION_PIN 10
 #define RIGHT_COLLISION_PIN 8
 #define FRONT_COLLISION_PIN 3
