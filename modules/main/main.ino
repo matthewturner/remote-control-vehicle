@@ -8,6 +8,10 @@
 #include "ControlModule.h"
 #include "AutoPilotModule.h"
 
+#define CAR 0
+#define BOAT 1
+#define VEHICLE_TYPE CAR
+
 #define SENSOR_I2C_ADDR 8
 
 const byte sensorInterruptPin = 13;
@@ -24,9 +28,17 @@ const byte motorRightEnablePin = 3;
 const byte motorRightForwardPin = 6;
 const byte motorRightReversePin = 5;
 
+RudderModule* rudderModule = NULL;
+if (VEHICLE_TYPE == BOAT)
+{
+#include "RudderModule.h"
+RudderModule rm(2, &Serial);
+rudderModule = &rm;
+}
+
 DrivingModule drivingModule(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin,
                             motorRightEnablePin, motorRightForwardPin, motorRightReversePin,
-                            &Serial);
+                            &Serial, rudderModule);
 
 SensorModule sensorModule(SENSOR_I2C_ADDR, sensorInterruptPin, &Serial);
 SensorResult sensorResult;
@@ -39,7 +51,7 @@ ControlModule controlModule(&Serial, &drivingModule, &recordModule,
                             &edgeModule, &ledModule, &commandModule);
 
 AutoPilotModule autoPilotModule(&Serial, &drivingModule,
-  &commandModule, &sensorModule);
+                                &commandModule, &sensorModule);
 
 void setup()
 {
