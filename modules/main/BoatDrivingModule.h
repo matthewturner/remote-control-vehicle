@@ -1,15 +1,14 @@
-#ifndef DrivingModule_h
-#define DrivingModule_h
+#ifndef BoatDrivingModule_h
+#define BoatDrivingModule_h
 
 #include "IDrivingModule.h"
-#include <L293.h>
+#include "DrivingModule.h"
+#include "RudderModule.h"
 
-class DrivingModule : public IDrivingModule
+class BoatDrivingModule : public IDrivingModule
 {
 public:
-    DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, byte motorLeftReversePin,
-                  byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin,
-                  HardwareSerial *stream);
+    BoatDrivingModule(IDrivingModule *drivingModule, RudderModule *rudderModule);
 
     void bearLeft(bool forward) override;
 
@@ -36,11 +35,8 @@ public:
     void resetSpeed() override;
 
 private:
-    L293 _motorLeft;
-    L293 _motorRight;
-    byte _directionOfMotion;
-    byte _speed;
-    HardwareSerial *_stream;
+    IDrivingModule *_drivingModule;
+    RudderModule *_rudderModule;
 };
 
 #endif
