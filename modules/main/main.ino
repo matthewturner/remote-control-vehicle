@@ -1,3 +1,4 @@
+#include "IDrivingModule.h"
 #include "DrivingModule.h"
 #include "SensorModule.h"
 #include "LedModule.h"
@@ -8,9 +9,7 @@
 #include "ControlModule.h"
 #include "AutoPilotModule.h"
 
-#define CAR 0
 #define BOAT 1
-#define VEHICLE_TYPE CAR
 
 #define SENSOR_I2C_ADDR 8
 
@@ -28,17 +27,19 @@ const byte motorRightEnablePin = 3;
 const byte motorRightForwardPin = 6;
 const byte motorRightReversePin = 5;
 
-RudderModule* rudderModule = NULL;
-if (VEHICLE_TYPE == BOAT)
-{
-#include "RudderModule.h"
-RudderModule rm(2, &Serial);
-rudderModule = &rm;
-}
-
-DrivingModule drivingModule(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin,
+DrivingModule dm(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin,
                             motorRightEnablePin, motorRightForwardPin, motorRightReversePin,
-                            &Serial, rudderModule);
+                            &Serial);
+
+#ifdef BOAT
+#include "RudderModule.h"
+#include "BoatDrivingModule.h"
+RudderModule rm(2, &Serial);
+BoatDrivingModule bdm(&dm, &rm);
+IDrivingModule *drivingModule = &bdm;
+#else
+IDrivingModule *drivingModule = &dm;
+#endif
 
 SensorModule sensorModule(SENSOR_I2C_ADDR, sensorInterruptPin, &Serial);
 SensorResult sensorResult;
@@ -47,10 +48,10 @@ CommandModule commandModule(&Serial);
 EdgeModule edgeModule(&Serial);
 RecordModule recordModule(REPLAY_DELAY, &Serial);
 
-ControlModule controlModule(&Serial, &drivingModule, &recordModule,
+ControlModule controlModule(&Serial, drivingModule, &recordModule,
                             &edgeModule, &ledModule, &commandModule);
 
-AutoPilotModule autoPilotModule(&Serial, &drivingModule,
+AutoPilotModule autoPilotModule(&Serial, drivingModule,
                                 &commandModule, &sensorModule);
 
 void setup()

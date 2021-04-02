@@ -15,7 +15,6 @@ DrivingModule::DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, 
 
 void DrivingModule::bearLeft(bool forward)
 {
-    _directionOfMotion = MOVE_FORWARD;
     DBGP("Bearing left...");
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
@@ -25,11 +24,13 @@ void DrivingModule::bearLeft(bool forward)
     }
     if (forward)
     {
+        _directionOfMotion = MOVE_FORWARD;
         _motorLeft.forward(reducedSpeed);
         _motorRight.forward(actualSpeed);
     }
     else
     {
+        _directionOfMotion = MOVE_BACKWARD;
         _motorLeft.back(reducedSpeed);
         _motorRight.back(actualSpeed);
     }
@@ -37,7 +38,7 @@ void DrivingModule::bearLeft(bool forward)
 
 void DrivingModule::bearRight(bool forward)
 {
-    DBGP("Bearing left...");
+    DBGP("Bearing right...");
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
     if (_speed > 4)
