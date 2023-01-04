@@ -1,31 +1,57 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
 {
     "configurations": [
         {
-            "name": "Win32",
+            "name": "PlatformIO",
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/../arduino/Arduino_L293/src",
-                "${workspaceFolder}/../arduino/ArduinoCore-avr/cores/arduino",
-                "${workspaceFolder}/../arduino/ArduinoCore-avr/variants/standard",
-                "${workspaceFolder}/../arduino/avr-libc/avr-libc/include",
-                "${workspaceFolder}/../arduino/avr-libc/avr-libc/include/util",
-                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/EEPROM/src",
-                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/HID/src",
-                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/SoftwareSerial/src",
-                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/SPI/src",
-                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/Wire/src",
-                "${workspaceFolder}/../arduino/ArduinoCore-avr/libraries/SPI/src"
+                "C:/Users/matt/remote-control-vehicle/include",
+                "C:/Users/matt/remote-control-vehicle/src",
+                "C:/Users/matt/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "C:/Users/matt/.platformio/packages/framework-arduino-avr/variants/standard",
+                "C:/Users/matt/remote-control-vehicle/.pio/libdeps/uno/Eventually/src",
+                "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                ""
             ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "C:/Users/matt/remote-control-vehicle/include",
+                    "C:/Users/matt/remote-control-vehicle/src",
+                    "C:/Users/matt/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "C:/Users/matt/.platformio/packages/framework-arduino-avr/variants/standard",
+                    "C:/Users/matt/remote-control-vehicle/.pio/libdeps/uno/Eventually/src",
+                    "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    ""
+                ]
+            },
             "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
+                "PLATFORMIO=60105",
+                "ARDUINO_AVR_UNO",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega328P__",
+                ""
             ],
-            "windowsSdkVersion": "10.0.18362.0",
-            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Tools/MSVC/14.27.29110/bin/Hostx64/x64/cl.exe",
             "cStandard": "c11",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "msvc-x64"
+            "cppStandard": "c++11",
+            "compilerPath": "C:/Users/matt/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
+            "compilerArgs": [
+                "-mmcu=atmega328p",
+                ""
+            ]
         }
     ],
     "version": 4
