@@ -3,7 +3,6 @@
 #include "SensorModule.h"
 #include "LedModule.h"
 #include "CommandModule.h"
-#include "RecordModule.h"
 #include "EdgeModule.h"
 #include "Debug.h"
 #include "ControlModule.h"
@@ -46,9 +45,8 @@ SensorResult sensorResult;
 
 CommandModule commandModule(&Serial);
 EdgeModule edgeModule(&Serial);
-RecordModule recordModule(REPLAY_DELAY, &Serial);
 
-ControlModule controlModule(&Serial, drivingModule, &recordModule,
+ControlModule controlModule(&Serial, drivingModule,
                             &edgeModule, &ledModule, &commandModule);
 
 AutoPilotModule autoPilotModule(&Serial, drivingModule,

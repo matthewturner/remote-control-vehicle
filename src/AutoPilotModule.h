@@ -21,7 +21,7 @@ class AutoPilotModule
 {
 public:
     AutoPilotModule(HardwareSerial *stream,
-                    DrivingModule *drivingModule,
+                    IDrivingModule *drivingModule,
                     CommandModule *commandModule,
                     SensorModule *sensorModule);
 
@@ -29,7 +29,7 @@ public:
 
 private:
     HardwareSerial *_stream;
-    DrivingModule *_drivingModule;
+    IDrivingModule *_drivingModule;
     CommandModule *_commandModule;
     SensorModule *_sensorModule;
     SensorResult _sensorResult;

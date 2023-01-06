@@ -44,7 +44,6 @@ public:
 private:
     char _commandBuffer[30];
     bool _selfDriveMode;
-    bool _recordMode;
     HardwareSerial *_stream;
 };
 

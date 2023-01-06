@@ -3,7 +3,7 @@
 #include "Debug.h"
 
 AutoPilotModule::AutoPilotModule(HardwareSerial *stream,
-                                 DrivingModule *drivingModule,
+                                 IDrivingModule *drivingModule,
                                  CommandModule *commandModule,
                                  SensorModule *sensorModule)
 {

@@ -24,19 +24,9 @@ int CommandModule::tryReadInstruction()
     return instruction;
 }
 
-void CommandModule::turnRecordMode(bool on)
-{
-    _recordMode = on;
-}
-
 void CommandModule::turnSelfDriveMode(bool on)
 {
     _selfDriveMode = on;
-}
-
-bool CommandModule::recordMode()
-{
-    return _recordMode;
 }
 
 bool CommandModule::selfDriveMode()
@@ -175,28 +165,6 @@ int CommandModule::convertToInstruction(int commandLength)
     if (strcmp(_commandBuffer, "decrease-edge-duration") == 0)
     {
         return DECREASE_EDGE_DURATION;
-    }
-    if (strcmp(_commandBuffer, "start-record") == 0)
-    {
-        if (_recordMode)
-        {
-            return -1;
-        }
-        else
-        {
-            return TOGGLE_RECORD_MODE;
-        }
-    }
-    if (strcmp(_commandBuffer, "stop-record") == 0)
-    {
-        if (_recordMode)
-        {
-            return TOGGLE_RECORD_MODE;
-        }
-        else
-        {
-            return -1;
-        }
     }
     return -1;
 }
