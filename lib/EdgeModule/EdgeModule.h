@@ -1,7 +1,7 @@
 #ifndef EdgeModule_h
 #define EdgeModule_h
 
-#define DEFAULT_DURATION 200
+const byte DEFAULT_DURATION = 200;
 
 class EdgeModule
 {

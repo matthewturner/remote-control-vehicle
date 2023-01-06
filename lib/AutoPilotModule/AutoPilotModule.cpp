@@ -4,20 +4,33 @@
 
 AutoPilotModule::AutoPilotModule(HardwareSerial *stream,
                                  IDrivingModule *drivingModule,
-                                 CommandModule *commandModule,
                                  SensorModule *sensorModule)
 {
     _stream = stream;
     _drivingModule = drivingModule;
-    _commandModule = commandModule;
     _sensorModule = sensorModule;
     _sampleAge = MAX_SENSOR_RESULT_AGE + 10;
     _maxSensorResultAge = MAX_SENSOR_RESULT_AGE;
 }
 
+bool AutoPilotModule::enabled()
+{
+    return _enabled;
+}
+
+void AutoPilotModule::enable()
+{
+    _enabled = true;
+}
+
+void AutoPilotModule::disable()
+{
+    _enabled = false;
+}
+
 void AutoPilotModule::handle()
 {
-    if (!_commandModule->selfDriveMode())
+    if (!enabled())
     {
         return;
     }
@@ -124,11 +137,11 @@ void AutoPilotModule::handle()
 
 bool AutoPilotModule::isCentered(SensorResult *sensorResult)
 {
-    if (sensorResult->Left - CENTER_TOLERANCE < sensorResult->Right < sensorResult->Left + CENTER_TOLERANCE)
+    if (sensorResult->Left - CENTER_TOLERANCE < sensorResult->Right && sensorResult->Right < sensorResult->Left + CENTER_TOLERANCE)
     {
         return true;
     }
-    if (sensorResult->Right - CENTER_TOLERANCE < sensorResult->Left < sensorResult->Right + CENTER_TOLERANCE)
+    if (sensorResult->Right - CENTER_TOLERANCE < sensorResult->Left && sensorResult->Left < sensorResult->Right + CENTER_TOLERANCE)
     {
         return true;
     }

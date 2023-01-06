@@ -2,11 +2,11 @@
 #include "DrivingModule.h"
 #include "SensorModule.h"
 #include "LedModule.h"
-#include "CommandModule.h"
 #include "EdgeModule.h"
 #include "Debug.h"
-#include "ControlModule.h"
 #include "AutoPilotModule.h"
+#include <Eventually.h>
+#include <EventuallyCommand.h>
 
 #define BOAT 1
 
@@ -43,11 +43,29 @@ IDrivingModule *drivingModule = &dm;
 SensorModule sensorModule(SENSOR_I2C_ADDR, sensorInterruptPin, &Serial);
 SensorResult sensorResult;
 
-CommandModule commandModule(&Serial);
 EdgeModule edgeModule(&Serial);
 
-ControlModule controlModule(&Serial, drivingModule,
-                            &edgeModule, &ledModule, &commandModule);
-
 AutoPilotModule autoPilotModule(&Serial, drivingModule,
-                                &commandModule, &sensorModule);
+                                &sensorModule);
+
+EvtManager mgr;
+EvtCommandListener commandListener(&Serial, 2);
+
+bool stop();
+bool forward();
+bool reverse();
+bool left();
+bool right();
+bool bearLeftForward();
+bool bearRightForward();
+bool bearLeftReverse();
+bool bearRightReverse();
+bool setSpeed(EvtListener *, EvtContext *, long data);
+bool edgeReverse();
+bool edgeLeft();
+bool edgeRight();
+bool edgeForward();
+bool startSelfDrive();
+bool stopSelfDrive();
+bool increaseEdgeDuration();
+bool decreaseEdgeDuration();

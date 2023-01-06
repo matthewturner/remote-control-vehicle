@@ -3,16 +3,16 @@
 
 #include <Arduino.h>
 
-#define DIR_FORWARD true
-#define DIR_REVERSE false
+const bool DIR_FORWARD = true;
+const bool DIR_REVERSE = false;
 
-#define MOVE_STOPPED 0
-#define MOVE_FORWARD 1
-#define MOVE_LEFT 2
-#define MOVE_RIGHT 3
-#define MOVE_BACKWARD 4
+const byte MOVE_STOPPED = 0;
+const byte MOVE_FORWARD = 1;
+const byte MOVE_LEFT = 2;
+const byte MOVE_RIGHT = 3;
+const byte MOVE_BACKWARD = 4;
 
-#define DEFAULT_SPEED 5
+const byte DEFAULT_SPEED = 5;
 
 class IDrivingModule
 {

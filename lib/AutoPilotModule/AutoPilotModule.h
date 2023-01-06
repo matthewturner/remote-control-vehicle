@@ -4,7 +4,6 @@
 #include <Arduino.h>
 #include "SensorModule.h"
 #include "DrivingModule.h"
-#include "CommandModule.h"
 
 #define SIDE_SENSOR_PADDING 3
 #define SIDE_SENSOR_COLLISION_THRESHOLD 7 + SIDE_SENSOR_PADDING
@@ -22,19 +21,21 @@ class AutoPilotModule
 public:
     AutoPilotModule(HardwareSerial *stream,
                     IDrivingModule *drivingModule,
-                    CommandModule *commandModule,
                     SensorModule *sensorModule);
 
+    bool enabled();
+    void enable();
+    void disable();
     void handle();
 
 private:
     HardwareSerial *_stream;
     IDrivingModule *_drivingModule;
-    CommandModule *_commandModule;
     SensorModule *_sensorModule;
     SensorResult _sensorResult;
     unsigned long _sampleAge;
     unsigned int _maxSensorResultAge;
+    bool _enabled = false;
 
     bool isCentered(SensorResult *sensorResult);
     bool spaceAhead(SensorResult *sensorResult);
