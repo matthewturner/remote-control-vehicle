@@ -8,7 +8,7 @@
 #include <Eventually.h>
 #include <EventuallyCommand.h>
 
-#define BOAT 1
+// #define BOAT
 
 #define SENSOR_I2C_ADDR 8
 
@@ -27,26 +27,24 @@ const byte motorRightForwardPin = 6;
 const byte motorRightReversePin = 5;
 
 DrivingModule dm(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin,
-                            motorRightEnablePin, motorRightForwardPin, motorRightReversePin,
-                            &Serial);
+                 motorRightEnablePin, motorRightForwardPin, motorRightReversePin,
+                 &Serial);
 
 #ifdef BOAT
 #include "RudderModule.h"
 #include "BoatDrivingModule.h"
-RudderModule rm(2, &Serial);
+const byte rudderPin = 2;
+RudderModule rm(rudderPin, &Serial);
 BoatDrivingModule bdm(&dm, &rm);
 IDrivingModule *drivingModule = &bdm;
 #else
 IDrivingModule *drivingModule = &dm;
-#endif
-
 SensorModule sensorModule(SENSOR_I2C_ADDR, sensorInterruptPin, &Serial);
 SensorResult sensorResult;
+AutoPilotModule autoPilotModule(&Serial, drivingModule, &sensorModule);
+#endif
 
 EdgeModule edgeModule(&Serial);
-
-AutoPilotModule autoPilotModule(&Serial, drivingModule,
-                                &sensorModule);
 
 EvtManager mgr;
 EvtCommandListener commandListener(&Serial, 2);
