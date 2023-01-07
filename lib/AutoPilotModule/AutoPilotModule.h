@@ -32,15 +32,16 @@ public:
     bool isTrapped();
     bool isOneSideClear();
     bool updatePositionIfRequired();
-    unsigned long sampleAge();
+    unsigned long resultAge();
     unsigned int maxSensorResultAge();
+    void updateResult(SensorResult *result);
 
 private:
     Stream *_stream;
     IDrivingModule *_drivingModule;
     ISensorModule *_sensorModule;
     SensorResult _sensorResult;
-    unsigned long _sampleAge;
+    unsigned long _resultAge;
     unsigned int _maxSensorResultAge;
     bool _enabled = false;
 };
