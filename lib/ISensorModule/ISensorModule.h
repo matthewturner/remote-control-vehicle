@@ -18,9 +18,9 @@ class ISensorModule
 {
 public:
     ISensorModule();
-    virtual void begin();
-    virtual byte detect(SensorResult *r);
-    virtual bool signalled();
+    virtual void begin() = 0;
+    virtual byte detect(SensorResult *r) = 0;
+    virtual bool signalled() = 0;
 };
 
 #endif
