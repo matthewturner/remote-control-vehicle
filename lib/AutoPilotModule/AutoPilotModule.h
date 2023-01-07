@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "SensorModule.h"
-#include "DrivingModule.h"
+#include "IDrivingModule.h"
 
 #define SIDE_SENSOR_PADDING 3
 #define SIDE_SENSOR_COLLISION_THRESHOLD 7 + SIDE_SENSOR_PADDING
@@ -19,7 +19,7 @@
 class AutoPilotModule
 {
 public:
-    AutoPilotModule(HardwareSerial *stream,
+    AutoPilotModule(Stream *stream,
                     IDrivingModule *drivingModule,
                     SensorModule *sensorModule);
 
@@ -29,7 +29,7 @@ public:
     void handle();
 
 private:
-    HardwareSerial *_stream;
+    Stream *_stream;
     IDrivingModule *_drivingModule;
     SensorModule *_sensorModule;
     SensorResult _sensorResult;

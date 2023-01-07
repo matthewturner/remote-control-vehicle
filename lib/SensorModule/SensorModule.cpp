@@ -3,7 +3,7 @@
 #include "SensorModule.h"
 
 SensorModule::SensorModule(byte i2cAddress, byte interruptPin,
-                           HardwareSerial *stream)
+                           Stream *stream)
 {
     _i2cAddress = i2cAddress;
     _interruptPin = interruptPin;
