@@ -3,7 +3,7 @@
 
 DrivingModule::DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, byte motorLeftReversePin,
                              byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin,
-                             HardwareSerial *stream)
+                             Stream *stream)
     : _motorLeft(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin),
       _motorRight(motorRightEnablePin, motorRightForwardPin, motorRightReversePin)
 {

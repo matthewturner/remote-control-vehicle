@@ -10,7 +10,7 @@ class DrivingModule : public IDrivingModule
 public:
     DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, byte motorLeftReversePin,
                   byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin,
-                  HardwareSerial *stream);
+                  Stream *stream);
 
     void bearLeft(bool forward) override;
 
@@ -41,7 +41,7 @@ private:
     L293 _motorRight;
     byte _directionOfMotion;
     byte _speed;
-    HardwareSerial *_stream;
+    Stream *_stream;
 };
 
 #endif

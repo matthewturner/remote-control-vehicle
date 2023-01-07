@@ -8,7 +8,7 @@ const byte DEFAULT_DURATION = 200;
 class EdgeModule
 {
 public:
-    EdgeModule(HardwareSerial *stream);
+    EdgeModule(Stream *stream);
     void increase();
     void decrease();
     void reset();
@@ -16,7 +16,7 @@ public:
 
 private:
     short _duration;
-    HardwareSerial *_stream;
+    Stream *_stream;
 };
 
 #endif

@@ -1,7 +1,7 @@
 #include "AutoPilotModule.h"
 #include "Debug.h"
 
-AutoPilotModule::AutoPilotModule(HardwareSerial *stream,
+AutoPilotModule::AutoPilotModule(Stream *stream,
                                  IDrivingModule *drivingModule,
                                  SensorModule *sensorModule)
 {

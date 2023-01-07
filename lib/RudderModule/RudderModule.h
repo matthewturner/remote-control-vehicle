@@ -7,7 +7,7 @@
 class RudderModule
 {
 public:
-    RudderModule(byte rudderPin, HardwareSerial *stream);
+    RudderModule(byte rudderPin, Stream *stream);
 
     void ahead();
 
@@ -16,7 +16,7 @@ public:
     void starboard();
 
 private:
-    HardwareSerial *_stream;
+    Stream *_stream;
     Servo _servo;
 };
 
