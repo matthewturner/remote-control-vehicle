@@ -2,6 +2,7 @@
 #define RudderModule_h
 
 #include <Servo.h>
+#include <Arduino.h>
 
 class RudderModule
 {

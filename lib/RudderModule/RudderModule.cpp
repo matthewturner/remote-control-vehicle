@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "RudderModule.h"
 #include "Debug.h"
 

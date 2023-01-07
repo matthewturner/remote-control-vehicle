@@ -1,6 +1,7 @@
 #ifndef BoatDrivingModule_h
 #define BoatDrivingModule_h
 
+#include <Arduino.h>
 #include "IDrivingModule.h"
 #include "DrivingModule.h"
 #include "RudderModule.h"

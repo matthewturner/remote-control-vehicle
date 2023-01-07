@@ -1,6 +1,8 @@
 #ifndef EdgeModule_h
 #define EdgeModule_h
 
+#include <Arduino.h>
+
 const byte DEFAULT_DURATION = 200;
 
 class EdgeModule

@@ -1,5 +1,3 @@
-#include <Arduino.h>
-#include <L293.h>
 #include "DrivingModule.h"
 #include "Debug.h"
 
@@ -15,7 +13,7 @@ DrivingModule::DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, 
 
 void DrivingModule::bearLeft(bool forward)
 {
-    DBGP("Bearing left...");
+    debugPrintln("Bearing left...");
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
     if (_speed > 4)
@@ -38,7 +36,7 @@ void DrivingModule::bearLeft(bool forward)
 
 void DrivingModule::bearRight(bool forward)
 {
-    DBGP("Bearing right...");
+    debugPrintln("Bearing right...");
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
     if (_speed > 4)
@@ -62,7 +60,7 @@ void DrivingModule::bearRight(bool forward)
 void DrivingModule::turnLeft()
 {
     _directionOfMotion = MOVE_LEFT;
-    DBGP("Turning left...");
+    debugPrintln("Turning left...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.back(actualSpeed);
     _motorRight.forward(actualSpeed);
@@ -71,7 +69,7 @@ void DrivingModule::turnLeft()
 void DrivingModule::turnRight()
 {
     _directionOfMotion = MOVE_RIGHT;
-    DBGP("Turning right...");
+    debugPrintln("Turning right...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.forward(actualSpeed);
     _motorRight.back(actualSpeed);
@@ -80,7 +78,7 @@ void DrivingModule::turnRight()
 void DrivingModule::moveBackward()
 {
     _directionOfMotion = MOVE_BACKWARD;
-    DBGP("Reversing...");
+    debugPrintln("Reversing...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.back(actualSpeed);
     _motorRight.back(actualSpeed);
@@ -89,9 +87,9 @@ void DrivingModule::moveBackward()
 void DrivingModule::moveForward()
 {
     _directionOfMotion = MOVE_FORWARD;
-    DBGP("Moving forward...");
+    debugPrintln("Moving forward...");
     byte actualSpeed = convertSpeed(_speed);
-    // DBGP(actualSpeed);
+    // debugPrintln(actualSpeed);
     _motorLeft.forward(actualSpeed);
     _motorRight.forward(actualSpeed);
 }
@@ -99,7 +97,7 @@ void DrivingModule::moveForward()
 void DrivingModule::stop()
 {
     _directionOfMotion = MOVE_STOPPED;
-    DBGP("Stopping...");
+    debugPrintln("Stopping...");
     _motorLeft.stop();
     _motorRight.stop();
 }

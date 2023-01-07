@@ -2,6 +2,7 @@
 #define DrivingModule_h
 
 #include "IDrivingModule.h"
+#include <Arduino.h>
 #include <L293.h>
 
 class DrivingModule : public IDrivingModule

@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "AutoPilotModule.h"
 #include "Debug.h"
 
@@ -47,16 +46,16 @@ void AutoPilotModule::handle()
 
         _sampleAge = millis();
 
-        DBGP("Sensor Module Result:");
-        DBGP_PRNT("   ");
-        DBGP(sensorResult->Front);
-        DBGP_PRNT(sensorResult->Left);
-        DBGP_PRNT("       ");
-        DBGP(sensorResult->Right);
-        DBGP_PRNT("   ");
-        DBGP(sensorResult->Back);
-        DBGP_PRNT("   ~");
-        DBGP(sensorResult->Age);
+        debugPrintln("Sensor Module Result:");
+        debugPrint("   ");
+        debugPrintln(sensorResult->Front);
+        debugPrint(sensorResult->Left);
+        debugPrint("       ");
+        debugPrintln(sensorResult->Right);
+        debugPrint("   ");
+        debugPrintln(sensorResult->Back);
+        debugPrint("   ~");
+        debugPrintln(sensorResult->Age);
     }
 
     if (isTrapped(sensorResult))

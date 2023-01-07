@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "EdgeModule.h"
 #include "Debug.h"
 
