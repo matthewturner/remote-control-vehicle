@@ -8,7 +8,7 @@ AutoPilotModule::AutoPilotModule(Stream *stream,
     _stream = stream;
     _drivingModule = drivingModule;
     _sensorModule = sensorModule;
-    _sampleAge = MAX_SENSOR_RESULT_AGE + 10;
+    _resultAge = MAX_SENSOR_RESULT_AGE + 10;
     _maxSensorResultAge = MAX_SENSOR_RESULT_AGE;
 }
 
@@ -112,9 +112,9 @@ void AutoPilotModule::handle()
     }
 }
 
-unsigned long AutoPilotModule::sampleAge()
+unsigned long AutoPilotModule::resultAge()
 {
-    return _sampleAge;
+    return _resultAge;
 }
 
 unsigned int AutoPilotModule::maxSensorResultAge()
@@ -122,9 +122,19 @@ unsigned int AutoPilotModule::maxSensorResultAge()
     return _maxSensorResultAge;
 }
 
+void AutoPilotModule::updateResult(SensorResult *result)
+{
+    _sensorResult.Age = result->Age;
+    _sensorResult.Left = result->Left;
+    _sensorResult.Right = result->Right;
+    _sensorResult.Front = result->Front;
+    _sensorResult.Back = result->Back;
+    _resultAge = millis();
+}
+
 bool AutoPilotModule::updatePositionIfRequired()
 {
-    unsigned long sensorResultAge = millis() - _sampleAge + _sensorResult.Age;
+    unsigned long sensorResultAge = millis() - _resultAge + _sensorResult.Age;
 
     if (_sensorModule->signalled() || (sensorResultAge > _maxSensorResultAge))
     {
@@ -132,7 +142,7 @@ bool AutoPilotModule::updatePositionIfRequired()
 
         _sensorModule->detect(&_sensorResult);
 
-        _sampleAge = millis();
+        _resultAge = millis();
 
         debugPrintln("Sensor Module Result:");
         debugPrint("   ");
@@ -144,7 +154,11 @@ bool AutoPilotModule::updatePositionIfRequired()
         debugPrintln(sensorResult.Back);
         debugPrint("   ~");
         debugPrintln(sensorResult.Age);
+
+        return true;
     }
+    
+    return false;
 }
 
 bool AutoPilotModule::isCentered()
