@@ -11,6 +11,7 @@ AutoPilotModule *target;
 void setUp(void)
 {
     ArduinoFakeReset();
+    // When(Method(ArduinoFake(Wire), begin)).AlwaysReturn();
     stream = ArduinoFakeMock(Stream);
     target = new AutoPilotModule(stream, nullptr, nullptr);
 }
