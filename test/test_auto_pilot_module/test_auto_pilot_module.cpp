@@ -181,6 +181,94 @@ void test_result_requested_if_result_too_old(void)
     Verify(Method(drivingModuleMock, stop)).Once();
 }
 
+void test_neither_side_clear(void)
+{
+    When(Method(ArduinoFake(), millis)).Return(10);
+
+    result.Left = SIDE_SENSOR_CLEAR_THRESHOLD;
+    result.Right = SIDE_SENSOR_CLEAR_THRESHOLD;
+    target->updateResult(&result);
+
+    TEST_ASSERT_FALSE(target->isOneSideClear());
+}
+
+void test_left_side_clear(void)
+{
+    When(Method(ArduinoFake(), millis)).Return(10);
+
+    result.Left = SIDE_SENSOR_CLEAR_THRESHOLD + 1;
+    result.Right = SIDE_SENSOR_CLEAR_THRESHOLD;
+    target->updateResult(&result);
+
+    TEST_ASSERT_TRUE(target->isOneSideClear());
+}
+
+void test_right_side_clear(void)
+{
+    When(Method(ArduinoFake(), millis)).Return(10);
+
+    result.Left = SIDE_SENSOR_CLEAR_THRESHOLD;
+    result.Right = SIDE_SENSOR_CLEAR_THRESHOLD + 1;
+    target->updateResult(&result);
+
+    TEST_ASSERT_TRUE(target->isOneSideClear());
+}
+
+void test_centered(void)
+{
+    When(Method(ArduinoFake(), millis)).Return(10);
+
+    result.Left = 50;
+    result.Right = 50;
+    target->updateResult(&result);
+
+    TEST_ASSERT_TRUE(target->isCentered());
+}
+
+void test_centered_within_right_tolerance(void)
+{
+    When(Method(ArduinoFake(), millis)).Return(10);
+
+    result.Left = 50;
+    result.Right = 49;
+    target->updateResult(&result);
+
+    TEST_ASSERT_TRUE(target->isCentered());
+}
+
+void test_centered_within_left_tolerance(void)
+{
+    When(Method(ArduinoFake(), millis)).Return(10);
+
+    result.Left = 49;
+    result.Right = 50;
+    target->updateResult(&result);
+
+    TEST_ASSERT_TRUE(target->isCentered());
+}
+
+void test_not_centered_towards_right(void)
+{
+    When(Method(ArduinoFake(), millis)).Return(10);
+
+    result.Left = 50;
+    result.Right = 48;
+    target->updateResult(&result);
+
+    TEST_ASSERT_FALSE(target->isCentered());
+}
+
+void test_not_centered_towards_left(void)
+{
+    When(Method(ArduinoFake(), millis)).Return(10);
+
+    result.Left = 48;
+    result.Right = 50;
+    target->updateResult(&result);
+
+    TEST_ASSERT_FALSE(target->isCentered());
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
@@ -197,6 +285,14 @@ int main(int argc, char **argv)
     RUN_TEST(test_result_not_requested);
     RUN_TEST(test_result_requested_if_signalled);
     RUN_TEST(test_result_requested_if_result_too_old);
+    RUN_TEST(test_neither_side_clear);
+    RUN_TEST(test_left_side_clear);
+    RUN_TEST(test_right_side_clear);
+    RUN_TEST(test_centered);
+    RUN_TEST(test_centered_within_right_tolerance);
+    RUN_TEST(test_centered_within_left_tolerance);
+    RUN_TEST(test_not_centered_towards_right);
+    RUN_TEST(test_not_centered_towards_left);
 
     UNITY_END();
 

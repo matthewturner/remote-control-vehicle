@@ -168,11 +168,13 @@ bool AutoPilotModule::updatePositionIfRequired()
 
 bool AutoPilotModule::isCentered()
 {
-    if (_sensorResult.Left - CENTER_TOLERANCE < _sensorResult.Right && _sensorResult.Right < _sensorResult.Left + CENTER_TOLERANCE)
+    if ((_sensorResult.Left - CENTER_TOLERANCE) < _sensorResult.Right 
+        && _sensorResult.Right < (_sensorResult.Left + CENTER_TOLERANCE))
     {
         return true;
     }
-    if (_sensorResult.Right - CENTER_TOLERANCE < _sensorResult.Left && _sensorResult.Left < _sensorResult.Right + CENTER_TOLERANCE)
+    if ((_sensorResult.Right - CENTER_TOLERANCE) < _sensorResult.Left 
+        && _sensorResult.Left < (_sensorResult.Right + CENTER_TOLERANCE))
     {
         return true;
     }
