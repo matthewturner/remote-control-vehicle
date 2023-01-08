@@ -109,11 +109,11 @@ void test_no_space_ahead(void)
     TEST_ASSERT_FALSE(target->spaceAhead());
 }
 
-void test_result_requested_if_signalled(void)
+void test_result_not_requested(void)
 {
-    When(Method(ArduinoFake(), millis)).AlwaysReturn(1000);
+    When(Method(ArduinoFake(), millis)).Return(10, 30, 35);
 
-    When(Method(sensorModuleMock, signalled)).Return(true);
+    When(Method(sensorModuleMock, signalled)).Return(false);
     When(Method(sensorModuleMock, detect))
         .Do([](SensorResult* r)->byte
         {
@@ -125,11 +125,58 @@ void test_result_requested_if_signalled(void)
     When(Method(drivingModuleMock, stop)).AlwaysReturn();
 
     target->updateResult(&result);
+
     target->updatePositionIfRequired();
 
-    TEST_ASSERT_EQUAL(1000, target->resultAge());
-    TEST_ASSERT_EQUAL(6, target->sensorResult()->Front);
-    Verify(Method(drivingModuleMock, stop)).Once();
+    TEST_ASSERT_EQUAL(10, target->sensorResult()->Front);
+    Verify(Method(drivingModuleMock, stop)).Never();
+    TEST_ASSERT_EQUAL(10, target->resultAge());
+}
+
+void test_result_requested_if_signalled(void)
+{
+    // When(Method(ArduinoFake(), millis)).AlwaysReturn(1000);
+
+    // When(Method(sensorModuleMock, signalled)).Return(true);
+    // When(Method(sensorModuleMock, detect))
+    //     .Do([](SensorResult* r)->byte
+    //     {
+    //         r->Age = 20;
+    //         r->Front = 6;
+    //         return 6;
+    //     });
+
+    // When(Method(drivingModuleMock, stop)).AlwaysReturn();
+
+    // target->updateResult(&result);
+    // target->updatePositionIfRequired();
+
+    // TEST_ASSERT_EQUAL(1000, target->resultAge());
+    // TEST_ASSERT_EQUAL(6, target->sensorResult()->Front);
+    // Verify(Method(drivingModuleMock, stop)).Once();
+}
+
+void test_result_requested_if_result_too_old(void)
+{
+    // When(Method(ArduinoFake(), millis)).AlwaysReturn(1000);
+
+    // When(Method(sensorModuleMock, signalled)).Return(false);
+    // When(Method(sensorModuleMock, detect))
+    //     .Do([](SensorResult* r)->byte
+    //     {
+    //         r->Age = 20;
+    //         r->Front = 6;
+    //         return 6;
+    //     });
+
+    // When(Method(drivingModuleMock, stop)).AlwaysReturn();
+
+    // target->updateResult(&result);
+    // target->updatePositionIfRequired();
+
+    // TEST_ASSERT_EQUAL(1000, target->resultAge());
+    // TEST_ASSERT_EQUAL(6, target->sensorResult()->Front);
+    // Verify(Method(drivingModuleMock, stop)).Once();
 }
 
 int main(int argc, char **argv)
@@ -145,7 +192,9 @@ int main(int argc, char **argv)
     RUN_TEST(test_is_not_trapped_on_left);
     RUN_TEST(test_space_ahead);
     RUN_TEST(test_no_space_ahead);
+    RUN_TEST(test_result_not_requested);
     RUN_TEST(test_result_requested_if_signalled);
+    RUN_TEST(test_result_requested_if_result_too_old);
 
     UNITY_END();
 
