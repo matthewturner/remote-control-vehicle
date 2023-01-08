@@ -45,6 +45,12 @@ private:
     unsigned long _resultAge;
     unsigned int _maxSensorResultAge;
     bool _enabled = false;
+
+    void moveForward();
+    void turnRight();
+    void turnLeft();
+    void bearRight();
+    void bearLeft();
 };
 
 #endif
