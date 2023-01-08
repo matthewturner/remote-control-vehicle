@@ -35,6 +35,7 @@ public:
     unsigned long resultAge();
     unsigned int maxSensorResultAge();
     void updateResult(SensorResult *result);
+    SensorResult* sensorResult();
 
 private:
     Stream *_stream;

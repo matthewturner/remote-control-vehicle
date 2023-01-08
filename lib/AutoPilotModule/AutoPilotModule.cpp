@@ -132,6 +132,11 @@ void AutoPilotModule::updateResult(SensorResult *result)
     _resultAge = millis();
 }
 
+SensorResult* AutoPilotModule::sensorResult()
+{
+    return &_sensorResult;
+}
+
 bool AutoPilotModule::updatePositionIfRequired()
 {
     unsigned long sensorResultAge = millis() - _resultAge + _sensorResult.Age;
