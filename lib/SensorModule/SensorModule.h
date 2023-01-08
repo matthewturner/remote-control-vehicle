@@ -1,24 +1,15 @@
 #ifndef SensorModule_h
 #define SensorModule_h
 
-struct sensorResult
-{
-    byte Front;
-    byte Back;
-    byte Left;
-    byte Right;
-    byte Age;
-};
+#include "ISensorModule.h"
 
-typedef struct sensorResult SensorResult;
-
-class SensorModule
+class SensorModule : public ISensorModule
 {
 public:
     SensorModule(byte i2cAddress, byte interruptPin, Stream *stream);
-    void begin();
-    byte detect(SensorResult *r);
-    bool signalled();
+    void begin() override;
+    byte detect(SensorResult *r) override;
+    bool signalled() override;
 
 private:
     byte _i2cAddress;
