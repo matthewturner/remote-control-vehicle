@@ -74,6 +74,7 @@ void AutoPilotModule::handle()
         _drivingModule->turnLeft();
         return;
     }
+    
     if (_sensorResult.Left < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
         _maxSensorResultAge = _sensorResult.Left * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
@@ -86,30 +87,31 @@ void AutoPilotModule::handle()
         _drivingModule->bearLeft(DIR_FORWARD);
         return;
     }
+    
     if (isCentered())
     {
         _maxSensorResultAge = _sensorResult.Front * MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD;
         _drivingModule->moveForward();
         return;
     }
+    
     if (isOneSideClear())
     {
         _maxSensorResultAge = _sensorResult.Front * MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD;
         _drivingModule->moveForward();
         return;
     }
+
     if (_sensorResult.Left < _sensorResult.Right)
     {
         _maxSensorResultAge = _sensorResult.Left * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
         _drivingModule->bearRight(DIR_FORWARD);
         return;
     }
-    else
-    {
-        _maxSensorResultAge = _sensorResult.Right * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
-        _drivingModule->bearLeft(DIR_FORWARD);
-        return;
-    }
+
+    _maxSensorResultAge = _sensorResult.Right * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
+    _drivingModule->bearLeft(DIR_FORWARD);
+    return;
 }
 
 unsigned long AutoPilotModule::resultAge()
