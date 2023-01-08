@@ -31,6 +31,8 @@ void tearDown(void)
 {
     delete target;
     delete stream;
+    drivingModuleMock.Reset();
+    sensorModuleMock.Reset();
 }
 
 void test_disabled_by_default(void)
@@ -176,7 +178,7 @@ void test_result_requested_if_result_too_old(void)
 
     TEST_ASSERT_EQUAL(4001, target->resultAge());
     TEST_ASSERT_EQUAL(6, target->sensorResult()->Front);
-    Verify(Method(drivingModuleMock, stop)).Twice();
+    Verify(Method(drivingModuleMock, stop)).Once();
 }
 
 int main(int argc, char **argv)
