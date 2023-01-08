@@ -46,72 +46,91 @@ void AutoPilotModule::handle()
     {
         if (_sensorResult.Right > _sensorResult.Left)
         {
-            _maxSensorResultAge = MAX_SENSOR_AGE_FOR_TURN;
-            _drivingModule->turnRight();
+            turnRight();
             return;
         }
         if (_sensorResult.Left > _sensorResult.Right)
         {
-            _maxSensorResultAge = MAX_SENSOR_AGE_FOR_TURN;
-            _drivingModule->turnLeft();
+            turnLeft();
             return;
         }
         // if equal, bias for right
-        _maxSensorResultAge = MAX_SENSOR_AGE_FOR_TURN;
-        _drivingModule->turnRight();
+        turnRight();
         return;
     }
 
     if (_sensorResult.Left < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
-        _maxSensorResultAge = MAX_SENSOR_AGE_FOR_TURN;
-        _drivingModule->turnRight();
+        turnRight();
         return;
     }
     if (_sensorResult.Right < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
-        _maxSensorResultAge = MAX_SENSOR_AGE_FOR_TURN;
-        _drivingModule->turnLeft();
+        turnLeft();
         return;
     }
-    
+
     if (_sensorResult.Left < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
-        _maxSensorResultAge = _sensorResult.Left * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
-        _drivingModule->bearRight(DIR_FORWARD);
+        bearRight();
         return;
     }
     if (_sensorResult.Right < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
-        _maxSensorResultAge = _sensorResult.Right * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
-        _drivingModule->bearLeft(DIR_FORWARD);
+        bearLeft();
         return;
     }
-    
+
     if (isCentered())
     {
-        _maxSensorResultAge = _sensorResult.Front * MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD;
-        _drivingModule->moveForward();
+        moveForward();
         return;
     }
-    
+
     if (isOneSideClear())
     {
-        _maxSensorResultAge = _sensorResult.Front * MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD;
-        _drivingModule->moveForward();
+        moveForward();
         return;
     }
 
     if (_sensorResult.Left < _sensorResult.Right)
     {
-        _maxSensorResultAge = _sensorResult.Left * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
-        _drivingModule->bearRight(DIR_FORWARD);
+        bearRight();
         return;
     }
 
+    bearLeft();
+    return;
+}
+
+void AutoPilotModule::moveForward()
+{
+    _maxSensorResultAge = _sensorResult.Front * MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD;
+    _drivingModule->moveForward();
+}
+
+void AutoPilotModule::turnRight()
+{
+    _maxSensorResultAge = MAX_SENSOR_AGE_FOR_TURN;
+    _drivingModule->turnRight();
+}
+
+void AutoPilotModule::turnLeft()
+{
+    _maxSensorResultAge = MAX_SENSOR_AGE_FOR_TURN;
+    _drivingModule->turnLeft();
+}
+
+void AutoPilotModule::bearRight()
+{
+    _maxSensorResultAge = _sensorResult.Left * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
+    _drivingModule->bearRight(DIR_FORWARD);
+}
+
+void AutoPilotModule::bearLeft()
+{
     _maxSensorResultAge = _sensorResult.Right * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
     _drivingModule->bearLeft(DIR_FORWARD);
-    return;
 }
 
 unsigned long AutoPilotModule::resultAge()
@@ -134,7 +153,7 @@ void AutoPilotModule::updateResult(SensorResult *result)
     _resultAge = millis();
 }
 
-SensorResult* AutoPilotModule::sensorResult()
+SensorResult *AutoPilotModule::sensorResult()
 {
     return &_sensorResult;
 }
@@ -164,19 +183,17 @@ bool AutoPilotModule::updatePositionIfRequired()
 
         return true;
     }
-    
+
     return false;
 }
 
 bool AutoPilotModule::isCentered()
 {
-    if ((_sensorResult.Left - CENTER_TOLERANCE) < _sensorResult.Right 
-        && _sensorResult.Right < (_sensorResult.Left + CENTER_TOLERANCE))
+    if ((_sensorResult.Left - CENTER_TOLERANCE) < _sensorResult.Right && _sensorResult.Right < (_sensorResult.Left + CENTER_TOLERANCE))
     {
         return true;
     }
-    if ((_sensorResult.Right - CENTER_TOLERANCE) < _sensorResult.Left 
-        && _sensorResult.Left < (_sensorResult.Right + CENTER_TOLERANCE))
+    if ((_sensorResult.Right - CENTER_TOLERANCE) < _sensorResult.Left && _sensorResult.Left < (_sensorResult.Right + CENTER_TOLERANCE))
     {
         return true;
     }
