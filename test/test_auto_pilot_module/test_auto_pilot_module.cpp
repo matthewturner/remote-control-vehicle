@@ -116,13 +116,6 @@ void test_result_not_requested(void)
     When(Method(ArduinoFake(), millis)).Return(10, 30, 35);
 
     When(Method(sensorModuleMock, signalled)).Return(false);
-    When(Method(sensorModuleMock, detect))
-        .Do([](SensorResult* r)->byte
-        {
-            r->Age = 20;
-            r->Front = 6;
-            return 6;
-        });
 
     When(Method(drivingModuleMock, stop)).AlwaysReturn();
 
