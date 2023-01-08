@@ -139,7 +139,7 @@ SensorResult* AutoPilotModule::sensorResult()
 
 bool AutoPilotModule::updatePositionIfRequired()
 {
-    unsigned long sensorResultAge = millis() - _resultAge + _sensorResult.Age;
+    unsigned long sensorResultAge = millis() - _resultAge - _sensorResult.Age;
 
     if (_sensorModule->signalled() || (sensorResultAge > _maxSensorResultAge))
     {
