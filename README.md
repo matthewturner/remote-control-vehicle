@@ -1,6 +1,8 @@
-# Massive Octo Tribble
+# YARV - Yet Another Remote-controlled Vehicle
 
-The bluetooth remote-controlled car
+[![PlatformIO CI](https://github.com/matthewturner/remote-control-vehicle/actions/workflows/platformio.yml/badge.svg)](https://github.com/matthewturner/remote-control-vehicle/actions/workflows/platformio.yml)
+
+The bluetooth remote-controlled car and boat
 
 ![car](https://user-images.githubusercontent.com/1783027/97975863-ab042000-1dc1-11eb-807a-c870f89b6db3.jpg)
 
