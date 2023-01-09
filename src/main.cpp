@@ -5,6 +5,10 @@ void setup()
   Serial.begin(9600);
   sensorModule.begin();
 
+  pinMode(RECEIVE_PIN, INPUT);
+  pinMode(TRANSMIT_PIN, OUTPUT);
+  bluetoothSerial.begin(9600);
+
   ledModule.turnOffAllLeds();
   ledModule.cycleThroughLeds();
 

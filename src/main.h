@@ -7,6 +7,7 @@
 #include "AutoPilotModule.h"
 #include <Eventually.h>
 #include <EventuallyCommand.h>
+#include <SoftwareSerial.h>
 
 // #define BOAT
 
@@ -18,6 +19,10 @@ const byte ledRedPin = 12;
 const byte ledGreenPin = 10;
 const byte ledBluePin = 11;
 LedModule ledModule(ledRedPin, ledGreenPin, ledBluePin);
+
+const byte TRANSMIT_PIN = 5;
+const byte RECEIVE_PIN = 6;
+SoftwareSerial bluetoothSerial(RECEIVE_PIN, TRANSMIT_PIN);
 
 const byte motorLeftEnablePin = 9;
 const byte motorLeftForwardPin = 7;
@@ -47,7 +52,7 @@ AutoPilotModule autoPilotModule(&Serial, drivingModule, &sensorModule);
 EdgeModule edgeModule(&Serial);
 
 EvtManager mgr;
-EvtCommandListener commandListener(&Serial, 2);
+EvtCommandListener commandListener(&bluetoothSerial, 2);
 
 bool stop();
 bool forward();
