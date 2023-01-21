@@ -172,14 +172,14 @@ bool AutoPilotModule::updatePositionIfRequired()
 
         debugPrintln("Sensor Module Result:");
         debugPrint("   ");
-        debugPrintln(sensorResult.Front);
-        debugPrint(sensorResult.Left);
+        debugPrintln(_sensorResult.Front);
+        debugPrint(_sensorResult.Left);
         debugPrint("       ");
-        debugPrintln(sensorResult.Right);
+        debugPrintln(_sensorResult.Right);
         debugPrint("   ");
-        debugPrintln(sensorResult.Back);
+        debugPrintln(_sensorResult.Back);
         debugPrint("   ~");
-        debugPrintln(sensorResult.Age);
+        debugPrintln(_sensorResult.Age);
 
         return true;
     }

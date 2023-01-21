@@ -5,6 +5,8 @@
 #include <Arduino.h>
 #include <L293.h>
 
+const byte BEAR_SPEED_THRESHOLD = 3;
+
 class DrivingModule : public IDrivingModule
 {
 public:

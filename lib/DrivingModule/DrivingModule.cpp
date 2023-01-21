@@ -16,9 +16,9 @@ void DrivingModule::bearLeft(bool forward)
     debugPrintln("Bearing left...");
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
-    if (_speed > 4)
+    if (_speed > BEAR_SPEED_THRESHOLD)
     {
-        reducedSpeed = convertSpeed(_speed - 4);
+        reducedSpeed = convertSpeed(_speed - BEAR_SPEED_THRESHOLD);
     }
     if (forward)
     {
@@ -39,9 +39,9 @@ void DrivingModule::bearRight(bool forward)
     debugPrintln("Bearing right...");
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
-    if (_speed > 4)
+    if (_speed > BEAR_SPEED_THRESHOLD)
     {
-        reducedSpeed = convertSpeed(_speed - 4);
+        reducedSpeed = convertSpeed(_speed - BEAR_SPEED_THRESHOLD);
     }
     if (forward)
     {
@@ -118,11 +118,13 @@ byte DrivingModule::convertSpeed(byte speed)
     {
         return 0;
     }
-    return map(speed, 1, 5, 50, 255);
+    return map(speed, 1, 5, 100, 250);
 }
 
 void DrivingModule::setSpeed(byte speed)
 {
+    debugPrint("Setting speed: ");
+    debugPrintln(speed);
     _speed = speed;
 }
 
