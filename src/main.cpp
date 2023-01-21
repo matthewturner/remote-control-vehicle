@@ -3,14 +3,10 @@
 void setup()
 {
   Serial.begin(9600);
-  // sensorModule.begin();
 
   pinMode(RECEIVE_PIN, INPUT);
   pinMode(TRANSMIT_PIN, OUTPUT);
-  // bluetoothSerial.begin(9600);
-
-  // ledModule.turnOffAllLeds();
-  // ledModule.cycleThroughLeds();
+  bluetoothSerial.begin(9600);
 
   commandListener.when("stop", (EvtCommandAction)stop);
   commandListener.when("forward", (EvtCommandAction)forward);
@@ -22,14 +18,6 @@ void setup()
   commandListener.when("bear-left-reverse", (EvtCommandAction)bearLeftReverse);
   commandListener.when("bear-right-reverse", (EvtCommandAction)bearRightReverse);
   commandListener.when("set-speed", (EvtCommandAction)setSpeed);
-  // commandListener.when("edge-reverse", (EvtCommandAction)edgeReverse);
-  // commandListener.when("edge-left", (EvtCommandAction)edgeLeft);
-  // commandListener.when("edge-right", (EvtCommandAction)edgeRight);
-  // commandListener.when("edge-forward", (EvtCommandAction)edgeForward);
-  // commandListener.when("start-self-drive", (EvtCommandAction)startSelfDrive);
-  // commandListener.when("stop-self-drive", (EvtCommandAction)stopSelfDrive);
-  // commandListener.when("increase-edge-duration", (EvtCommandAction)increaseEdgeDuration);
-  // commandListener.when("decrease-edge-duration", (EvtCommandAction)decreaseEdgeDuration);
   mgr.addListener(&commandListener);
 
   Serial.println(F("Setup complete, continuing..."));
@@ -97,63 +85,5 @@ bool bearRightReverse()
 bool setSpeed(EvtListener *, EvtContext *, long data)
 {
   drivingModule->setSpeed((byte)data);
-  return true;
-}
-
-bool edgeForward()
-{
-  drivingModule->moveForward();
-  // delay(edgeModule.duration());
-  drivingModule->stop();
-  return true;
-}
-
-bool edgeReverse()
-{
-  drivingModule->moveBackward();
-  // delay(edgeModule.duration());
-  drivingModule->stop();
-  return true;
-}
-
-bool edgeLeft()
-{
-  drivingModule->turnLeft();
-  // delay(edgeModule.duration());
-  drivingModule->stop();
-  return true;
-}
-
-bool edgeRight()
-{
-  drivingModule->turnRight();
-  // delay(edgeModule.duration());
-  drivingModule->stop();
-  return true;
-}
-
-bool startSelfDrive()
-{
-  // ledModule.turnOn(ledModule.greenPin());
-  // autoPilotModule.enable();
-  return true;
-}
-
-bool stopSelfDrive()
-{
-  // autoPilotModule.disable();
-  // ledModule.turnOff(ledModule.greenPin());
-  return true;
-}
-
-bool increaseEdgeDuration()
-{
-  // edgeModule.increase();
-  return true;
-}
-
-bool decreaseEdgeDuration()
-{
-  // edgeModule.decrease();
   return true;
 }
