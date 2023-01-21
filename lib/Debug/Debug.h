@@ -5,7 +5,7 @@
 #define DEBUG_OFF 0
 
 // set this
-#define DEBUG_MODE DEBUG_OFF
+#define DEBUG_MODE DEBUG_ON
 
 #if DEBUG_MODE == DEBUG_ON
 #define debugPrintln(...) _stream->println(__VA_ARGS__)

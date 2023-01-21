@@ -15,24 +15,25 @@
 
 const byte sensorInterruptPin = 13;
 
-const byte ledRedPin = 12;
-const byte ledGreenPin = 10;
-const byte ledBluePin = 11;
-LedModule ledModule(ledRedPin, ledGreenPin, ledBluePin);
+// const byte ledRedPin = 12;
+// const byte ledGreenPin = 10;
+// const byte ledBluePin = 11;
+// LedModule ledModule(ledRedPin, ledGreenPin, ledBluePin);
 
-const byte TRANSMIT_PIN = 5;
-const byte RECEIVE_PIN = 6;
+const byte TRANSMIT_PIN = 2;
+const byte RECEIVE_PIN = 3;
 SoftwareSerial bluetoothSerial(RECEIVE_PIN, TRANSMIT_PIN);
 
-const byte motorLeftEnablePin = 9;
-const byte motorLeftForwardPin = 7;
-const byte motorLeftReversePin = 8;
-const byte motorRightEnablePin = 3;
-const byte motorRightForwardPin = 6;
-const byte motorRightReversePin = 5;
+const byte MOTOR_LEFT_ENABLE_PIN = 5;
+const byte MOTOR_LEFT_FORWARD_PIN = 4;
+const byte MOTOR_LEFT_REVERSE_PIN = 6;
 
-DrivingModule dm(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin,
-                 motorRightEnablePin, motorRightForwardPin, motorRightReversePin,
+const byte MOTOR_RIGHT_ENABLE_PIN = 10;
+const byte MOTOR_RIGHT_FORWARD_PIN = 8;
+const byte MOTOR_RIGHT_REVERSE_PIN = 7;
+
+DrivingModule dm(MOTOR_LEFT_ENABLE_PIN, MOTOR_LEFT_FORWARD_PIN, MOTOR_LEFT_REVERSE_PIN,
+                 MOTOR_RIGHT_ENABLE_PIN, MOTOR_RIGHT_FORWARD_PIN, MOTOR_RIGHT_REVERSE_PIN,
                  &Serial);
 
 #ifdef BOAT
@@ -44,15 +45,15 @@ BoatDrivingModule bdm(&dm, &rm);
 IDrivingModule *drivingModule = &bdm;
 #else
 IDrivingModule *drivingModule = &dm;
-SensorModule sensorModule(SENSOR_I2C_ADDR, sensorInterruptPin, &Serial);
-SensorResult sensorResult;
-AutoPilotModule autoPilotModule(&Serial, drivingModule, &sensorModule);
+// SensorModule sensorModule(SENSOR_I2C_ADDR, sensorInterruptPin, &Serial);
+// SensorResult sensorResult;
+// AutoPilotModule autoPilotModule(&Serial, drivingModule, &sensorModule);
 #endif
 
-EdgeModule edgeModule(&Serial);
+// EdgeModule edgeModule(&Serial);
 
 EvtManager mgr;
-EvtCommandListener commandListener(&bluetoothSerial, 2);
+EvtCommandListener commandListener(&Serial, 2);
 
 bool stop();
 bool forward();

@@ -3,14 +3,14 @@
 void setup()
 {
   Serial.begin(9600);
-  sensorModule.begin();
+  // sensorModule.begin();
 
   pinMode(RECEIVE_PIN, INPUT);
   pinMode(TRANSMIT_PIN, OUTPUT);
-  bluetoothSerial.begin(9600);
+  // bluetoothSerial.begin(9600);
 
-  ledModule.turnOffAllLeds();
-  ledModule.cycleThroughLeds();
+  // ledModule.turnOffAllLeds();
+  // ledModule.cycleThroughLeds();
 
   commandListener.when("stop", (EvtCommandAction)stop);
   commandListener.when("forward", (EvtCommandAction)forward);
@@ -22,15 +22,17 @@ void setup()
   commandListener.when("bear-left-reverse", (EvtCommandAction)bearLeftReverse);
   commandListener.when("bear-right-reverse", (EvtCommandAction)bearRightReverse);
   commandListener.when("set-speed", (EvtCommandAction)setSpeed);
-  commandListener.when("edge-reverse", (EvtCommandAction)edgeReverse);
-  commandListener.when("edge-left", (EvtCommandAction)edgeLeft);
-  commandListener.when("edge-right", (EvtCommandAction)edgeRight);
-  commandListener.when("edge-forward", (EvtCommandAction)edgeForward);
-  commandListener.when("start-self-drive", (EvtCommandAction)startSelfDrive);
-  commandListener.when("stop-self-drive", (EvtCommandAction)stopSelfDrive);
-  commandListener.when("increase-edge-duration", (EvtCommandAction)increaseEdgeDuration);
-  commandListener.when("decrease-edge-duration", (EvtCommandAction)decreaseEdgeDuration);
+  // commandListener.when("edge-reverse", (EvtCommandAction)edgeReverse);
+  // commandListener.when("edge-left", (EvtCommandAction)edgeLeft);
+  // commandListener.when("edge-right", (EvtCommandAction)edgeRight);
+  // commandListener.when("edge-forward", (EvtCommandAction)edgeForward);
+  // commandListener.when("start-self-drive", (EvtCommandAction)startSelfDrive);
+  // commandListener.when("stop-self-drive", (EvtCommandAction)stopSelfDrive);
+  // commandListener.when("increase-edge-duration", (EvtCommandAction)increaseEdgeDuration);
+  // commandListener.when("decrease-edge-duration", (EvtCommandAction)decreaseEdgeDuration);
   mgr.addListener(&commandListener);
+
+  Serial.println(F("Setup complete, continuing..."));
 }
 
 void loop()
@@ -101,7 +103,7 @@ bool setSpeed(EvtListener *, EvtContext *, long data)
 bool edgeForward()
 {
   drivingModule->moveForward();
-  delay(edgeModule.duration());
+  // delay(edgeModule.duration());
   drivingModule->stop();
   return true;
 }
@@ -109,7 +111,7 @@ bool edgeForward()
 bool edgeReverse()
 {
   drivingModule->moveBackward();
-  delay(edgeModule.duration());
+  // delay(edgeModule.duration());
   drivingModule->stop();
   return true;
 }
@@ -117,7 +119,7 @@ bool edgeReverse()
 bool edgeLeft()
 {
   drivingModule->turnLeft();
-  delay(edgeModule.duration());
+  // delay(edgeModule.duration());
   drivingModule->stop();
   return true;
 }
@@ -125,33 +127,33 @@ bool edgeLeft()
 bool edgeRight()
 {
   drivingModule->turnRight();
-  delay(edgeModule.duration());
+  // delay(edgeModule.duration());
   drivingModule->stop();
   return true;
 }
 
 bool startSelfDrive()
 {
-  ledModule.turnOn(ledModule.greenPin());
-  autoPilotModule.enable();
+  // ledModule.turnOn(ledModule.greenPin());
+  // autoPilotModule.enable();
   return true;
 }
 
 bool stopSelfDrive()
 {
-  autoPilotModule.disable();
-  ledModule.turnOff(ledModule.greenPin());
+  // autoPilotModule.disable();
+  // ledModule.turnOff(ledModule.greenPin());
   return true;
 }
 
 bool increaseEdgeDuration()
 {
-  edgeModule.increase();
+  // edgeModule.increase();
   return true;
 }
 
 bool decreaseEdgeDuration()
 {
-  edgeModule.decrease();
+  // edgeModule.decrease();
   return true;
 }
