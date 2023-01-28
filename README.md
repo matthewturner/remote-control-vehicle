@@ -19,4 +19,4 @@ The bluetooth remote-controlled car and boat
 * [Power connectors](https://www.ebay.co.uk/itm/5-Pairs-2-Pin-SM-Plug-Connector-Cable-Wire-Male-Female-5-Of-Each-Connector/322057378908?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649)
 * [Battery charger](https://www.amazon.co.uk/gp/product/B07V5H5GX7/ref=ppx_yo_dt_b_asin_title_o06_s00?ie=UTF8&psc=1)
 
-* [Android App](http://ai2.appinventor.mit.edu/#6077631378620416)
+* [Android App](https://github.com/matthewturner/Yarv.Android)
