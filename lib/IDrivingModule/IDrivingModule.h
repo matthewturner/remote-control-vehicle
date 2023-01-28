@@ -6,11 +6,14 @@
 const bool DIR_FORWARD = true;
 const bool DIR_REVERSE = false;
 
-const byte MOVE_STOPPED = 0;
-const byte MOVE_FORWARD = 1;
-const byte MOVE_LEFT = 2;
-const byte MOVE_RIGHT = 3;
-const byte MOVE_BACKWARD = 4;
+typedef enum : byte
+{
+    STOPPED = 0,
+    FORWARD = 1,
+    LEFT = 2,
+    RIGHT = 3,
+    BACKWARD = 4
+} Motion;
 
 const byte DEFAULT_SPEED = 5;
 
