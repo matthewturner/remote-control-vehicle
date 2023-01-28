@@ -1,11 +1,11 @@
 #include "DrivingModule.h"
 #include "Debug.h"
 
-DrivingModule::DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, byte motorLeftReversePin,
-                             byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin,
+DrivingModule::DrivingModule(byte motorLeftEnablePin, byte motorLeftDirectionPin,
+                             byte motorRightEnablePin, byte motorRightDirectionPin,
                              Stream *stream)
-    : _motorLeft(motorLeftEnablePin, motorLeftForwardPin, motorLeftReversePin),
-      _motorRight(motorRightEnablePin, motorRightForwardPin, motorRightReversePin)
+    : _motorLeft(motorLeftEnablePin, motorLeftDirectionPin),
+      _motorRight(motorRightEnablePin, motorRightDirectionPin)
 {
     _speed = DEFAULT_SPEED;
     _stream = stream;
@@ -104,10 +104,10 @@ void DrivingModule::stop()
 
 bool DrivingModule::isMoving()
 {
-    return _directionOfMotion > 0;
+    return (_directionOfMotion != Motion::STOPPED);
 }
 
-byte DrivingModule::directionOfMotion()
+Motion DrivingModule::directionOfMotion()
 {
     return _directionOfMotion;
 }

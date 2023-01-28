@@ -4,11 +4,32 @@
 
 The bluetooth remote-controlled car and boat
 
+## Pinout
+
+| Pin | PWM | Usage                     |
+| --- | --- | ---                       |
+| 2   |     | TRANSMIT_PIN              |
+| ~3  | Yes | RECEIVE_PIN               |
+| 4   |     |                           |
+| ~5  | Yes |                           |
+| ~6  | Yes | MOTOR_LEFT_ENABLE_PIN     |
+| 7   |     | MOTOR_LEFT_DIRECTION_PIN  |
+| 8   |     | MOTOR_RIGHT_DIRECTION_PIN |
+| ~9  | Yes | MOTOR_RIGHT_ENABLE_PIN    |
+| ~10 | Yes |                           |
+| ~11 | Yes |                           |
+| 12  |     | LEFT_BUMPER_PIN           |
+| 13  |     | RIGHT_BUMPER_PIN          |
+
+## Demos
+
 ![car](https://user-images.githubusercontent.com/1783027/97975863-ab042000-1dc1-11eb-807a-c870f89b6db3.jpg)
 
 ![Video](https://media.giphy.com/media/VY4mH3ABTiCAt8fhKN/giphy.gif)
 
 [Full Video](https://youtu.be/ySsLElAfF24)
+
+## Components
 
 * [Chassis/motors](https://www.amazon.co.uk/gp/product/B071CF3NXM/ref=ppx_yo_dt_b_asin_title_o05_s00?ie=UTF8&psc=1)
 * [Elegoo Nano](https://www.amazon.co.uk/gp/product/B072BMYZ18/ref=ppx_yo_dt_b_asin_title_o08_s00?ie=UTF8&psc=1)

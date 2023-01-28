@@ -2,7 +2,7 @@
 
 #include "IDrivingModule.h"
 #include "DrivingModule.h"
-#include "LedModule.h"
+#include "BumperModule.h"
 #include "Debug.h"
 #include <Eventually.h>
 #include <EventuallyCommand.h>
@@ -12,18 +12,22 @@
 
 const byte TRANSMIT_PIN = 2;
 const byte RECEIVE_PIN = 3;
+
+const byte MOTOR_LEFT_ENABLE_PIN = 6;
+const byte MOTOR_LEFT_DIRECTION_PIN = 7;
+
+const byte MOTOR_RIGHT_ENABLE_PIN = 9;
+const byte MOTOR_RIGHT_DIRECTION_PIN = 8;
+
+const byte LEFT_BUMPER_PIN = 12;
+const byte RIGHT_BUMPER_PIN = 13;
+
+BumperModule bumperModule(LEFT_BUMPER_PIN, RIGHT_BUMPER_PIN, &Serial);
+
 SoftwareSerial bluetoothSerial(RECEIVE_PIN, TRANSMIT_PIN);
 
-const byte MOTOR_LEFT_ENABLE_PIN = 5;
-const byte MOTOR_LEFT_FORWARD_PIN = 4;
-const byte MOTOR_LEFT_REVERSE_PIN = 6;
-
-const byte MOTOR_RIGHT_ENABLE_PIN = 10;
-const byte MOTOR_RIGHT_FORWARD_PIN = 8;
-const byte MOTOR_RIGHT_REVERSE_PIN = 7;
-
-DrivingModule dm(MOTOR_LEFT_ENABLE_PIN, MOTOR_LEFT_FORWARD_PIN, MOTOR_LEFT_REVERSE_PIN,
-                 MOTOR_RIGHT_ENABLE_PIN, MOTOR_RIGHT_FORWARD_PIN, MOTOR_RIGHT_REVERSE_PIN,
+DrivingModule dm(MOTOR_LEFT_ENABLE_PIN, MOTOR_LEFT_DIRECTION_PIN,
+                 MOTOR_RIGHT_ENABLE_PIN, MOTOR_RIGHT_DIRECTION_PIN,
                  &Serial);
 
 #ifdef BOAT
@@ -51,3 +55,5 @@ bool bearRightForward();
 bool bearLeftReverse();
 bool bearRightReverse();
 bool setSpeed(EvtListener *, EvtContext *, long data);
+
+bool handleBumperEvent();

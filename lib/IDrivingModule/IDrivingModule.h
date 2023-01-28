@@ -6,14 +6,14 @@
 const bool DIR_FORWARD = true;
 const bool DIR_REVERSE = false;
 
-typedef enum : byte
+enum class Motion : byte
 {
     STOPPED = 0,
     FORWARD = 1,
     LEFT = 2,
     RIGHT = 3,
     BACKWARD = 4
-} Motion;
+};
 
 const byte DEFAULT_SPEED = 5;
 
@@ -40,7 +40,7 @@ public:
 
     virtual bool isMoving() = 0;
 
-    virtual byte directionOfMotion() = 0;
+    virtual Motion directionOfMotion() = 0;
 
     virtual void setSpeed(byte speed) = 0;
 

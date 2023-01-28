@@ -29,7 +29,7 @@ public:
 
     bool isMoving() override;
 
-    byte directionOfMotion() override;
+    Motion directionOfMotion() override;
 
     void setSpeed(byte speed) override;
 
