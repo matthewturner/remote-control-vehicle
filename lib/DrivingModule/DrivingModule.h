@@ -10,8 +10,8 @@ const byte BEAR_SPEED_THRESHOLD = 3;
 class DrivingModule : public IDrivingModule
 {
 public:
-    DrivingModule(byte motorLeftEnablePin, byte motorLeftForwardPin, byte motorLeftReversePin,
-                  byte motorRightEnablePin, byte motorRightForwardPin, byte motorRightReversePin,
+    DrivingModule(byte motorLeftEnablePin, byte motorLeftDirectionPin,
+                  byte motorRightEnablePin, byte motorRightDirectionPin,
                   Stream *stream);
 
     void bearLeft(bool forward) override;
@@ -32,15 +32,15 @@ public:
 
     bool isMoving() override;
 
-    byte directionOfMotion() override;
+    Motion directionOfMotion() override;
 
     void setSpeed(byte speed) override;
 
     void resetSpeed() override;
 
 private:
-    L293 _motorLeft;
-    L293 _motorRight;
+    L293_twoWire _motorLeft;
+    L293_twoWire _motorRight;
     Motion _directionOfMotion;
     byte _speed;
     Stream *_stream;

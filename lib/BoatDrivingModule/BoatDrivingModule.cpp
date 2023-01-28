@@ -65,7 +65,7 @@ bool BoatDrivingModule::isMoving()
     return _drivingModule->isMoving();
 }
 
-byte BoatDrivingModule::directionOfMotion()
+Motion BoatDrivingModule::directionOfMotion()
 {
     return _drivingModule->directionOfMotion();
 }

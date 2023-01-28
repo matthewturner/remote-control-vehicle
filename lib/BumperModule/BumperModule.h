@@ -3,13 +3,13 @@
 
 #include <Arduino.h>
 
-typedef enum : byte
+enum class Sides : byte
 {
     NONE = 0,
     LEFT = 1,
     RIGHT = 2,
     BOTH = LEFT | RIGHT
-} Sides;
+};
 
 class BumperModule
 {
@@ -17,7 +17,9 @@ public:
     BumperModule(byte leftSensorPin, byte rightSensorPin,
                   Stream *stream);
 
-    Sides hasCollided(short sinceMs = 0);
+    void begin();
+
+    Sides hasCollided(unsigned short sinceMs = 0);
 
 private:
     byte _leftSensorPin;

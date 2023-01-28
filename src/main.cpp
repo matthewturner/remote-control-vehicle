@@ -4,6 +4,8 @@ void setup()
 {
   Serial.begin(9600);
 
+  bumperModule.begin();
+
   pinMode(RECEIVE_PIN, INPUT);
   pinMode(TRANSMIT_PIN, OUTPUT);
   bluetoothSerial.begin(9600);
@@ -20,6 +22,9 @@ void setup()
   commandListener.when("set-speed", (EvtCommandAction)setSpeed);
   mgr.addListener(&commandListener);
 
+  mgr.addListener(new EvtPinListener(LEFT_BUMPER_PIN, (EvtAction)handleBumperEvent));
+  mgr.addListener(new EvtPinListener(RIGHT_BUMPER_PIN, (EvtAction)handleBumperEvent));
+
   Serial.println(F("Setup complete, continuing..."));
 }
 
@@ -31,6 +36,15 @@ void loop()
 bool stop()
 {
   drivingModule->stop();
+  return true;
+}
+
+bool handleBumperEvent()
+{
+  if (bumperModule.hasCollided(5) != Sides::NONE)
+  {
+    drivingModule->stop();
+  }
   return true;
 }
 
