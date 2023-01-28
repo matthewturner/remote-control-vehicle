@@ -41,7 +41,7 @@ public:
 private:
     L293 _motorLeft;
     L293 _motorRight;
-    byte _directionOfMotion;
+    Motion _directionOfMotion;
     byte _speed;
     Stream *_stream;
 };

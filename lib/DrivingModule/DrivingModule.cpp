@@ -22,13 +22,13 @@ void DrivingModule::bearLeft(bool forward)
     }
     if (forward)
     {
-        _directionOfMotion = MOVE_FORWARD;
+        _directionOfMotion = Motion::FORWARD;
         _motorLeft.forward(reducedSpeed);
         _motorRight.forward(actualSpeed);
     }
     else
     {
-        _directionOfMotion = MOVE_BACKWARD;
+        _directionOfMotion = Motion::BACKWARD;
         _motorLeft.back(reducedSpeed);
         _motorRight.back(actualSpeed);
     }
@@ -45,13 +45,13 @@ void DrivingModule::bearRight(bool forward)
     }
     if (forward)
     {
-        _directionOfMotion = MOVE_FORWARD;
+        _directionOfMotion = Motion::FORWARD;
         _motorLeft.forward(actualSpeed);
         _motorRight.forward(reducedSpeed);
     }
     else
     {
-        _directionOfMotion = MOVE_BACKWARD;
+        _directionOfMotion = Motion::BACKWARD;
         _motorLeft.back(actualSpeed);
         _motorRight.back(reducedSpeed);
     }
@@ -59,7 +59,7 @@ void DrivingModule::bearRight(bool forward)
 
 void DrivingModule::turnLeft()
 {
-    _directionOfMotion = MOVE_LEFT;
+    _directionOfMotion = Motion::LEFT;
     debugPrintln("Turning left...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.back(actualSpeed);
@@ -68,7 +68,7 @@ void DrivingModule::turnLeft()
 
 void DrivingModule::turnRight()
 {
-    _directionOfMotion = MOVE_RIGHT;
+    _directionOfMotion = Motion::RIGHT;
     debugPrintln("Turning right...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.forward(actualSpeed);
@@ -77,7 +77,7 @@ void DrivingModule::turnRight()
 
 void DrivingModule::moveBackward()
 {
-    _directionOfMotion = MOVE_BACKWARD;
+    _directionOfMotion = Motion::BACKWARD;
     debugPrintln("Reversing...");
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.back(actualSpeed);
@@ -86,7 +86,7 @@ void DrivingModule::moveBackward()
 
 void DrivingModule::moveForward()
 {
-    _directionOfMotion = MOVE_FORWARD;
+    _directionOfMotion = Motion::FORWARD;
     debugPrintln("Moving forward...");
     byte actualSpeed = convertSpeed(_speed);
     // debugPrintln(actualSpeed);
@@ -96,7 +96,7 @@ void DrivingModule::moveForward()
 
 void DrivingModule::stop()
 {
-    _directionOfMotion = MOVE_STOPPED;
+    _directionOfMotion = Motion::STOPPED;
     debugPrintln("Stopping...");
     _motorLeft.stop();
     _motorRight.stop();
