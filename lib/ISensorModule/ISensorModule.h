@@ -3,16 +3,14 @@
 
 #include <Arduino.h>
 
-struct sensorResult
+typedef struct sensorResult
 {
     byte Front;
     byte Back;
     byte Left;
     byte Right;
     byte Age;
-};
-
-typedef struct sensorResult SensorResult;
+} SensorResult;
 
 class ISensorModule
 {

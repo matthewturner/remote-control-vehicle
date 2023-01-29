@@ -1,12 +1,15 @@
 #define EVENTUALLY_MAX_COMMANDS 12
 
+#include <Arduino.h>
 #include "IDrivingModule.h"
 #include "DrivingModule.h"
 #include "BumperModule.h"
+#include "SensorModule.h"
 #include "Debug.h"
 #include <Eventually.h>
 #include <EventuallyCommand.h>
 #include <SoftwareSerial.h>
+#include <Wire.h>
 
 // #define BOAT
 
@@ -22,7 +25,11 @@ const byte MOTOR_RIGHT_DIRECTION_PIN = 8;
 const byte LEFT_BUMPER_PIN = 12;
 const byte RIGHT_BUMPER_PIN = 13;
 
+const byte SENSOR_SERVO_PIN = 5;
+
 BumperModule bumperModule(LEFT_BUMPER_PIN, RIGHT_BUMPER_PIN, &Serial);
+
+SensorModule sensorModule((byte)0x30, SENSOR_SERVO_PIN, &Serial);
 
 SoftwareSerial bluetoothSerial(RECEIVE_PIN, TRANSMIT_PIN);
 

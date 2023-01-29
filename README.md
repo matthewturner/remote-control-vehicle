@@ -11,7 +11,7 @@ The bluetooth remote-controlled car and boat
 | 2   |     | TRANSMIT_PIN              |
 | ~3  | Yes | RECEIVE_PIN               |
 | 4   |     |                           |
-| ~5  | Yes |                           |
+| ~5  | Yes | SENSOR_SERVO_PIN          |
 | ~6  | Yes | MOTOR_LEFT_ENABLE_PIN     |
 | 7   |     | MOTOR_LEFT_DIRECTION_PIN  |
 | 8   |     | MOTOR_RIGHT_DIRECTION_PIN |
