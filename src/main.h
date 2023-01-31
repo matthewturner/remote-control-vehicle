@@ -5,6 +5,7 @@
 #include "DrivingModule.h"
 #include "BumperModule.h"
 #include "SensorModule.h"
+#include "AutoPilotModule.h"
 #include "Debug.h"
 #include <Eventually.h>
 #include <EventuallyCommand.h>
@@ -29,7 +30,7 @@ const byte SENSOR_SERVO_PIN = 5;
 
 BumperModule bumperModule(LEFT_BUMPER_PIN, RIGHT_BUMPER_PIN, &Serial);
 
-SensorModule sensorModule((byte)0x30, SENSOR_SERVO_PIN, &Serial);
+SensorModule sm((byte)0x30, SENSOR_SERVO_PIN, &Serial);
 
 SoftwareSerial bluetoothSerial(RECEIVE_PIN, TRANSMIT_PIN);
 
@@ -46,6 +47,8 @@ BoatDrivingModule bdm(&dm, &rm);
 IDrivingModule *drivingModule = &bdm;
 #else
 IDrivingModule *drivingModule = &dm;
+ISensorModule *sensorModule = &sm;
+AutoPilotModule autoPilotModule(&Serial, drivingModule, sensorModule);
 #endif
 
 EvtManager mgr;
