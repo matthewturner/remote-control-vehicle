@@ -17,6 +17,7 @@ public:
     bool detect(SensorResult *r) override;
     bool signalled() override;
     void scan(SensorResult *r) override;
+    bool request(SensorResult *r, byte direction) override;
 
 private:
     byte _i2cAddress;

@@ -20,6 +20,29 @@ bool SensorModule::signalled()
     return false;
 }
 
+bool SensorModule::request(SensorResult *r, byte direction)
+{
+    unsigned long now = millis();
+
+    if (direction != _desiredPosition)
+    {
+        _desiredPosition = direction;        
+        int desiredPosition = _positions[_desiredPosition];
+        _servo.write(desiredPosition);
+        _lastChange = now;
+        return false;
+    }
+
+    unsigned long elapsed = now - _lastChange;
+
+    if (elapsed <= POSITION_DELAY)
+    {
+        return false;
+    }
+
+    return detect(r);
+}
+
 void SensorModule::scan(SensorResult *r)
 {
     unsigned long now = millis();

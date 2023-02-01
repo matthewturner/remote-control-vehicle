@@ -19,6 +19,7 @@ public:
     virtual bool detect(SensorResult *r) = 0;
     virtual bool signalled() = 0;
     virtual void scan(SensorResult *r) = 0;
+    virtual bool request(SensorResult *r, byte direction) = 0;
 };
 
 #endif
