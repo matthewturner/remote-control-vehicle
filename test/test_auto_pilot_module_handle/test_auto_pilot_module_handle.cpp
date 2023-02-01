@@ -24,7 +24,6 @@ void setUp(void)
 
     result.Age = 10;
     result.Front = 10;
-    result.Back = 10;
     result.Left = 10;
     result.Right = 10;
 }
