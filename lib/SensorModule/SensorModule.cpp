@@ -28,30 +28,37 @@ void SensorModule::scan(SensorResult *r)
     if (elapsed > POSITION_DELAY)
     {
         detect(r);
-        _desiredStage++;
-        if (_desiredStage > 3)
-        {
-            _desiredStage = 0;
-        }
-        int desiredPosition = _stages[_desiredStage];
+        _desiredPosition++;
+        _desiredPosition %= 4;
+        int desiredPosition = _positions[_desiredPosition];
         _servo.write(desiredPosition);
         _lastChange = now;
     }
 }
 
-byte SensorModule::detect(SensorResult *r)
+bool SensorModule::detect(SensorResult *r)
 {
     _sensor.rangingTest(&_measure, false);
 
-    if (_measure.RangeStatus != 4)
+    if (_measure.RangeStatus == 4)
     {
-        Serial.println(_measure.RangeMilliMeter);
-        r->Right = _measure.RangeMilliMeter;
-    }
-    else
-    {
-        Serial.println(F(" out of range "));
+        // out of range
+        return false;
     }
 
-    return 6;
+    Serial.println(_measure.RangeMilliMeter);
+    switch(_desiredPosition)
+    {
+        case 0:
+            r->Left = _measure.RangeMilliMeter;
+            break;
+        case 2:
+            r->Right = _measure.RangeMilliMeter;
+            break;
+        default:
+            r->Front = _measure.RangeMilliMeter;
+            break;
+    }
+
+    return true;
 }

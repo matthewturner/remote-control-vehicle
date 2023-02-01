@@ -16,7 +16,7 @@ class ISensorModule
 public:
     ISensorModule();
     virtual void begin() = 0;
-    virtual byte detect(SensorResult *r) = 0;
+    virtual bool detect(SensorResult *r) = 0;
     virtual bool signalled() = 0;
     virtual void scan(SensorResult *r) = 0;
 };
