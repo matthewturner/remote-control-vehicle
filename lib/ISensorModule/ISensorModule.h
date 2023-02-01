@@ -18,7 +18,7 @@ public:
     virtual void begin() = 0;
     virtual byte detect(SensorResult *r) = 0;
     virtual bool signalled() = 0;
-    virtual void handle(SensorResult *r) = 0;
+    virtual void scan(SensorResult *r) = 0;
 };
 
 #endif

@@ -35,7 +35,7 @@ void loop()
   mgr.loopIteration();
 
   SensorResult sensorResult;
-  sensorModule->handle(&sensorResult);
+  sensorModule->scan(&sensorResult);
 }
 
 bool stop()

@@ -20,19 +20,12 @@ bool SensorModule::signalled()
     return false;
 }
 
-const short POSITION_DELAY = 1000;
-const short MESSAGE_DELAY = 300;
-
-void SensorModule::handle(SensorResult *r)
+void SensorModule::scan(SensorResult *r)
 {
-    int desiredPosition = _stages[_desiredStage];
-    int currentPosition = _servo.read();
-    Serial.print("Desired: ");
-    Serial.println(desiredPosition);
-    Serial.print("Current: ");
-    Serial.println(currentPosition);
+    unsigned long now = millis();
+    unsigned long elapsed = now - _lastChange;
 
-    if (currentPosition == desiredPosition)
+    if (elapsed > POSITION_DELAY)
     {
         detect(r);
         _desiredStage++;
@@ -40,6 +33,9 @@ void SensorModule::handle(SensorResult *r)
         {
             _desiredStage = 0;
         }
+        int desiredPosition = _stages[_desiredStage];
+        _servo.write(desiredPosition);
+        _lastChange = now;
     }
 }
 
