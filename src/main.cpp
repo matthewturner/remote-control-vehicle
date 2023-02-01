@@ -6,6 +6,8 @@ void setup()
 
   bumperModule.begin();
 
+  sensorModule->begin();
+
   pinMode(RECEIVE_PIN, INPUT);
   pinMode(TRANSMIT_PIN, OUTPUT);
   bluetoothSerial.begin(9600);
@@ -33,7 +35,7 @@ void loop()
   mgr.loopIteration();
 
   SensorResult sensorResult;
-  sensorModule->detect(&sensorResult);
+  sensorModule->handle(&sensorResult);
 }
 
 bool stop()
