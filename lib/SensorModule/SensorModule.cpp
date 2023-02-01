@@ -19,13 +19,78 @@ bool SensorModule::signalled()
     return false;
 }
 
+const short POSITION_DELAY = 200;
+const short MESSAGE_DELAY = 300;
+
 byte SensorModule::detect(SensorResult *r)
 {
-    r->Front = _sensorBuffer[0];
-    r->Left = _sensorBuffer[1];
-    r->Right = _sensorBuffer[2];
-    r->Back = _sensorBuffer[3];
-    r->Age = _sensorBuffer[4];
+    Serial.println(F("Facing right (0)"));
+    Serial.print(F("Right Distance in mm: "));
+    _servo.write(0);
+    delay(POSITION_DELAY);
+    _sensor.rangingTest(&_measure, false);
+
+    if (_measure.RangeStatus != 4)
+    {
+        Serial.println(_measure.RangeMilliMeter);
+        r->Right = _measure.RangeMilliMeter;
+    }
+    else
+    {
+        Serial.println(F(" out of range "));
+    }
+    delay(MESSAGE_DELAY);
+
+    Serial.println(F("Facing forward (90)"));
+    Serial.print(F("Front Distance in mm: "));
+    _servo.write(90);
+    delay(POSITION_DELAY);
+    _sensor.rangingTest(&_measure, false);
+
+    if (_measure.RangeStatus != 4)
+    {
+        Serial.println(_measure.RangeMilliMeter);
+        r->Front = _measure.RangeMilliMeter;
+    }
+    else
+    {
+        Serial.println(F(" out of range "));
+    }
+    delay(MESSAGE_DELAY);
+
+    Serial.println(F("Facing left (180)"));
+    Serial.print(F("Left Distance in mm: "));
+    _servo.write(180);
+    delay(POSITION_DELAY);
+    _sensor.rangingTest(&_measure, false);
+
+    if (_measure.RangeStatus != 4)
+    {
+        Serial.println(_measure.RangeMilliMeter);
+        r->Left = _measure.RangeMilliMeter;
+    }
+    else
+    {
+        Serial.println(F(" out of range "));
+    }
+    delay(MESSAGE_DELAY);
+
+    Serial.println(F("Facing forward (90)"));
+    Serial.print(F("Front Distance in mm: "));
+    _servo.write(90);
+    delay(POSITION_DELAY);
+    _sensor.rangingTest(&_measure, false);
+
+    if (_measure.RangeStatus != 4)
+    {
+        Serial.println(_measure.RangeMilliMeter);
+        r->Front = _measure.RangeMilliMeter;
+    }
+    else
+    {
+        Serial.println(F(" out of range "));
+    }
+    delay(MESSAGE_DELAY);
 
     return 6;
 }

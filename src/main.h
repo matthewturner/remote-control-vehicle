@@ -10,7 +10,6 @@
 #include <Eventually.h>
 #include <EventuallyCommand.h>
 #include <SoftwareSerial.h>
-#include <Wire.h>
 
 // #define BOAT
 
@@ -52,8 +51,8 @@ AutoPilotModule autoPilotModule(&Serial, drivingModule, sensorModule);
 #endif
 
 EvtManager mgr;
-EvtCommandListener commandListener(&bluetoothSerial, 2);
-// EvtCommandListener commandListener(&Serial, 2);
+// EvtCommandListener commandListener(&bluetoothSerial, 2);
+EvtCommandListener commandListener(&Serial, 2);
 
 bool stop();
 bool forward();

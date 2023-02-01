@@ -18,11 +18,10 @@ public:
 private:
     byte _i2cAddress;
     byte _servoControlPin;
-    byte _sensorBuffer[6];
     Stream *_stream;
     Servo _servo;
     Adafruit_VL53L0X _sensor = Adafruit_VL53L0X();
-    // VL53L0X_RangingMeasurementData_t _measure;
+    VL53L0X_RangingMeasurementData_t _measure;
 };
 
 #endif

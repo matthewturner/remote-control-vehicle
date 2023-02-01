@@ -149,7 +149,6 @@ void AutoPilotModule::updateResult(SensorResult *result)
     _sensorResult.Left = result->Left;
     _sensorResult.Right = result->Right;
     _sensorResult.Front = result->Front;
-    _sensorResult.Back = result->Back;
     _resultAge = millis();
 }
 

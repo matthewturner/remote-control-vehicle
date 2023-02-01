@@ -15,10 +15,10 @@ void setup()
   commandListener.when("reverse", (EvtCommandAction)reverse);
   commandListener.when("left", (EvtCommandAction)left);
   commandListener.when("right", (EvtCommandAction)right);
-  commandListener.when("bear-left-forward", (EvtCommandAction)bearLeftForward);
-  commandListener.when("bear-right-forward", (EvtCommandAction)bearRightForward);
-  commandListener.when("bear-left-reverse", (EvtCommandAction)bearLeftReverse);
-  commandListener.when("bear-right-reverse", (EvtCommandAction)bearRightReverse);
+  commandListener.when("bear-lf", (EvtCommandAction)bearLeftForward);
+  commandListener.when("bear-rf", (EvtCommandAction)bearRightForward);
+  commandListener.when("bear-lr", (EvtCommandAction)bearLeftReverse);
+  commandListener.when("bear-rr", (EvtCommandAction)bearRightReverse);
   commandListener.when("set-speed", (EvtCommandAction)setSpeed);
   mgr.addListener(&commandListener);
 
@@ -31,6 +31,9 @@ void setup()
 void loop()
 {
   mgr.loopIteration();
+
+  SensorResult sensorResult;
+  sensorModule->detect(&sensorResult);
 }
 
 bool stop()

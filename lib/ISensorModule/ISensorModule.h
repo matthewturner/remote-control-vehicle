@@ -5,11 +5,10 @@
 
 typedef struct sensorResult
 {
-    byte Front;
-    byte Back;
-    byte Left;
-    byte Right;
-    byte Age;
+    uint16_t Front;
+    uint16_t Left;
+    uint16_t Right;
+    uint16_t Age;
 } SensorResult;
 
 class ISensorModule
