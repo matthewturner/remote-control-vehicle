@@ -32,7 +32,6 @@ public:
     bool isTrapped();
     bool isOneSideClear();
     bool updatePositionIfRequired();
-    unsigned long resultAge();
     unsigned int maxSensorResultAge();
     void updateResult(SensorResult *result);
     SensorResult *sensorResult();

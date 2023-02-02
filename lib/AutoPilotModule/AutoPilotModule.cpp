@@ -133,11 +133,6 @@ void AutoPilotModule::bearLeft()
     _drivingModule->bearLeft(DIR_FORWARD);
 }
 
-unsigned long AutoPilotModule::resultAge()
-{
-    return 0;
-}
-
 unsigned int AutoPilotModule::maxSensorResultAge()
 {
     return _maxSensorResultAge;
