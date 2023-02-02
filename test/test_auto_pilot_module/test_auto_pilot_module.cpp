@@ -125,8 +125,8 @@ void test_result_not_requested(void)
     target->updatePositionIfRequired();
 
     TEST_ASSERT_EQUAL(10, target->sensorResult()->Front.Distance);
+    TEST_ASSERT_EQUAL(10, target->sensorResult()->Front.Timestamp);
     Verify(Method(drivingModuleMock, stop)).Never();
-    // TEST_ASSERT_EQUAL(10, target->resultAge());
 }
 
 void test_result_requested_if_signalled(void)
@@ -147,14 +147,14 @@ void test_result_requested_if_signalled(void)
     target->updateResult(&result);
     target->updatePositionIfRequired();
 
-    // TEST_ASSERT_EQUAL(0, target->sensorResult()->Front.Timestamp);
-    // TEST_ASSERT_EQUAL(6, target->sensorResult()->Front.Distance);
+    TEST_ASSERT_EQUAL(0, target->sensorResult()->Front.Timestamp);
+    TEST_ASSERT_EQUAL(6, target->sensorResult()->Front.Distance);
     Verify(Method(drivingModuleMock, stop)).Once();
 }
 
 void test_result_requested_if_result_too_old(void)
 {
-    When(Method(ArduinoFake(), millis)).Return(10, 4000, 4001);
+    When(Method(ArduinoFake(), millis)).Return(4000, 4001, 4001);
 
     When(Method(sensorModuleMock, signalled)).Return(false);
     When(Method(sensorModuleMock, detect))
@@ -170,8 +170,8 @@ void test_result_requested_if_result_too_old(void)
     target->updateResult(&result);
     target->updatePositionIfRequired();
 
-    // TEST_ASSERT_EQUAL(4001, target->resultAge());
-    // TEST_ASSERT_EQUAL(6, target->sensorResult()->Front.Distance);
+    TEST_ASSERT_EQUAL(20, target->sensorResult()->Front.Timestamp);
+    TEST_ASSERT_EQUAL(6, target->sensorResult()->Front.Distance);
     Verify(Method(drivingModuleMock, stop)).Once();
 }
 
