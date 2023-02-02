@@ -22,10 +22,12 @@ void setUp(void)
     target->enable();
     When(Method(sensorModuleMock, signalled)).Return(false);
 
-    result.Age = 10;
-    result.Front = 10;
-    result.Left = 10;
-    result.Right = 10;
+    result.Front.Distance = 10;
+    result.Front.Timestamp = 10;
+    result.Left.Distance = 10;
+    result.Left.Timestamp = 10;
+    result.Right.Distance = 10;
+    result.Right.Timestamp = 10;
 }
 
 void tearDown(void)
@@ -42,8 +44,8 @@ void test_stops_when_trapped(void)
 
     When(Method(drivingModuleMock, stop)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_COLLISION_THRESHOLD;
-    result.Right = SIDE_SENSOR_COLLISION_THRESHOLD;
+    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
     target->updateResult(&result);
 
     target->handle();
@@ -57,9 +59,9 @@ void test_turns_right_when_no_space_ahead(void)
 
     When(Method(drivingModuleMock, turnRight)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
-    result.Right = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD;
+    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
     target->updateResult(&result);
 
     target->handle();
@@ -74,9 +76,9 @@ void test_turns_left_when_no_space_ahead(void)
 
     When(Method(drivingModuleMock, turnLeft)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
-    result.Right = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD;
+    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
     target->updateResult(&result);
 
     target->handle();
@@ -91,9 +93,9 @@ void test_turns_right_preferentially_when_no_space_ahead(void)
 
     When(Method(drivingModuleMock, turnRight)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
-    result.Right = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD;
+    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
     target->updateResult(&result);
 
     target->handle();
@@ -108,9 +110,9 @@ void test_turns_right_when_space_ahead_and_no_space_on_left(void)
 
     When(Method(drivingModuleMock, turnRight)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_COLLISION_THRESHOLD - 1;
-    result.Right = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD - 1;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
     target->updateResult(&result);
 
     target->handle();
@@ -125,9 +127,9 @@ void test_turns_left_when_space_ahead_and_no_space_on_right(void)
 
     When(Method(drivingModuleMock, turnLeft)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
-    result.Right = SIDE_SENSOR_COLLISION_THRESHOLD - 1;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD - 1;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
     target->updateResult(&result);
 
     target->handle();
@@ -142,11 +144,11 @@ void test_bear_right_when_space_ahead_warning_on_left(void)
 
     When(Method(drivingModuleMock, bearRight)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD - 1;
-    result.Right = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Left.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD - 1;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
     target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Left;
+    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Left.Distance;
 
     target->handle();
 
@@ -160,11 +162,11 @@ void test_bear_left_when_space_ahead_warning_on_right(void)
 
     When(Method(drivingModuleMock, bearLeft)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
-    result.Right = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD - 1;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Left.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD - 1;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
     target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Right;
+    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Right.Distance;
 
     target->handle();
 
@@ -178,11 +180,11 @@ void test_move_forward_when_centered(void)
 
     When(Method(drivingModuleMock, moveForward)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
-    result.Right = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Left.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
     target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD * result.Front;
+    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD * result.Front.Distance;
 
     target->handle();
 
@@ -196,11 +198,11 @@ void test_move_forward_when_one_side_clear(void)
 
     When(Method(drivingModuleMock, moveForward)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_CLEAR_THRESHOLD + 2;
-    result.Right = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD + 2;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
     target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD * result.Front;
+    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD * result.Front.Distance;
 
     target->handle();
 
@@ -214,11 +216,11 @@ void test_bear_right_when_space_ahead_more_space_on_right(void)
 
     When(Method(drivingModuleMock, bearRight)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
-    result.Right = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
+    result.Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
     target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Left;
+    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Left.Distance;
 
     target->handle();
 
@@ -232,11 +234,11 @@ void test_bear_left_when_space_ahead_more_space_on_left(void)
 
     When(Method(drivingModuleMock, bearLeft)).AlwaysReturn();
 
-    result.Left = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
-    result.Right = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
-    result.Front = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+    result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
+    result.Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
+    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
     target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Right;
+    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Right.Distance;
 
     target->handle();
 
