@@ -3,12 +3,17 @@
 
 #include <Arduino.h>
 
+typedef struct sensorResultDetail
+{
+    uint16_t Distance;
+    unsigned long Timestamp;
+} SensorResultDetail;
+
 typedef struct sensorResult
 {
-    uint16_t Front;
-    uint16_t Left;
-    uint16_t Right;
-    uint16_t Age;
+    SensorResultDetail Front;
+    SensorResultDetail Left;
+    SensorResultDetail Right;
 } SensorResult;
 
 class ISensorModule

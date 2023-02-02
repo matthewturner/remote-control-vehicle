@@ -24,10 +24,10 @@ bool SensorModule::request(SensorResult *r, byte direction)
 {
     unsigned long now = millis();
 
-    if (direction != _desiredPosition)
+    if (direction != _desiredDirection)
     {
-        _desiredPosition = direction;        
-        int desiredPosition = _positions[_desiredPosition];
+        _desiredDirection = direction;        
+        int desiredPosition = _positions[_desiredDirection];
         _servo.write(desiredPosition);
         _lastChange = now;
         return false;
@@ -51,9 +51,9 @@ void SensorModule::scan(SensorResult *r)
     if (elapsed > POSITION_DELAY)
     {
         detect(r);
-        _desiredPosition++;
-        _desiredPosition %= 4;
-        int desiredPosition = _positions[_desiredPosition];
+        _desiredDirection++;
+        _desiredDirection %= 4;
+        int desiredPosition = _positions[_desiredDirection];
         _servo.write(desiredPosition);
         _lastChange = now;
     }
@@ -70,16 +70,19 @@ bool SensorModule::detect(SensorResult *r)
     }
 
     Serial.println(_measure.RangeMilliMeter);
-    switch(_desiredPosition)
+    switch(_desiredDirection)
     {
         case 0:
-            r->Left = _measure.RangeMilliMeter;
+            r->Left.Distance = _measure.RangeMilliMeter;
+            r->Left.Timestamp = millis();
             break;
         case 2:
-            r->Right = _measure.RangeMilliMeter;
+            r->Right.Distance = _measure.RangeMilliMeter;
+            r->Right.Timestamp = millis();
             break;
         default:
-            r->Front = _measure.RangeMilliMeter;
+            r->Front.Distance = _measure.RangeMilliMeter;
+            r->Front.Timestamp = millis();
             break;
     }
 

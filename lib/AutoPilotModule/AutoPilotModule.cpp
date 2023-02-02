@@ -8,7 +8,7 @@ AutoPilotModule::AutoPilotModule(Stream *stream,
     _stream = stream;
     _drivingModule = drivingModule;
     _sensorModule = sensorModule;
-    _resultAge = MAX_SENSOR_RESULT_AGE + 10;
+    // _resultAge = MAX_SENSOR_RESULT_AGE + 10;
     _maxSensorResultAge = MAX_SENSOR_RESULT_AGE;
 }
 
@@ -44,12 +44,12 @@ void AutoPilotModule::handle()
 
     if (!spaceAhead())
     {
-        if (_sensorResult.Right > _sensorResult.Left)
+        if (_sensorResult.Right.Distance > _sensorResult.Left.Distance)
         {
             turnRight();
             return;
         }
-        if (_sensorResult.Left > _sensorResult.Right)
+        if (_sensorResult.Left.Distance > _sensorResult.Right.Distance)
         {
             turnLeft();
             return;
@@ -59,23 +59,23 @@ void AutoPilotModule::handle()
         return;
     }
 
-    if (_sensorResult.Left < SIDE_SENSOR_COLLISION_THRESHOLD)
+    if (_sensorResult.Left.Distance < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
         turnRight();
         return;
     }
-    if (_sensorResult.Right < SIDE_SENSOR_COLLISION_THRESHOLD)
+    if (_sensorResult.Right.Distance < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
         turnLeft();
         return;
     }
 
-    if (_sensorResult.Left < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
+    if (_sensorResult.Left.Distance < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
         bearRight();
         return;
     }
-    if (_sensorResult.Right < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
+    if (_sensorResult.Right.Distance < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
         bearLeft();
         return;
@@ -93,7 +93,7 @@ void AutoPilotModule::handle()
         return;
     }
 
-    if (_sensorResult.Left < _sensorResult.Right)
+    if (_sensorResult.Left.Distance < _sensorResult.Right.Distance)
     {
         bearRight();
         return;
@@ -105,7 +105,7 @@ void AutoPilotModule::handle()
 
 void AutoPilotModule::moveForward()
 {
-    _maxSensorResultAge = _sensorResult.Front * MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD;
+    _maxSensorResultAge = _sensorResult.Front.Distance * MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD;
     _drivingModule->moveForward();
 }
 
@@ -123,19 +123,19 @@ void AutoPilotModule::turnLeft()
 
 void AutoPilotModule::bearRight()
 {
-    _maxSensorResultAge = _sensorResult.Left * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
+    _maxSensorResultAge = _sensorResult.Left.Distance * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
     _drivingModule->bearRight(DIR_FORWARD);
 }
 
 void AutoPilotModule::bearLeft()
 {
-    _maxSensorResultAge = _sensorResult.Right * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
+    _maxSensorResultAge = _sensorResult.Right.Distance * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
     _drivingModule->bearLeft(DIR_FORWARD);
 }
 
 unsigned long AutoPilotModule::resultAge()
 {
-    return _resultAge;
+    return 0;
 }
 
 unsigned int AutoPilotModule::maxSensorResultAge()
@@ -145,11 +145,10 @@ unsigned int AutoPilotModule::maxSensorResultAge()
 
 void AutoPilotModule::updateResult(SensorResult *result)
 {
-    _sensorResult.Age = result->Age;
-    _sensorResult.Left = result->Left;
-    _sensorResult.Right = result->Right;
-    _sensorResult.Front = result->Front;
-    _resultAge = millis();
+    _sensorResult.Left.Distance = result->Left.Distance;
+    _sensorResult.Right.Distance = result->Right.Distance;
+    _sensorResult.Front.Distance = result->Front.Distance;
+    _sensorResult.Front.Timestamp = result->Front.Timestamp;
 }
 
 SensorResult *AutoPilotModule::sensorResult()
@@ -159,7 +158,7 @@ SensorResult *AutoPilotModule::sensorResult()
 
 bool AutoPilotModule::updatePositionIfRequired()
 {
-    unsigned long sensorResultAge = millis() - _resultAge - _sensorResult.Age;
+    unsigned long sensorResultAge = millis() - _sensorResult.Front.Timestamp;
 
     if (_sensorModule->signalled() || (sensorResultAge > _maxSensorResultAge))
     {
@@ -167,18 +166,13 @@ bool AutoPilotModule::updatePositionIfRequired()
 
         _sensorModule->detect(&_sensorResult);
 
-        _resultAge = millis();
-
         debugPrintln("Sensor Module Result:");
         debugPrint("   ");
-        debugPrintln(_sensorResult.Front);
-        debugPrint(_sensorResult.Left);
+        debugPrintln(_sensorResult.Front.Distance);
+        debugPrint(_sensorResult.Left.Distance);
         debugPrint("       ");
-        debugPrintln(_sensorResult.Right);
-        debugPrint("   ");
-        debugPrintln(_sensorResult.Back);
+        debugPrintln(_sensorResult.Right.Distance);
         debugPrint("   ~");
-        debugPrintln(_sensorResult.Age);
 
         return true;
     }
@@ -188,11 +182,11 @@ bool AutoPilotModule::updatePositionIfRequired()
 
 bool AutoPilotModule::isCentered()
 {
-    if ((_sensorResult.Left - CENTER_TOLERANCE) < _sensorResult.Right && _sensorResult.Right < (_sensorResult.Left + CENTER_TOLERANCE))
+    if ((_sensorResult.Left.Distance - CENTER_TOLERANCE) < _sensorResult.Right.Distance && _sensorResult.Right.Distance < (_sensorResult.Left.Distance + CENTER_TOLERANCE))
     {
         return true;
     }
-    if ((_sensorResult.Right - CENTER_TOLERANCE) < _sensorResult.Left && _sensorResult.Left < (_sensorResult.Right + CENTER_TOLERANCE))
+    if ((_sensorResult.Right.Distance - CENTER_TOLERANCE) < _sensorResult.Left.Distance && _sensorResult.Left.Distance < (_sensorResult.Right.Distance + CENTER_TOLERANCE))
     {
         return true;
     }
@@ -201,11 +195,11 @@ bool AutoPilotModule::isCentered()
 
 bool AutoPilotModule::isOneSideClear()
 {
-    if (_sensorResult.Left > SIDE_SENSOR_CLEAR_THRESHOLD)
+    if (_sensorResult.Left.Distance > SIDE_SENSOR_CLEAR_THRESHOLD)
     {
         return true;
     }
-    if (_sensorResult.Right > SIDE_SENSOR_CLEAR_THRESHOLD)
+    if (_sensorResult.Right.Distance > SIDE_SENSOR_CLEAR_THRESHOLD)
     {
         return true;
     }
@@ -214,16 +208,16 @@ bool AutoPilotModule::isOneSideClear()
 
 bool AutoPilotModule::spaceAhead()
 {
-    return _sensorResult.Front > FRONT_SENSOR_COLLISION_THRESHOLD;
+    return _sensorResult.Front.Distance > FRONT_SENSOR_COLLISION_THRESHOLD;
 }
 
 bool AutoPilotModule::isTrapped()
 {
-    if (_sensorResult.Right > SIDE_SENSOR_COLLISION_THRESHOLD)
+    if (_sensorResult.Right.Distance > SIDE_SENSOR_COLLISION_THRESHOLD)
     {
         return false;
     }
-    if (_sensorResult.Left > SIDE_SENSOR_COLLISION_THRESHOLD)
+    if (_sensorResult.Left.Distance > SIDE_SENSOR_COLLISION_THRESHOLD)
     {
         return false;
     }

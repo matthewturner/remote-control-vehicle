@@ -42,7 +42,6 @@ private:
     IDrivingModule *_drivingModule;
     ISensorModule *_sensorModule;
     SensorResult _sensorResult;
-    unsigned long _resultAge;
     unsigned int _maxSensorResultAge;
     bool _enabled = false;
 

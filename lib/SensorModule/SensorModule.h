@@ -24,7 +24,7 @@ private:
     byte _servoControlPin;
     Stream *_stream;
     Servo _servo;
-    byte _desiredPosition = 0;
+    byte _desiredDirection = 0;
     byte _positions[4] = {0, 90, 180, 90};
     unsigned long _lastChange = 0;
     Adafruit_VL53L0X _sensor = Adafruit_VL53L0X();
