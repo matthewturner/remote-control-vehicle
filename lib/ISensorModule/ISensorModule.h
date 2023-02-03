@@ -3,6 +3,14 @@
 
 #include <Arduino.h>
 
+enum class Direction : byte
+{
+    NONE = 0,
+    FRONT = 1,
+    LEFT = 2,
+    RIGHT = 3
+};
+
 typedef struct sensorResultDetail
 {
     uint16_t Distance;
@@ -23,8 +31,7 @@ public:
     virtual void begin() = 0;
     virtual bool detect(SensorResult *r) = 0;
     virtual bool signalled() = 0;
-    virtual void scan(SensorResult *r) = 0;
-    virtual bool request(SensorResult *r, byte direction) = 0;
+    virtual bool request(SensorResult *r, Direction direction) = 0;
 };
 
 #endif

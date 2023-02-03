@@ -16,16 +16,15 @@ public:
     void begin() override;
     bool detect(SensorResult *r) override;
     bool signalled() override;
-    void scan(SensorResult *r) override;
-    bool request(SensorResult *r, byte direction) override;
+    bool request(SensorResult *r, Direction direction) override;
 
 private:
     byte _i2cAddress;
     byte _servoControlPin;
     Stream *_stream;
     Servo _servo;
-    byte _desiredDirection = 0;
-    byte _positions[4] = {0, 90, 180, 90};
+    Direction _desiredDirection = Direction::FRONT;
+    byte _positions[4] = {90, 90, 0, 180};
     unsigned long _lastChange = 0;
     Adafruit_VL53L0X _sensor = Adafruit_VL53L0X();
     VL53L0X_RangingMeasurementData_t _measure;

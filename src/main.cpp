@@ -30,12 +30,20 @@ void setup()
   Serial.println(F("Setup complete, continuing..."));
 }
 
+Direction direction = Direction::FRONT;
+
 void loop()
 {
   mgr.loopIteration();
 
   SensorResult sensorResult;
-  sensorModule->scan(&sensorResult);
+  if (sensorModule->request(&sensorResult, direction))
+  {
+    byte dir = (byte)direction;
+    dir++;
+    dir %= 4;
+    direction = (Direction)dir;
+  }
 }
 
 bool stop()

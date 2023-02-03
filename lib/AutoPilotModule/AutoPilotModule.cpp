@@ -162,12 +162,18 @@ bool AutoPilotModule::updatePositionIfRequired()
         _sensorModule->detect(&_sensorResult);
 
         debugPrintln("Sensor Module Result:");
-        debugPrint("   ");
-        debugPrintln(_sensorResult.Front.Distance);
+
+        debugPrint(_sensorResult.Front.Distance);
+        debugPrint("   ~ ");
+        debugPrintln(_sensorResult.Front.Timestamp);
+
         debugPrint(_sensorResult.Left.Distance);
-        debugPrint("       ");
-        debugPrintln(_sensorResult.Right.Distance);
-        debugPrint("   ~");
+        debugPrint("   ~ ");
+        debugPrintln(_sensorResult.Left.Timestamp);
+
+        debugPrint(_sensorResult.Right.Distance);
+        debugPrint("   ~ ");
+        debugPrint(_sensorResult.Right.Timestamp);
 
         return true;
     }
