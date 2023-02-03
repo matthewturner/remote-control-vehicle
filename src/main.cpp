@@ -12,16 +12,16 @@ void setup()
   pinMode(TRANSMIT_PIN, OUTPUT);
   bluetoothSerial.begin(9600);
 
-  commandListener.when("stop", (EvtCommandAction)stop);
-  commandListener.when("forward", (EvtCommandAction)forward);
-  commandListener.when("reverse", (EvtCommandAction)reverse);
-  commandListener.when("left", (EvtCommandAction)left);
-  commandListener.when("right", (EvtCommandAction)right);
-  commandListener.when("bear-lf", (EvtCommandAction)bearLeftForward);
-  commandListener.when("bear-rf", (EvtCommandAction)bearRightForward);
-  commandListener.when("bear-lr", (EvtCommandAction)bearLeftReverse);
-  commandListener.when("bear-rr", (EvtCommandAction)bearRightReverse);
-  commandListener.when("set-speed", (EvtCommandAction)setSpeed);
+  commandListener.when("stp", (EvtCommandAction)stop);
+  commandListener.when("fwd", (EvtCommandAction)forward);
+  commandListener.when("rev", (EvtCommandAction)reverse);
+  commandListener.when("lft", (EvtCommandAction)left);
+  commandListener.when("rht", (EvtCommandAction)right);
+  commandListener.when("b-lf", (EvtCommandAction)bearLeftForward);
+  commandListener.when("b-rf", (EvtCommandAction)bearRightForward);
+  commandListener.when("b-lr", (EvtCommandAction)bearLeftReverse);
+  commandListener.when("b-rr", (EvtCommandAction)bearRightReverse);
+  commandListener.when("spd", (EvtCommandAction)setSpeed);
   mgr.addListener(&commandListener);
 
   mgr.addListener(new EvtPinListener(LEFT_BUMPER_PIN, (EvtAction)handleBumperEvent));
@@ -33,8 +33,6 @@ void setup()
 void loop()
 {
   mgr.loopIteration();
-
-  detect();
 }
 
 bool stop()
@@ -45,6 +43,7 @@ bool stop()
 
 bool detect()
 {
+  Direction Sequence[] = { Direction::LEFT, Direction::FRONT, Direction::RIGHT, Direction::FRONT };
   Direction direction = Sequence[currentDirection];
 
   if (sensorModule->request(&sensorResult, direction))

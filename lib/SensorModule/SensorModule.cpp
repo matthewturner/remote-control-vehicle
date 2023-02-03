@@ -12,7 +12,7 @@ void SensorModule::begin()
 {
     _servo.attach(_servoControlPin);
     _sensor.begin(_i2cAddress);
-    _servo.write(0);
+    _servo.write(positionFrom(_desiredDirection));
 }
 
 bool SensorModule::signalled()
@@ -27,7 +27,7 @@ bool SensorModule::request(SensorResult *r, Direction direction)
     if (direction != _desiredDirection)
     {
         _desiredDirection = direction;        
-        byte desiredPosition = _positions[(byte)_desiredDirection];
+        byte desiredPosition = positionFrom(_desiredDirection);
         _servo.write(desiredPosition);
         _lastChange = now;
         return false;
@@ -41,6 +41,11 @@ bool SensorModule::request(SensorResult *r, Direction direction)
     }
 
     return detect(r);
+}
+
+byte SensorModule::positionFrom(Direction direction)
+{
+    return _positions[(byte)direction];
 }
 
 bool SensorModule::detect(SensorResult *r)

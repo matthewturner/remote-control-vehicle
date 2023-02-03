@@ -56,7 +56,6 @@ EvtManager mgr;
 // EvtCommandListener commandListener(&bluetoothSerial, 2);
 EvtCommandListener commandListener(&Serial, 2);
 
-Direction Sequence[] = { Direction::LEFT, Direction::FRONT, Direction::RIGHT, Direction::FRONT };
 byte currentDirection = 0;
 
 bool detect();

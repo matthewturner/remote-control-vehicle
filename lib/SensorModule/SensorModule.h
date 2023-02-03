@@ -20,6 +20,8 @@ public:
     bool request(SensorResult *r, Direction direction) override;
 
 private:
+    byte positionFrom(Direction direction);
+    
     byte _i2cAddress;
     byte _servoControlPin;
     Stream *_stream;
