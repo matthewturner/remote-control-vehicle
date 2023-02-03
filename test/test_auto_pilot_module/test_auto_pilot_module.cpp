@@ -18,7 +18,7 @@ void setUp(void)
     stream = ArduinoFakeMock(Stream);
     ISensorModule &sensorModule = sensorModuleMock.get();
     IDrivingModule &drivingModule = drivingModuleMock.get();
-    target = new AutoPilotModule(stream, &drivingModule, &sensorModule);
+    target = new AutoPilotModule(stream, &drivingModule, &sensorModule, &result);
 
     result.Front.Distance = 10;
     result.Front.Timestamp = 10;
@@ -124,8 +124,8 @@ void test_result_not_requested(void)
 
     target->updatePositionIfRequired();
 
-    TEST_ASSERT_EQUAL(10, target->sensorResult()->Front.Distance);
-    TEST_ASSERT_EQUAL(10, target->sensorResult()->Front.Timestamp);
+    TEST_ASSERT_EQUAL(10, result.Front.Distance);
+    TEST_ASSERT_EQUAL(10, result.Front.Timestamp);
     Verify(Method(drivingModuleMock, stop)).Never();
 }
 
@@ -147,8 +147,8 @@ void test_result_requested_if_signalled(void)
     target->updateResult(&result);
     target->updatePositionIfRequired();
 
-    TEST_ASSERT_EQUAL(0, target->sensorResult()->Front.Timestamp);
-    TEST_ASSERT_EQUAL(6, target->sensorResult()->Front.Distance);
+    TEST_ASSERT_EQUAL(0, result.Front.Timestamp);
+    TEST_ASSERT_EQUAL(6, result.Front.Distance);
     Verify(Method(drivingModuleMock, stop)).Once();
 }
 
@@ -170,8 +170,8 @@ void test_result_requested_if_result_too_old(void)
     target->updateResult(&result);
     target->updatePositionIfRequired();
 
-    TEST_ASSERT_EQUAL(20, target->sensorResult()->Front.Timestamp);
-    TEST_ASSERT_EQUAL(6, target->sensorResult()->Front.Distance);
+    TEST_ASSERT_EQUAL(20, result.Front.Timestamp);
+    TEST_ASSERT_EQUAL(6, result.Front.Distance);
     Verify(Method(drivingModuleMock, stop)).Once();
 }
 

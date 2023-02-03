@@ -50,22 +50,21 @@ bool SensorModule::detect(SensorResult *r)
     if (_measure.RangeStatus == 4)
     {
         // out of range
-        return false;
+        return true;
     }
 
-    Serial.println(_measure.RangeMilliMeter);
     switch(_desiredDirection)
     {
         case Direction::LEFT:
-            r->Left.Distance = _measure.RangeMilliMeter;
+            r->Left.Distance = _measure.RangeMilliMeter - OFFSET;
             r->Left.Timestamp = millis();
             break;
         case Direction::RIGHT:
-            r->Right.Distance = _measure.RangeMilliMeter;
+            r->Right.Distance = _measure.RangeMilliMeter - OFFSET;
             r->Right.Timestamp = millis();
             break;
         default:
-            r->Front.Distance = _measure.RangeMilliMeter;
+            r->Front.Distance = _measure.RangeMilliMeter - OFFSET;
             r->Front.Timestamp = millis();
             break;
     }

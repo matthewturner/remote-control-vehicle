@@ -8,6 +8,7 @@
 #include <Servo.h>
 
 const short POSITION_DELAY = 500;
+const short OFFSET = 50;
 
 class SensorModule : public ISensorModule
 {
@@ -24,7 +25,7 @@ private:
     Stream *_stream;
     Servo _servo;
     Direction _desiredDirection = Direction::FRONT;
-    byte _positions[4] = {90, 90, 0, 180};
+    byte _positions[4] = {90, 90, 180, 0};
     unsigned long _lastChange = 0;
     Adafruit_VL53L0X _sensor = Adafruit_VL53L0X();
     VL53L0X_RangingMeasurementData_t _measure;

@@ -18,7 +18,7 @@ void setUp(void)
     stream = ArduinoFakeMock(Stream);
     ISensorModule &sensorModule = sensorModuleMock.get();
     IDrivingModule &drivingModule = drivingModuleMock.get();
-    target = new AutoPilotModule(stream, &drivingModule, &sensorModule);
+    target = new AutoPilotModule(stream, &drivingModule, &sensorModule, &result);
     target->enable();
     When(Method(sensorModuleMock, signalled)).Return(false);
 

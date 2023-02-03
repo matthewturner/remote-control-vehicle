@@ -21,7 +21,8 @@ class AutoPilotModule
 public:
     AutoPilotModule(Stream *stream,
                     IDrivingModule *drivingModule,
-                    ISensorModule *sensorModule);
+                    ISensorModule *sensorModule,
+                    SensorResult *sensorResult);
 
     bool enabled();
     void enable();
@@ -34,13 +35,12 @@ public:
     bool updatePositionIfRequired();
     unsigned int maxSensorResultAge();
     void updateResult(SensorResult *result);
-    SensorResult *sensorResult();
 
 private:
     Stream *_stream;
     IDrivingModule *_drivingModule;
     ISensorModule *_sensorModule;
-    SensorResult _sensorResult;
+    SensorResult *_sensorResult;
     unsigned int _maxSensorResultAge;
     bool _enabled = false;
 

@@ -37,6 +37,8 @@ DrivingModule dm(MOTOR_LEFT_ENABLE_PIN, MOTOR_LEFT_DIRECTION_PIN,
                  MOTOR_RIGHT_ENABLE_PIN, MOTOR_RIGHT_DIRECTION_PIN,
                  &Serial);
 
+SensorResult sensorResult;
+
 #ifdef BOAT
 #include "RudderModule.h"
 #include "BoatDrivingModule.h"
@@ -47,13 +49,17 @@ IDrivingModule *drivingModule = &bdm;
 #else
 IDrivingModule *drivingModule = &dm;
 ISensorModule *sensorModule = &sm;
-AutoPilotModule autoPilotModule(&Serial, drivingModule, sensorModule);
+AutoPilotModule autoPilotModule(&Serial, drivingModule, sensorModule, &sensorResult);
 #endif
 
 EvtManager mgr;
 // EvtCommandListener commandListener(&bluetoothSerial, 2);
 EvtCommandListener commandListener(&Serial, 2);
 
+Direction Sequence[] = { Direction::LEFT, Direction::FRONT, Direction::RIGHT, Direction::FRONT };
+byte currentDirection = 0;
+
+bool detect();
 bool stop();
 bool forward();
 bool reverse();

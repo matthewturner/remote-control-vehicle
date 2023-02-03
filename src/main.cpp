@@ -30,25 +30,43 @@ void setup()
   Serial.println(F("Setup complete, continuing..."));
 }
 
-Direction direction = Direction::FRONT;
-
 void loop()
 {
   mgr.loopIteration();
 
-  SensorResult sensorResult;
-  if (sensorModule->request(&sensorResult, direction))
-  {
-    byte dir = (byte)direction;
-    dir++;
-    dir %= 4;
-    direction = (Direction)dir;
-  }
+  detect();
 }
 
 bool stop()
 {
   drivingModule->stop();
+  return true;
+}
+
+bool detect()
+{
+  Direction direction = Sequence[currentDirection];
+
+  if (sensorModule->request(&sensorResult, direction))
+  {
+    switch (direction)
+    {
+    case Direction::LEFT:
+      Serial.print(F("LEFT  :"));
+      Serial.println(sensorResult.Left.Distance);
+      break;
+    case Direction::RIGHT:
+      Serial.print(F("RIGHT :"));
+      Serial.println(sensorResult.Right.Distance);
+      break;
+    default:
+      Serial.print(F("FRONT :"));
+      Serial.println(sensorResult.Front.Distance);
+      break;
+    }
+    currentDirection++;
+    currentDirection %= 4;
+  }
   return true;
 }
 
