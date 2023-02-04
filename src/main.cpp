@@ -22,6 +22,8 @@ void setup()
   commandListener.when("b-lr", (EvtCommandAction)bearLeftReverse);
   commandListener.when("b-rr", (EvtCommandAction)bearRightReverse);
   commandListener.when("spd", (EvtCommandAction)setSpeed);
+  // commandListener.when("apon", (EvtCommandAction)enableAutoPilot);
+  // commandListener.when("apof", (EvtCommandAction)disableAutoPilot);
   mgr.addListener(&commandListener);
 
   mgr.addListener(new EvtPinListener(LEFT_BUMPER_PIN, (EvtAction)handleBumperEvent));
@@ -33,6 +35,41 @@ void setup()
 void loop()
 {
   mgr.loopIteration();
+
+  selfDriveIfEnabled();
+}
+
+void selfDriveIfEnabled()
+{
+  // autoPilotModule.handle();
+  if (sensorModule->scan(&sensorResult))
+  {
+    Serial.println(F("Sensor Module Result:"));
+
+    Serial.print(sensorResult.Front.Distance);
+    Serial.print(F("   ~ "));
+    Serial.println(sensorResult.Front.Timestamp);
+
+    Serial.print(sensorResult.Left.Distance);
+    Serial.print(F("   ~ "));
+    Serial.println(sensorResult.Left.Timestamp);
+
+    Serial.print(sensorResult.Right.Distance);
+    Serial.print(F("   ~ "));
+    Serial.println(sensorResult.Right.Timestamp);
+  }
+}
+
+bool enableAutoPilot()
+{
+  autoPilotModule.enable();
+  return true;
+}
+
+bool disableAutoPilot()
+{
+  autoPilotModule.disable();
+  return true;
 }
 
 bool stop()
@@ -40,35 +77,7 @@ bool stop()
   drivingModule->stop();
   return true;
 }
-
-bool detect()
-{
-  Direction Sequence[] = { Direction::LEFT, Direction::FRONT, Direction::RIGHT, Direction::FRONT };
-  Direction direction = Sequence[currentDirection];
-
-  if (sensorModule->request(&sensorResult, direction))
-  {
-    switch (direction)
-    {
-    case Direction::LEFT:
-      Serial.print(F("LEFT  :"));
-      Serial.println(sensorResult.Left.Distance);
-      break;
-    case Direction::RIGHT:
-      Serial.print(F("RIGHT :"));
-      Serial.println(sensorResult.Right.Distance);
-      break;
-    default:
-      Serial.print(F("FRONT :"));
-      Serial.println(sensorResult.Front.Distance);
-      break;
-    }
-    currentDirection++;
-    currentDirection %= 4;
-  }
-  return true;
-}
-
+  
 bool handleBumperEvent()
 {
   if (bumperModule.hasCollided(5) != Sides::NONE)

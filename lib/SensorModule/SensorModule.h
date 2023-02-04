@@ -9,6 +9,7 @@
 
 const short POSITION_DELAY = 500;
 const short OFFSET = 50;
+const byte SEQUENCE_COUNT = 4;
 
 class SensorModule : public ISensorModule
 {
@@ -17,17 +18,21 @@ public:
     void begin() override;
     bool detect(SensorResult *r) override;
     bool signalled() override;
+    bool scan(SensorResult *r) override;
     bool request(SensorResult *r, Direction direction) override;
 
 private:
     byte positionFrom(Direction direction);
+    byte sequenceIndexFrom(Direction direction);
     
     byte _i2cAddress;
     byte _servoControlPin;
     Stream *_stream;
     Servo _servo;
-    Direction _desiredDirection = Direction::FRONT;
-    byte _positions[4] = {90, 90, 180, 0};
+    byte _desiredSequenceIndex = 1;
+    byte _currentSequenceIndex = 0;
+    Direction _sequence[SEQUENCE_COUNT] = { Direction::LEFT, Direction::FRONT, Direction::RIGHT, Direction::FRONT };
+    byte _positions[SEQUENCE_COUNT] = {90, 90, 180, 0};
     unsigned long _lastChange = 0;
     Adafruit_VL53L0X _sensor = Adafruit_VL53L0X();
     VL53L0X_RangingMeasurementData_t _measure;

@@ -37,8 +37,6 @@ DrivingModule dm(MOTOR_LEFT_ENABLE_PIN, MOTOR_LEFT_DIRECTION_PIN,
                  MOTOR_RIGHT_ENABLE_PIN, MOTOR_RIGHT_DIRECTION_PIN,
                  &Serial);
 
-SensorResult sensorResult;
-
 #ifdef BOAT
 #include "RudderModule.h"
 #include "BoatDrivingModule.h"
@@ -47,6 +45,7 @@ RudderModule rm(rudderPin, &Serial);
 BoatDrivingModule bdm(&dm, &rm);
 IDrivingModule *drivingModule = &bdm;
 #else
+SensorResult sensorResult;
 IDrivingModule *drivingModule = &dm;
 ISensorModule *sensorModule = &sm;
 AutoPilotModule autoPilotModule(&Serial, drivingModule, sensorModule, &sensorResult);
@@ -55,8 +54,6 @@ AutoPilotModule autoPilotModule(&Serial, drivingModule, sensorModule, &sensorRes
 EvtManager mgr;
 // EvtCommandListener commandListener(&bluetoothSerial, 2);
 EvtCommandListener commandListener(&Serial, 2);
-
-byte currentDirection = 0;
 
 bool detect();
 bool stop();
@@ -69,5 +66,9 @@ bool bearRightForward();
 bool bearLeftReverse();
 bool bearRightReverse();
 bool setSpeed(EvtListener *, EvtContext *, long data);
+
+void selfDriveIfEnabled();
+bool enableAutoPilot();
+bool disableAutoPilot();
 
 bool handleBumperEvent();

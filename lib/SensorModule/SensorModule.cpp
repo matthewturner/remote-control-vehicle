@@ -12,7 +12,7 @@ void SensorModule::begin()
 {
     _servo.attach(_servoControlPin);
     _sensor.begin(_i2cAddress);
-    _servo.write(positionFrom(_desiredDirection));
+    _servo.write(positionFrom(_sequence[_desiredSequenceIndex]));
 }
 
 bool SensorModule::signalled()
@@ -20,14 +20,31 @@ bool SensorModule::signalled()
     return false;
 }
 
+bool SensorModule::scan(SensorResult *r)
+{
+  Direction direction = _sequence[_desiredSequenceIndex];
+
+  if (request(r, direction))
+  {
+    _desiredSequenceIndex++;
+    _desiredSequenceIndex %= 4;
+
+    return true;
+  }
+
+  return false;
+}
+
 bool SensorModule::request(SensorResult *r, Direction direction)
 {
     unsigned long now = millis();
 
-    if (direction != _desiredDirection)
+    Direction currentDirection = _sequence[_currentSequenceIndex];
+
+    if (direction != currentDirection)
     {
-        _desiredDirection = direction;        
-        byte desiredPosition = positionFrom(_desiredDirection);
+        _currentSequenceIndex = sequenceIndexFrom(direction);        
+        byte desiredPosition = positionFrom(direction);
         _servo.write(desiredPosition);
         _lastChange = now;
         return false;
@@ -41,6 +58,18 @@ bool SensorModule::request(SensorResult *r, Direction direction)
     }
 
     return detect(r);
+}
+
+byte SensorModule::sequenceIndexFrom(Direction direction)
+{
+    for (byte i = 0; i < SEQUENCE_COUNT; i++)
+    {
+        if (_sequence[i] == direction)
+        {
+            return i;
+        }
+    }
+    return 0;
 }
 
 byte SensorModule::positionFrom(Direction direction)
@@ -58,7 +87,9 @@ bool SensorModule::detect(SensorResult *r)
         return true;
     }
 
-    switch(_desiredDirection)
+    Direction desiredDirection = _sequence[_desiredSequenceIndex];
+
+    switch(desiredDirection)
     {
         case Direction::LEFT:
             r->Left.Distance = _measure.RangeMilliMeter - OFFSET;
