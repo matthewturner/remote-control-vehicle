@@ -33,7 +33,6 @@ public:
     bool isTrapped();
     bool isOneSideClear();
     unsigned short maxSensorResultAge();
-    void updateResult(SensorResult *result);
 
 private:
     Stream *_stream;
