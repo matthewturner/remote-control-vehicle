@@ -141,10 +141,12 @@ unsigned int AutoPilotModule::maxSensorResultAge()
 
 void AutoPilotModule::updateResult(SensorResult *result)
 {
-    _sensorResult->Front.Timestamp = result->Front.Timestamp;
     _sensorResult->Front.Distance = result->Front.Distance;
+    _sensorResult->Front.Timestamp = result->Front.Timestamp;
     _sensorResult->Left.Distance = result->Left.Distance;
+    _sensorResult->Left.Timestamp = result->Left.Timestamp;
     _sensorResult->Right.Distance = result->Right.Distance;
+    _sensorResult->Right.Timestamp = result->Right.Timestamp;
 }
 
 bool AutoPilotModule::updatePositionIfRequired()
