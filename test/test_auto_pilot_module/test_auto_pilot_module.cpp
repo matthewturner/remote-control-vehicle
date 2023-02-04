@@ -65,8 +65,6 @@ void test_is_trapped(void)
 {
     When(Method(ArduinoFake(), millis)).Return(1);
 
-    target->updateResult(&result);
-
     TEST_ASSERT_TRUE(target->isTrapped());
 }
 
@@ -75,8 +73,6 @@ void test_is_not_trapped_on_right(void)
     When(Method(ArduinoFake(), millis)).Return(1);
 
     result.Right.Distance = 11;
-
-    target->updateResult(&result);
 
     TEST_ASSERT_FALSE(target->isTrapped());
 }
@@ -87,8 +83,6 @@ void test_is_not_trapped_on_left(void)
 
     result.Left.Distance = 11;
 
-    target->updateResult(&result);
-
     TEST_ASSERT_FALSE(target->isTrapped());
 }
 
@@ -98,16 +92,12 @@ void test_space_ahead(void)
 
     result.Front.Distance = 11;
 
-    target->updateResult(&result);
-
     TEST_ASSERT_TRUE(target->spaceAhead());
 }
 
 void test_no_space_ahead(void)
 {
     When(Method(ArduinoFake(), millis)).Return(1);
-
-    target->updateResult(&result);
 
     TEST_ASSERT_FALSE(target->spaceAhead());
 }
@@ -118,7 +108,6 @@ void test_neither_side_clear(void)
 
     result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD;
     result.Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD;
-    target->updateResult(&result);
 
     TEST_ASSERT_FALSE(target->isOneSideClear());
 }
@@ -129,7 +118,6 @@ void test_left_side_clear(void)
 
     result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD + 1;
     result.Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD;
-    target->updateResult(&result);
 
     TEST_ASSERT_TRUE(target->isOneSideClear());
 }
@@ -140,7 +128,6 @@ void test_right_side_clear(void)
 
     result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD;
     result.Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD + 1;
-    target->updateResult(&result);
 
     TEST_ASSERT_TRUE(target->isOneSideClear());
 }
@@ -151,7 +138,6 @@ void test_centered(void)
 
     result.Left.Distance = 50;
     result.Right.Distance = 50;
-    target->updateResult(&result);
 
     TEST_ASSERT_TRUE(target->isCentered());
 }
@@ -162,7 +148,6 @@ void test_centered_within_right_tolerance(void)
 
     result.Left.Distance = 50;
     result.Right.Distance = 49;
-    target->updateResult(&result);
 
     TEST_ASSERT_TRUE(target->isCentered());
 }
@@ -173,7 +158,6 @@ void test_centered_within_left_tolerance(void)
 
     result.Left.Distance = 49;
     result.Right.Distance = 50;
-    target->updateResult(&result);
 
     TEST_ASSERT_TRUE(target->isCentered());
 }
@@ -184,7 +168,6 @@ void test_not_centered_towards_right(void)
 
     result.Left.Distance = 50;
     result.Right.Distance = 48;
-    target->updateResult(&result);
 
     TEST_ASSERT_FALSE(target->isCentered());
 }
@@ -195,7 +178,6 @@ void test_not_centered_towards_left(void)
 
     result.Left.Distance = 48;
     result.Right.Distance = 50;
-    target->updateResult(&result);
 
     TEST_ASSERT_FALSE(target->isCentered());
 }
