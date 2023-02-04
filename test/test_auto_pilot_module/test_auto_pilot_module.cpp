@@ -112,69 +112,6 @@ void test_no_space_ahead(void)
     TEST_ASSERT_FALSE(target->spaceAhead());
 }
 
-void test_result_not_requested(void)
-{
-    When(Method(ArduinoFake(), millis)).Return(10, 30, 35);
-
-    When(Method(sensorModuleMock, signalled)).Return(false);
-
-    When(Method(drivingModuleMock, stop)).AlwaysReturn();
-
-    target->updateResult(&result);
-
-    target->updatePositionIfRequired();
-
-    TEST_ASSERT_EQUAL(10, result.Front.Distance);
-    TEST_ASSERT_EQUAL(10, result.Front.Timestamp);
-    Verify(Method(drivingModuleMock, stop)).Never();
-}
-
-void test_result_requested_if_signalled(void)
-{
-    When(Method(ArduinoFake(), millis)).Return(10, 11, 12);
-
-    When(Method(sensorModuleMock, signalled)).Return(true);
-    When(Method(sensorModuleMock, detect))
-        .Do([](SensorResult* r)->bool
-        {
-            r->Front.Distance = 6;
-            r->Front.Timestamp = 0;
-            return true;
-        });
-
-    When(Method(drivingModuleMock, stop)).AlwaysReturn();
-
-    target->updateResult(&result);
-    target->updatePositionIfRequired();
-
-    TEST_ASSERT_EQUAL(0, result.Front.Timestamp);
-    TEST_ASSERT_EQUAL(6, result.Front.Distance);
-    Verify(Method(drivingModuleMock, stop)).Once();
-}
-
-void test_result_requested_if_result_too_old(void)
-{
-    When(Method(ArduinoFake(), millis)).Return(4000, 4001, 4001);
-
-    When(Method(sensorModuleMock, signalled)).Return(false);
-    When(Method(sensorModuleMock, detect))
-        .Do([](SensorResult* r)->bool
-        {
-            r->Front.Distance = 6;
-            r->Front.Timestamp = 20;
-            return true;
-        });
-
-    When(Method(drivingModuleMock, stop)).AlwaysReturn();
-
-    target->updateResult(&result);
-    target->updatePositionIfRequired();
-
-    TEST_ASSERT_EQUAL(20, result.Front.Timestamp);
-    TEST_ASSERT_EQUAL(6, result.Front.Distance);
-    Verify(Method(drivingModuleMock, stop)).Once();
-}
-
 void test_neither_side_clear(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
@@ -276,9 +213,6 @@ int main(int argc, char **argv)
     RUN_TEST(test_is_not_trapped_on_left);
     RUN_TEST(test_space_ahead);
     RUN_TEST(test_no_space_ahead);
-    RUN_TEST(test_result_not_requested);
-    RUN_TEST(test_result_requested_if_signalled);
-    RUN_TEST(test_result_requested_if_result_too_old);
     RUN_TEST(test_neither_side_clear);
     RUN_TEST(test_left_side_clear);
     RUN_TEST(test_right_side_clear);

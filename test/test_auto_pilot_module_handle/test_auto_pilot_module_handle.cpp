@@ -44,6 +44,13 @@ void test_stops_when_trapped(void)
 
     When(Method(drivingModuleMock, stop)).AlwaysReturn();
 
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = 6;
+            r->Front.Timestamp = 20;
+            return true; });
+
     result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
     result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
     target->updateResult(&result);
@@ -59,15 +66,17 @@ void test_turns_right_when_no_space_ahead(void)
 
     When(Method(drivingModuleMock, turnRight)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
-    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
-    target->updateResult(&result);
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
+            r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, turnRight)).Once();
-    TEST_ASSERT_EQUAL(MAX_SENSOR_AGE_FOR_TURN, target->maxSensorResultAge());
 }
 
 void test_turns_left_when_no_space_ahead(void)
@@ -76,15 +85,17 @@ void test_turns_left_when_no_space_ahead(void)
 
     When(Method(drivingModuleMock, turnLeft)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
-    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
-    target->updateResult(&result);
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
+            r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, turnLeft)).Once();
-    TEST_ASSERT_EQUAL(MAX_SENSOR_AGE_FOR_TURN, target->maxSensorResultAge());
 }
 
 void test_turns_right_preferentially_when_no_space_ahead(void)
@@ -93,15 +104,17 @@ void test_turns_right_preferentially_when_no_space_ahead(void)
 
     When(Method(drivingModuleMock, turnRight)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
-    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
-    target->updateResult(&result);
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
+            r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 2;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, turnRight)).Once();
-    TEST_ASSERT_EQUAL(MAX_SENSOR_AGE_FOR_TURN, target->maxSensorResultAge());
 }
 
 void test_turns_right_when_space_ahead_and_no_space_on_left(void)
@@ -110,15 +123,17 @@ void test_turns_right_when_space_ahead_and_no_space_on_left(void)
 
     When(Method(drivingModuleMock, turnRight)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD - 1;
-    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
-    target->updateResult(&result);
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
+            r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD - 1;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, turnRight)).Once();
-    TEST_ASSERT_EQUAL(MAX_SENSOR_AGE_FOR_TURN, target->maxSensorResultAge());
 }
 
 void test_turns_left_when_space_ahead_and_no_space_on_right(void)
@@ -127,15 +142,17 @@ void test_turns_left_when_space_ahead_and_no_space_on_right(void)
 
     When(Method(drivingModuleMock, turnLeft)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
-    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD - 1;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
-    target->updateResult(&result);
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD - 1;
+            r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, turnLeft)).Once();
-    TEST_ASSERT_EQUAL(MAX_SENSOR_AGE_FOR_TURN, target->maxSensorResultAge());
 }
 
 void test_bear_right_when_space_ahead_warning_on_left(void)
@@ -144,16 +161,17 @@ void test_bear_right_when_space_ahead_warning_on_left(void)
 
     When(Method(drivingModuleMock, bearRight)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD - 1;
-    result.Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
-    target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Left.Distance;
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 1;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
+            r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD - 1;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, bearRight).Using(DIR_FORWARD)).Once();
-    TEST_ASSERT_EQUAL(maxSensorResultAge, target->maxSensorResultAge());
 }
 
 void test_bear_left_when_space_ahead_warning_on_right(void)
@@ -162,16 +180,17 @@ void test_bear_left_when_space_ahead_warning_on_right(void)
 
     When(Method(drivingModuleMock, bearLeft)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
-    result.Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD - 1;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
-    target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Right.Distance;
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD - 1;
+            r->Left.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, bearLeft).Using(DIR_FORWARD)).Once();
-    TEST_ASSERT_EQUAL(maxSensorResultAge, target->maxSensorResultAge());
 }
 
 void test_move_forward_when_centered(void)
@@ -180,16 +199,17 @@ void test_move_forward_when_centered(void)
 
     When(Method(drivingModuleMock, moveForward)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
-    result.Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
-    target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD * result.Front.Distance;
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
+            r->Left.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, moveForward)).Once();
-    TEST_ASSERT_EQUAL(maxSensorResultAge, target->maxSensorResultAge());
 }
 
 void test_move_forward_when_one_side_clear(void)
@@ -198,16 +218,17 @@ void test_move_forward_when_one_side_clear(void)
 
     When(Method(drivingModuleMock, moveForward)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD + 2;
-    result.Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
-    target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD * result.Front.Distance;
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_WARNING_THRESHOLD + 2;
+            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD + 2;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, moveForward)).Once();
-    TEST_ASSERT_EQUAL(maxSensorResultAge, target->maxSensorResultAge());
 }
 
 void test_bear_right_when_space_ahead_more_space_on_right(void)
@@ -216,16 +237,17 @@ void test_bear_right_when_space_ahead_more_space_on_right(void)
 
     When(Method(drivingModuleMock, bearRight)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
-    result.Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
-    target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Left.Distance;
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+            r->Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
+            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, bearRight).Using(DIR_FORWARD)).Once();
-    TEST_ASSERT_EQUAL(maxSensorResultAge, target->maxSensorResultAge());
 }
 
 void test_bear_left_when_space_ahead_more_space_on_left(void)
@@ -234,16 +256,17 @@ void test_bear_left_when_space_ahead_more_space_on_left(void)
 
     When(Method(drivingModuleMock, bearLeft)).AlwaysReturn();
 
-    result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
-    result.Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
-    result.Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
-    target->updateResult(&result);
-    short maxSensorResultAge = MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR * result.Right.Distance;
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
+            r->Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
+            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
+            return true; });
 
     target->handle();
 
     Verify(Method(drivingModuleMock, bearLeft).Using(DIR_FORWARD)).Once();
-    TEST_ASSERT_EQUAL(maxSensorResultAge, target->maxSensorResultAge());
 }
 
 int main(int argc, char **argv)
