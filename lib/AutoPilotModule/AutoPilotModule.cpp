@@ -39,12 +39,10 @@ void AutoPilotModule::handle()
     
     if (outOfDate())
     {
-        printf("Out of date\n");
         _drivingModule->stop();
         return;
     }
 
-    printf("Checking is trapped\n");
     if (isTrapped())
     {
         _drivingModule->stop();
