@@ -14,7 +14,7 @@ const byte CENTER_TOLERANCE = 2;
 const byte MAX_SENSOR_AGE_FOR_TURN = 100;
 const byte MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR = 10;
 const byte MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD = 10;
-const short MAX_SENSOR_RESULT_AGE = 3000;
+const short MAX_SENSOR_RESULT_AGE = 2000;
 
 class AutoPilotModule
 {
@@ -32,23 +32,17 @@ public:
     bool spaceAhead();
     bool isTrapped();
     bool isOneSideClear();
-    bool updatePositionIfRequired();
-    unsigned int maxSensorResultAge();
-    void updateResult(SensorResult *result);
+    unsigned short maxSensorResultAge();
 
 private:
     Stream *_stream;
     IDrivingModule *_drivingModule;
     ISensorModule *_sensorModule;
     SensorResult *_sensorResult;
-    unsigned int _maxSensorResultAge;
+    unsigned short _maxSensorResultAge;
     bool _enabled = false;
 
-    void moveForward();
-    void turnRight();
-    void turnLeft();
-    void bearRight();
-    void bearLeft();
+    bool outOfDate();
 };
 
 #endif

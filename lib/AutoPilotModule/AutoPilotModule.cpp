@@ -35,7 +35,13 @@ void AutoPilotModule::handle()
         return;
     }
 
-    updatePositionIfRequired();
+    _sensorModule->scan(_sensorResult);
+    
+    if (outOfDate())
+    {
+        _drivingModule->stop();
+        return;
+    }
 
     if (isTrapped())
     {
@@ -47,136 +53,73 @@ void AutoPilotModule::handle()
     {
         if (_sensorResult->Right.Distance > _sensorResult->Left.Distance)
         {
-            turnRight();
+            _drivingModule->turnRight();
             return;
         }
         if (_sensorResult->Left.Distance > _sensorResult->Right.Distance)
         {
-            turnLeft();
+            _drivingModule->turnLeft();
             return;
         }
         // if equal, bias for right
-        turnRight();
+        _drivingModule->turnRight();
         return;
     }
 
     if (_sensorResult->Left.Distance < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
-        turnRight();
+        _drivingModule->turnRight();
         return;
     }
     if (_sensorResult->Right.Distance < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
-        turnLeft();
+        _drivingModule->turnLeft();
         return;
     }
 
     if (_sensorResult->Left.Distance < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
-        bearRight();
+        _drivingModule->bearRight(DIR_FORWARD);
         return;
     }
     if (_sensorResult->Right.Distance < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
-        bearLeft();
+        _drivingModule->bearLeft(DIR_FORWARD);
         return;
     }
 
     if (isCentered())
     {
-        moveForward();
+        _drivingModule->moveForward();
         return;
     }
 
     if (isOneSideClear())
     {
-        moveForward();
+        _drivingModule->moveForward();
         return;
     }
 
     if (_sensorResult->Left.Distance < _sensorResult->Right.Distance)
     {
-        bearRight();
+        _drivingModule->bearRight(DIR_FORWARD);
         return;
     }
 
-    bearLeft();
+    _drivingModule->bearLeft(DIR_FORWARD);
     return;
 }
 
-void AutoPilotModule::moveForward()
-{
-    _maxSensorResultAge = _sensorResult->Front.Distance * MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD;
-    _drivingModule->moveForward();
-}
-
-void AutoPilotModule::turnRight()
-{
-    _maxSensorResultAge = MAX_SENSOR_AGE_FOR_TURN;
-    _drivingModule->turnRight();
-}
-
-void AutoPilotModule::turnLeft()
-{
-    _maxSensorResultAge = MAX_SENSOR_AGE_FOR_TURN;
-    _drivingModule->turnLeft();
-}
-
-void AutoPilotModule::bearRight()
-{
-    _maxSensorResultAge = _sensorResult->Left.Distance * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
-    _drivingModule->bearRight(DIR_FORWARD);
-}
-
-void AutoPilotModule::bearLeft()
-{
-    _maxSensorResultAge = _sensorResult->Right.Distance * MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR;
-    _drivingModule->bearLeft(DIR_FORWARD);
-}
-
-unsigned int AutoPilotModule::maxSensorResultAge()
-{
-    return _maxSensorResultAge;
-}
-
-void AutoPilotModule::updateResult(SensorResult *result)
-{
-    _sensorResult->Front.Distance = result->Front.Distance;
-    _sensorResult->Front.Timestamp = result->Front.Timestamp;
-    _sensorResult->Left.Distance = result->Left.Distance;
-    _sensorResult->Left.Timestamp = result->Left.Timestamp;
-    _sensorResult->Right.Distance = result->Right.Distance;
-    _sensorResult->Right.Timestamp = result->Right.Timestamp;
-}
-
-bool AutoPilotModule::updatePositionIfRequired()
+bool AutoPilotModule::outOfDate()
 {
     unsigned long sensorResultAge = millis() - _sensorResult->Front.Timestamp;
 
-    if (_sensorModule->signalled() || (sensorResultAge > _maxSensorResultAge))
-    {
-        _drivingModule->stop();
+    return (sensorResultAge > _maxSensorResultAge);
+}
 
-        _sensorModule->detect(_sensorResult);
-
-        debugPrintln("Sensor Module Result:");
-
-        debugPrint(_sensorResult->Front.Distance);
-        debugPrint("   ~ ");
-        debugPrintln(_sensorResult->Front.Timestamp);
-
-        debugPrint(_sensorResult->Left.Distance);
-        debugPrint("   ~ ");
-        debugPrintln(_sensorResult->Left.Timestamp);
-
-        debugPrint(_sensorResult->Right.Distance);
-        debugPrint("   ~ ");
-        debugPrint(_sensorResult->Right.Timestamp);
-
-        return true;
-    }
-
-    return false;
+unsigned short AutoPilotModule::maxSensorResultAge()
+{
+    return _maxSensorResultAge;
 }
 
 bool AutoPilotModule::isCentered()
