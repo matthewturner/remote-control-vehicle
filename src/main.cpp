@@ -6,20 +6,24 @@ void setup()
 
   bumperModule.begin();
 
+  sensorModule->begin();
+
   pinMode(RECEIVE_PIN, INPUT);
   pinMode(TRANSMIT_PIN, OUTPUT);
   bluetoothSerial.begin(9600);
 
-  commandListener.when("stop", (EvtCommandAction)stop);
-  commandListener.when("forward", (EvtCommandAction)forward);
-  commandListener.when("reverse", (EvtCommandAction)reverse);
-  commandListener.when("left", (EvtCommandAction)left);
-  commandListener.when("right", (EvtCommandAction)right);
-  commandListener.when("bear-left-forward", (EvtCommandAction)bearLeftForward);
-  commandListener.when("bear-right-forward", (EvtCommandAction)bearRightForward);
-  commandListener.when("bear-left-reverse", (EvtCommandAction)bearLeftReverse);
-  commandListener.when("bear-right-reverse", (EvtCommandAction)bearRightReverse);
-  commandListener.when("set-speed", (EvtCommandAction)setSpeed);
+  commandListener.when("stp", (EvtCommandAction)stop);
+  commandListener.when("fwd", (EvtCommandAction)forward);
+  commandListener.when("rev", (EvtCommandAction)reverse);
+  commandListener.when("lft", (EvtCommandAction)left);
+  commandListener.when("rht", (EvtCommandAction)right);
+  commandListener.when("b-lf", (EvtCommandAction)bearLeftForward);
+  commandListener.when("b-rf", (EvtCommandAction)bearRightForward);
+  commandListener.when("b-lr", (EvtCommandAction)bearLeftReverse);
+  commandListener.when("b-rr", (EvtCommandAction)bearRightReverse);
+  commandListener.when("spd", (EvtCommandAction)setSpeed);
+  // commandListener.when("apon", (EvtCommandAction)enableAutoPilot);
+  // commandListener.when("apof", (EvtCommandAction)disableAutoPilot);
   mgr.addListener(&commandListener);
 
   mgr.addListener(new EvtPinListener(LEFT_BUMPER_PIN, (EvtAction)handleBumperEvent));
@@ -31,6 +35,41 @@ void setup()
 void loop()
 {
   mgr.loopIteration();
+
+  selfDriveIfEnabled();
+}
+
+void selfDriveIfEnabled()
+{
+  // autoPilotModule.handle();
+  if (sensorModule->scan(&sensorResult))
+  {
+    Serial.println(F("Sensor Module Result:"));
+
+    Serial.print(sensorResult.Front.Distance);
+    Serial.print(F("   ~ "));
+    Serial.println(sensorResult.Front.Timestamp);
+
+    Serial.print(sensorResult.Left.Distance);
+    Serial.print(F("   ~ "));
+    Serial.println(sensorResult.Left.Timestamp);
+
+    Serial.print(sensorResult.Right.Distance);
+    Serial.print(F("   ~ "));
+    Serial.println(sensorResult.Right.Timestamp);
+  }
+}
+
+bool enableAutoPilot()
+{
+  autoPilotModule.enable();
+  return true;
+}
+
+bool disableAutoPilot()
+{
+  autoPilotModule.disable();
+  return true;
 }
 
 bool stop()
@@ -38,7 +77,7 @@ bool stop()
   drivingModule->stop();
   return true;
 }
-
+  
 bool handleBumperEvent()
 {
   if (bumperModule.hasCollided(5) != Sides::NONE)

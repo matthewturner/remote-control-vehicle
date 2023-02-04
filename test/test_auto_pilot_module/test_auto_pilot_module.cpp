@@ -18,13 +18,14 @@ void setUp(void)
     stream = ArduinoFakeMock(Stream);
     ISensorModule &sensorModule = sensorModuleMock.get();
     IDrivingModule &drivingModule = drivingModuleMock.get();
-    target = new AutoPilotModule(stream, &drivingModule, &sensorModule);
+    target = new AutoPilotModule(stream, &drivingModule, &sensorModule, &result);
 
-    result.Age = 10;
-    result.Front = 10;
-    result.Back = 10;
-    result.Left = 10;
-    result.Right = 10;
+    result.Front.Distance = 10;
+    result.Front.Timestamp = 10;
+    result.Left.Distance = 10;
+    result.Left.Timestamp = 10;
+    result.Right.Distance = 10;
+    result.Right.Timestamp = 10;
 }
 
 void tearDown(void)
@@ -73,7 +74,7 @@ void test_is_not_trapped_on_right(void)
 {
     When(Method(ArduinoFake(), millis)).Return(1);
 
-    result.Right = 11;
+    result.Right.Distance = 11;
 
     target->updateResult(&result);
 
@@ -84,7 +85,7 @@ void test_is_not_trapped_on_left(void)
 {
     When(Method(ArduinoFake(), millis)).Return(1);
 
-    result.Left = 11;
+    result.Left.Distance = 11;
 
     target->updateResult(&result);
 
@@ -95,7 +96,7 @@ void test_space_ahead(void)
 {
     When(Method(ArduinoFake(), millis)).Return(1);
 
-    result.Front = 11;
+    result.Front.Distance = 11;
 
     target->updateResult(&result);
 
@@ -123,9 +124,9 @@ void test_result_not_requested(void)
 
     target->updatePositionIfRequired();
 
-    TEST_ASSERT_EQUAL(10, target->sensorResult()->Front);
+    TEST_ASSERT_EQUAL(10, result.Front.Distance);
+    TEST_ASSERT_EQUAL(10, result.Front.Timestamp);
     Verify(Method(drivingModuleMock, stop)).Never();
-    TEST_ASSERT_EQUAL(10, target->resultAge());
 }
 
 void test_result_requested_if_signalled(void)
@@ -134,11 +135,11 @@ void test_result_requested_if_signalled(void)
 
     When(Method(sensorModuleMock, signalled)).Return(true);
     When(Method(sensorModuleMock, detect))
-        .Do([](SensorResult* r)->byte
+        .Do([](SensorResult* r)->bool
         {
-            r->Age = 0;
-            r->Front = 6;
-            return 6;
+            r->Front.Distance = 6;
+            r->Front.Timestamp = 0;
+            return true;
         });
 
     When(Method(drivingModuleMock, stop)).AlwaysReturn();
@@ -146,22 +147,22 @@ void test_result_requested_if_signalled(void)
     target->updateResult(&result);
     target->updatePositionIfRequired();
 
-    TEST_ASSERT_EQUAL(12, target->resultAge());
-    TEST_ASSERT_EQUAL(6, target->sensorResult()->Front);
+    TEST_ASSERT_EQUAL(0, result.Front.Timestamp);
+    TEST_ASSERT_EQUAL(6, result.Front.Distance);
     Verify(Method(drivingModuleMock, stop)).Once();
 }
 
 void test_result_requested_if_result_too_old(void)
 {
-    When(Method(ArduinoFake(), millis)).Return(10, 4000, 4001);
+    When(Method(ArduinoFake(), millis)).Return(4000, 4001, 4001);
 
     When(Method(sensorModuleMock, signalled)).Return(false);
     When(Method(sensorModuleMock, detect))
-        .Do([](SensorResult* r)->byte
+        .Do([](SensorResult* r)->bool
         {
-            r->Age = 20;
-            r->Front = 6;
-            return 6;
+            r->Front.Distance = 6;
+            r->Front.Timestamp = 20;
+            return true;
         });
 
     When(Method(drivingModuleMock, stop)).AlwaysReturn();
@@ -169,8 +170,8 @@ void test_result_requested_if_result_too_old(void)
     target->updateResult(&result);
     target->updatePositionIfRequired();
 
-    TEST_ASSERT_EQUAL(4001, target->resultAge());
-    TEST_ASSERT_EQUAL(6, target->sensorResult()->Front);
+    TEST_ASSERT_EQUAL(20, result.Front.Timestamp);
+    TEST_ASSERT_EQUAL(6, result.Front.Distance);
     Verify(Method(drivingModuleMock, stop)).Once();
 }
 
@@ -178,8 +179,8 @@ void test_neither_side_clear(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
 
-    result.Left = SIDE_SENSOR_CLEAR_THRESHOLD;
-    result.Right = SIDE_SENSOR_CLEAR_THRESHOLD;
+    result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD;
+    result.Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD;
     target->updateResult(&result);
 
     TEST_ASSERT_FALSE(target->isOneSideClear());
@@ -189,8 +190,8 @@ void test_left_side_clear(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
 
-    result.Left = SIDE_SENSOR_CLEAR_THRESHOLD + 1;
-    result.Right = SIDE_SENSOR_CLEAR_THRESHOLD;
+    result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD + 1;
+    result.Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD;
     target->updateResult(&result);
 
     TEST_ASSERT_TRUE(target->isOneSideClear());
@@ -200,8 +201,8 @@ void test_right_side_clear(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
 
-    result.Left = SIDE_SENSOR_CLEAR_THRESHOLD;
-    result.Right = SIDE_SENSOR_CLEAR_THRESHOLD + 1;
+    result.Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD;
+    result.Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD + 1;
     target->updateResult(&result);
 
     TEST_ASSERT_TRUE(target->isOneSideClear());
@@ -211,8 +212,8 @@ void test_centered(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
 
-    result.Left = 50;
-    result.Right = 50;
+    result.Left.Distance = 50;
+    result.Right.Distance = 50;
     target->updateResult(&result);
 
     TEST_ASSERT_TRUE(target->isCentered());
@@ -222,8 +223,8 @@ void test_centered_within_right_tolerance(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
 
-    result.Left = 50;
-    result.Right = 49;
+    result.Left.Distance = 50;
+    result.Right.Distance = 49;
     target->updateResult(&result);
 
     TEST_ASSERT_TRUE(target->isCentered());
@@ -233,8 +234,8 @@ void test_centered_within_left_tolerance(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
 
-    result.Left = 49;
-    result.Right = 50;
+    result.Left.Distance = 49;
+    result.Right.Distance = 50;
     target->updateResult(&result);
 
     TEST_ASSERT_TRUE(target->isCentered());
@@ -244,8 +245,8 @@ void test_not_centered_towards_right(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
 
-    result.Left = 50;
-    result.Right = 48;
+    result.Left.Distance = 50;
+    result.Right.Distance = 48;
     target->updateResult(&result);
 
     TEST_ASSERT_FALSE(target->isCentered());
@@ -255,8 +256,8 @@ void test_not_centered_towards_left(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
 
-    result.Left = 48;
-    result.Right = 50;
+    result.Left.Distance = 48;
+    result.Right.Distance = 50;
     target->updateResult(&result);
 
     TEST_ASSERT_FALSE(target->isCentered());
