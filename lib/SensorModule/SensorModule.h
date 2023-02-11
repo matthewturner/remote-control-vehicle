@@ -7,7 +7,7 @@
 #include <Adafruit_VL53L0X.h>
 #include <Servo.h>
 
-const short POSITION_DELAY = 500;
+const short POSITION_DELAY = 400;
 const short OFFSET = 50;
 const byte SEQUENCE_COUNT = 4;
 
