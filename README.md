@@ -6,20 +6,22 @@ The bluetooth remote-controlled car and boat
 
 ## Pinout
 
-| Pin | PWM | Usage                     |
-| --- | --- | ---                       |
-| 2   |     | TRANSMIT_PIN              |
-| ~3  | Yes | RECEIVE_PIN               |
-| 4   |     |                           |
-| ~5  | Yes | SENSOR_SERVO_PIN          |
-| ~6  | Yes | MOTOR_LEFT_ENABLE_PIN     |
-| 7   |     | MOTOR_LEFT_DIRECTION_PIN  |
-| 8   |     | MOTOR_RIGHT_DIRECTION_PIN |
-| ~9  | Yes | MOTOR_RIGHT_ENABLE_PIN    |
-| ~10 | Yes |                           |
-| ~11 | Yes |                           |
-| 12  |     | LEFT_BUMPER_PIN           |
-| 13  |     | RIGHT_BUMPER_PIN          |
+| Pin | PWM | Usage                     | Wire Colour |
+| --- | --- | ---                       | ---         |
+| 2   |     | TRANSMIT_PIN              | Yellow      |
+| ~3  | Yes | RECEIVE_PIN               | Green       |
+| 4   |     |                           |             |
+| ~5  | Yes | SENSOR_SERVO_PIN          | Yellow      |
+| ~6  | Yes | MOTOR_LEFT_ENABLE_PIN     |             |
+| 7   |     | MOTOR_LEFT_DIRECTION_PIN  |             |
+| 8   |     | MOTOR_RIGHT_DIRECTION_PIN |             |
+| ~9  | Yes | MOTOR_RIGHT_ENABLE_PIN    |             |
+| ~10 | Yes |                           |             |
+| ~11 | Yes |                           |             |
+| 12  |     | RIGHT_BUMPER_PIN          | Yellow      |
+| 13  |     | LEFT_BUMPER_PIN           | Green       |
+| A4  |     | SDA                       | Blue        |
+| A5  |     | SCL                       | Green       |
 
 ## Demos
 
