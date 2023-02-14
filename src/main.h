@@ -22,8 +22,8 @@ const byte MOTOR_LEFT_DIRECTION_PIN = 7;
 const byte MOTOR_RIGHT_ENABLE_PIN = 9;
 const byte MOTOR_RIGHT_DIRECTION_PIN = 8;
 
-const byte LEFT_BUMPER_PIN = 12;
-const byte RIGHT_BUMPER_PIN = 13;
+const byte LEFT_BUMPER_PIN = 11;
+const byte RIGHT_BUMPER_PIN = 12;
 
 const byte SENSOR_SERVO_PIN = 5;
 

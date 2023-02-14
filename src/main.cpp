@@ -22,12 +22,9 @@ void setup()
   commandListener.when("blr", (EvtCommandAction)bearLeftReverse);
   commandListener.when("brr", (EvtCommandAction)bearRightReverse);
   commandListener.when("spd", (EvtCommandAction)setSpeed);
-  // commandListener.when("apon", (EvtCommandAction)enableAutoPilot);
-  // commandListener.when("apof", (EvtCommandAction)disableAutoPilot);
+  commandListener.when("aon", (EvtCommandAction)enableAutoPilot);
+  commandListener.when("aof", (EvtCommandAction)disableAutoPilot);
   mgr.addListener(&commandListener);
-
-  mgr.addListener(new EvtPinListener(LEFT_BUMPER_PIN, (EvtAction)handleBumperEvent));
-  mgr.addListener(new EvtPinListener(RIGHT_BUMPER_PIN, (EvtAction)handleBumperEvent));
 
   // autoPilotModule.enable();
   Serial.println(F("Setup complete, continuing..."));
@@ -37,7 +34,8 @@ void loop()
 {
   mgr.loopIteration();
 
-  selfDriveIfEnabled();
+  // selfDriveIfEnabled();
+  handleBumperEvent();
 }
 
 void selfDriveIfEnabled()

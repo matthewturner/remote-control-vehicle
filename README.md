@@ -17,9 +17,9 @@ The bluetooth remote-controlled car and boat
 | 8   |     | MOTOR_RIGHT_DIRECTION_PIN |             |
 | ~9  | Yes | MOTOR_RIGHT_ENABLE_PIN    |             |
 | ~10 | Yes |                           |             |
-| ~11 | Yes |                           |             |
+| ~11 | Yes | LEFT_BUMPER_PIN           | Green       |
 | 12  |     | RIGHT_BUMPER_PIN          | Yellow      |
-| 13  |     | LEFT_BUMPER_PIN           | Green       |
+| 13  |     |                           |             |
 | A4  |     | SDA                       | Blue        |
 | A5  |     | SCL                       | Green       |
 
