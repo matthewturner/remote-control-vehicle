@@ -55,7 +55,6 @@ EvtManager mgr;
 // EvtCommandListener commandListener(&bluetoothSerial, 2);
 EvtCommandListener commandListener(&Serial, 2);
 
-bool detect();
 bool stop();
 bool forward();
 bool reverse();
