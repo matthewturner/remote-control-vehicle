@@ -19,11 +19,11 @@ const byte RECEIVE_PIN = 3;
 const byte MOTOR_LEFT_ENABLE_PIN = 6;
 const byte MOTOR_LEFT_DIRECTION_PIN = 7;
 
-const byte MOTOR_RIGHT_ENABLE_PIN = 9;
+const byte MOTOR_RIGHT_ENABLE_PIN = 11;
 const byte MOTOR_RIGHT_DIRECTION_PIN = 8;
 
-const byte LEFT_BUMPER_PIN = 12;
-const byte RIGHT_BUMPER_PIN = 13;
+const byte LEFT_BUMPER_PIN = 10;
+const byte RIGHT_BUMPER_PIN = 12;
 
 const byte SENSOR_SERVO_PIN = 5;
 
@@ -55,7 +55,6 @@ EvtManager mgr;
 // EvtCommandListener commandListener(&bluetoothSerial, 2);
 EvtCommandListener commandListener(&Serial, 2);
 
-bool detect();
 bool stop();
 bool forward();
 bool reverse();

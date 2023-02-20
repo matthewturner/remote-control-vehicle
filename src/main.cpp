@@ -17,17 +17,14 @@ void setup()
   commandListener.when("rev", (EvtCommandAction)reverse);
   commandListener.when("lft", (EvtCommandAction)left);
   commandListener.when("rht", (EvtCommandAction)right);
-  commandListener.when("b-lf", (EvtCommandAction)bearLeftForward);
-  commandListener.when("b-rf", (EvtCommandAction)bearRightForward);
-  commandListener.when("b-lr", (EvtCommandAction)bearLeftReverse);
-  commandListener.when("b-rr", (EvtCommandAction)bearRightReverse);
+  commandListener.when("blf", (EvtCommandAction)bearLeftForward);
+  commandListener.when("brf", (EvtCommandAction)bearRightForward);
+  commandListener.when("blr", (EvtCommandAction)bearLeftReverse);
+  commandListener.when("brr", (EvtCommandAction)bearRightReverse);
   commandListener.when("spd", (EvtCommandAction)setSpeed);
-  // commandListener.when("apon", (EvtCommandAction)enableAutoPilot);
-  // commandListener.when("apof", (EvtCommandAction)disableAutoPilot);
+  commandListener.when("aon", (EvtCommandAction)enableAutoPilot);
+  commandListener.when("aof", (EvtCommandAction)disableAutoPilot);
   mgr.addListener(&commandListener);
-
-  mgr.addListener(new EvtPinListener(LEFT_BUMPER_PIN, (EvtAction)handleBumperEvent));
-  mgr.addListener(new EvtPinListener(RIGHT_BUMPER_PIN, (EvtAction)handleBumperEvent));
 
   Serial.println(F("Setup complete, continuing..."));
 }
@@ -37,27 +34,13 @@ void loop()
   mgr.loopIteration();
 
   selfDriveIfEnabled();
+  
+  handleBumperEvent();
 }
 
 void selfDriveIfEnabled()
 {
-  // autoPilotModule.handle();
-  if (sensorModule->scan(&sensorResult))
-  {
-    Serial.println(F("Sensor Module Result:"));
-
-    Serial.print(sensorResult.Front.Distance);
-    Serial.print(F("   ~ "));
-    Serial.println(sensorResult.Front.Timestamp);
-
-    Serial.print(sensorResult.Left.Distance);
-    Serial.print(F("   ~ "));
-    Serial.println(sensorResult.Left.Timestamp);
-
-    Serial.print(sensorResult.Right.Distance);
-    Serial.print(F("   ~ "));
-    Serial.println(sensorResult.Right.Timestamp);
-  }
+  autoPilotModule.handle();
 }
 
 bool enableAutoPilot()
