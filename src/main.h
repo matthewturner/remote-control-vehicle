@@ -52,8 +52,8 @@ AutoPilotModule autoPilotModule(&Serial, drivingModule, sensorModule, &sensorRes
 #endif
 
 EvtManager mgr;
-// EvtCommandListener commandListener(&bluetoothSerial, 2);
-EvtCommandListener commandListener(&Serial, 2);
+EvtCommandListener commandListener(&bluetoothSerial, 2);
+// EvtCommandListener commandListener(&Serial, 2);
 
 bool stop();
 bool forward();
