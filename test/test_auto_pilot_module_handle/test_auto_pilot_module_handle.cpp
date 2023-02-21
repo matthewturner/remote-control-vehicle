@@ -38,6 +38,26 @@ void tearDown(void)
     sensorModuleMock.Reset();
 }
 
+void test_stops_when_sensor_result_out_of_date(void)
+{
+    When(Method(ArduinoFake(), millis)).Return(5000, 5500, 7000);
+
+    When(Method(drivingModuleMock, stop)).AlwaysReturn();
+
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
+            r->Front.Timestamp = 5;
+            r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
+            return true; });
+
+    target->handle();
+
+    Verify(Method(drivingModuleMock, stop)).Once();
+}
+
 void test_stops_when_trapped(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10, 30, 35);
@@ -47,8 +67,8 @@ void test_stops_when_trapped(void)
     When(Method(sensorModuleMock, scan))
         .Do([](SensorResult *r) -> bool
             {
-            r->Front.Distance = 60;
-            r->Front.Timestamp = 20;
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
+            r->Front.Timestamp = 5;
             r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
             r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
             return true; });
@@ -271,6 +291,7 @@ int main(int argc, char **argv)
 {
     UNITY_BEGIN();
 
+    RUN_TEST(test_stops_when_sensor_result_out_of_date);
     RUN_TEST(test_stops_when_trapped);
     RUN_TEST(test_turns_right_when_no_space_ahead);
     RUN_TEST(test_turns_left_when_no_space_ahead);

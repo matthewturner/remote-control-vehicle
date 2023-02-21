@@ -11,4 +11,10 @@
 #define debugPrint(...)
 #endif
 
+#ifdef DEBUG_PRINT_ON
+#define debugPrintf(...) printf(__VA_ARGS__)
+#else
+#define debugPrintf(...)
+#endif
+
 #endif
