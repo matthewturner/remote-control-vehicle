@@ -35,14 +35,10 @@ void AutoPilotModule::handle()
         return;
     }
 
-    printf("Scanning...\n");
     _sensorModule->scan(_sensorResult);
-
-    printf("%d\n", _sensorResult->Front.Timestamp);
     
     if (outOfDate())
     {
-        printf("Out of date\n");
         debugPrintln(F("Sensor result is out of date"));
         _drivingModule->stop();
         return;
@@ -50,14 +46,12 @@ void AutoPilotModule::handle()
 
     if (isTrapped())
     {
-        printf("Trapped\n");
         _drivingModule->stop();
         return;
     }
 
     if (!spaceAhead())
     {
-        printf("No space ahead\n");
         if (_sensorResult->Right.Distance > _sensorResult->Left.Distance)
         {
             _drivingModule->turnRight();
@@ -75,52 +69,44 @@ void AutoPilotModule::handle()
 
     if (_sensorResult->Left.Distance < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
-        printf("xx");
         _drivingModule->turnRight();
         return;
     }
     if (_sensorResult->Right.Distance < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
-        printf("yy");
         _drivingModule->turnLeft();
         return;
     }
 
     if (_sensorResult->Left.Distance < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
-        printf("zz");
         _drivingModule->bearRight(DIR_FORWARD);
         return;
     }
     if (_sensorResult->Right.Distance < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
     {
-        printf("aa");
         _drivingModule->bearLeft(DIR_FORWARD);
         return;
     }
 
     if (isCentered())
     {
-        printf("bb");
         _drivingModule->moveForward();
         return;
     }
 
     if (isOneSideClear())
     {
-        printf("cc");
         _drivingModule->moveForward();
         return;
     }
 
     if (_sensorResult->Left.Distance < _sensorResult->Right.Distance)
     {
-        printf("dd");
         _drivingModule->bearRight(DIR_FORWARD);
         return;
     }
 
-    printf("ee");
     _drivingModule->bearLeft(DIR_FORWARD);
     return;
 }
