@@ -72,7 +72,7 @@ void test_is_not_trapped_on_right(void)
 {
     When(Method(ArduinoFake(), millis)).Return(1);
 
-    result.Right.Distance = 101;
+    result.Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
 
     TEST_ASSERT_FALSE(target->isTrapped());
 }
@@ -81,7 +81,7 @@ void test_is_not_trapped_on_left(void)
 {
     When(Method(ArduinoFake(), millis)).Return(1);
 
-    result.Left.Distance = 101;
+    result.Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD + 1;
 
     TEST_ASSERT_FALSE(target->isTrapped());
 }
@@ -166,8 +166,8 @@ void test_not_centered_towards_right(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
 
-    result.Left.Distance = 50;
-    result.Right.Distance = 48;
+    result.Left.Distance = 500;
+    result.Right.Distance = 480;
 
     TEST_ASSERT_FALSE(target->isCentered());
 }
@@ -176,8 +176,8 @@ void test_not_centered_towards_left(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10);
 
-    result.Left.Distance = 48;
-    result.Right.Distance = 50;
+    result.Left.Distance = 480;
+    result.Right.Distance = 500;
 
     TEST_ASSERT_FALSE(target->isCentered());
 }

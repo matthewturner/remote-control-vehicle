@@ -238,8 +238,8 @@ void test_bear_right_when_space_ahead_more_space_on_right(void)
     When(Method(sensorModuleMock, scan))
         .Do([](SensorResult *r) -> bool
             {
-            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
-            r->Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
+            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 50;
+            r->Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 20;
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
@@ -257,8 +257,8 @@ void test_bear_left_when_space_ahead_more_space_on_left(void)
     When(Method(sensorModuleMock, scan))
         .Do([](SensorResult *r) -> bool
             {
-            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
-            r->Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
+            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 20;
+            r->Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 50;
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
