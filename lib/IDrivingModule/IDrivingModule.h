@@ -11,8 +11,12 @@ enum class Motion : byte
     STOPPED = 0,
     FORWARD = 1,
     LEFT = 2,
-    RIGHT = 3,
-    BACKWARD = 4
+    RIGHT = 4,
+    REVERSE = 8,
+    BEAR_LEFT_FORWARD = RIGHT | FORWARD,
+    BEAR_LEFT_REVERSE = RIGHT | REVERSE,
+    BEAR_RIGHT_FORWARD = RIGHT | FORWARD,
+    BEAR_RIGHT_REVERSE = RIGHT | REVERSE
 };
 
 const byte DEFAULT_SPEED = 5;

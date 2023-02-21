@@ -13,7 +13,22 @@ DrivingModule::DrivingModule(byte motorLeftEnablePin, byte motorLeftDirectionPin
 
 void DrivingModule::bearLeft(bool forward)
 {
-    debugPrintln("Bearing left...");
+    if (forward)
+    {
+        if (_directionOfMotion != Motion::BEAR_LEFT_FORWARD)
+        {
+            return;
+        }
+    }
+    else
+    {
+        if (_directionOfMotion != Motion::BEAR_LEFT_REVERSE)
+        {
+            return;
+        }
+    }
+
+    debugPrintln(F("Bearing left..."));
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
     if (_speed > BEAR_SPEED_THRESHOLD)
@@ -28,7 +43,7 @@ void DrivingModule::bearLeft(bool forward)
     }
     else
     {
-        _directionOfMotion = Motion::BACKWARD;
+        _directionOfMotion = Motion::REVERSE;
         _motorLeft.back(reducedSpeed);
         _motorRight.back(actualSpeed);
     }
@@ -36,7 +51,22 @@ void DrivingModule::bearLeft(bool forward)
 
 void DrivingModule::bearRight(bool forward)
 {
-    debugPrintln("Bearing right...");
+    if (forward)
+    {
+        if (_directionOfMotion != Motion::BEAR_RIGHT_FORWARD)
+        {
+            return;
+        }
+    }
+    else
+    {
+        if (_directionOfMotion != Motion::BEAR_RIGHT_REVERSE)
+        {
+            return;
+        }
+    }
+
+    debugPrintln(F("Bearing right..."));
     byte actualSpeed = convertSpeed(_speed);
     byte reducedSpeed = 0;
     if (_speed > BEAR_SPEED_THRESHOLD)
@@ -51,7 +81,7 @@ void DrivingModule::bearRight(bool forward)
     }
     else
     {
-        _directionOfMotion = Motion::BACKWARD;
+        _directionOfMotion = Motion::REVERSE;
         _motorLeft.back(actualSpeed);
         _motorRight.back(reducedSpeed);
     }
@@ -59,8 +89,13 @@ void DrivingModule::bearRight(bool forward)
 
 void DrivingModule::turnLeft()
 {
+    if (_directionOfMotion == Motion::LEFT)
+    {
+        return;
+    }
+
     _directionOfMotion = Motion::LEFT;
-    debugPrintln("Turning left...");
+    debugPrintln(F("Turning left..."));
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.back(actualSpeed);
     _motorRight.forward(actualSpeed);
@@ -68,8 +103,13 @@ void DrivingModule::turnLeft()
 
 void DrivingModule::turnRight()
 {
+    if (_directionOfMotion == Motion::RIGHT)
+    {
+        return;
+    }
+
     _directionOfMotion = Motion::RIGHT;
-    debugPrintln("Turning right...");
+    debugPrintln(F("Turning right..."));
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.forward(actualSpeed);
     _motorRight.back(actualSpeed);
@@ -77,8 +117,13 @@ void DrivingModule::turnRight()
 
 void DrivingModule::moveBackward()
 {
-    _directionOfMotion = Motion::BACKWARD;
-    debugPrintln("Reversing...");
+    if (_directionOfMotion == Motion::REVERSE)
+    {
+        return;
+    }
+
+    _directionOfMotion = Motion::REVERSE;
+    debugPrintln(F("Reversing..."));
     byte actualSpeed = convertSpeed(_speed);
     _motorLeft.back(actualSpeed);
     _motorRight.back(actualSpeed);
@@ -86,8 +131,13 @@ void DrivingModule::moveBackward()
 
 void DrivingModule::moveForward()
 {
+    if (_directionOfMotion == Motion::FORWARD)
+    {
+        return;
+    }
+
     _directionOfMotion = Motion::FORWARD;
-    debugPrintln("Moving forward...");
+    debugPrintln(F("Moving forward..."));
     byte actualSpeed = convertSpeed(_speed);
     // debugPrintln(actualSpeed);
     _motorLeft.forward(actualSpeed);
@@ -96,8 +146,13 @@ void DrivingModule::moveForward()
 
 void DrivingModule::stop()
 {
+    if (_directionOfMotion == Motion::STOPPED)
+    {
+        return;
+    }
+
     _directionOfMotion = Motion::STOPPED;
-    debugPrintln("Stopping...");
+    debugPrintln(F("Stopping..."));
     _motorLeft.stop();
     _motorRight.stop();
 }
@@ -123,7 +178,7 @@ byte DrivingModule::convertSpeed(byte speed)
 
 void DrivingModule::setSpeed(byte speed)
 {
-    debugPrint("Setting speed: ");
+    debugPrint(F("Setting speed: "));
     debugPrintln(speed);
     _speed = speed;
 }

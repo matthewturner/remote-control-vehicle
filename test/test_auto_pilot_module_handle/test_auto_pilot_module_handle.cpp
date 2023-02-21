@@ -22,11 +22,11 @@ void setUp(void)
     target->enable();
     When(Method(sensorModuleMock, signalled)).Return(false);
 
-    result.Front.Distance = 10;
+    result.Front.Distance = 100;
     result.Front.Timestamp = 10;
-    result.Left.Distance = 10;
+    result.Left.Distance = 100;
     result.Left.Timestamp = 10;
-    result.Right.Distance = 10;
+    result.Right.Distance = 100;
     result.Right.Timestamp = 10;
 }
 
@@ -47,7 +47,7 @@ void test_stops_when_trapped(void)
     When(Method(sensorModuleMock, scan))
         .Do([](SensorResult *r) -> bool
             {
-            r->Front.Distance = 6;
+            r->Front.Distance = 60;
             r->Front.Timestamp = 20;
             r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
             r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;

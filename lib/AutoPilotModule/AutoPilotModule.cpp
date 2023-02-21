@@ -39,6 +39,7 @@ void AutoPilotModule::handle()
     
     if (outOfDate())
     {
+        debugPrintln(F("Sensor result is out of date"));
         _drivingModule->stop();
         return;
     }

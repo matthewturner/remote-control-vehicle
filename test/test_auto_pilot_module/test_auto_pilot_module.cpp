@@ -72,7 +72,7 @@ void test_is_not_trapped_on_right(void)
 {
     When(Method(ArduinoFake(), millis)).Return(1);
 
-    result.Right.Distance = 11;
+    result.Right.Distance = 101;
 
     TEST_ASSERT_FALSE(target->isTrapped());
 }
@@ -81,7 +81,7 @@ void test_is_not_trapped_on_left(void)
 {
     When(Method(ArduinoFake(), millis)).Return(1);
 
-    result.Left.Distance = 11;
+    result.Left.Distance = 101;
 
     TEST_ASSERT_FALSE(target->isTrapped());
 }
@@ -90,7 +90,7 @@ void test_space_ahead(void)
 {
     When(Method(ArduinoFake(), millis)).Return(1);
 
-    result.Front.Distance = 11;
+    result.Front.Distance = 101;
 
     TEST_ASSERT_TRUE(target->spaceAhead());
 }
