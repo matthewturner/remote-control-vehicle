@@ -52,6 +52,7 @@ bool enableAutoPilot()
 bool disableAutoPilot()
 {
   autoPilotModule.disable();
+  drivingModule->stop();
   return true;
 }
 
