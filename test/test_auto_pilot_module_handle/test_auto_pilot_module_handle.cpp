@@ -22,11 +22,11 @@ void setUp(void)
     target->enable();
     When(Method(sensorModuleMock, signalled)).Return(false);
 
-    result.Front.Distance = 10;
+    result.Front.Distance = 100;
     result.Front.Timestamp = 10;
-    result.Left.Distance = 10;
+    result.Left.Distance = 100;
     result.Left.Timestamp = 10;
-    result.Right.Distance = 10;
+    result.Right.Distance = 100;
     result.Right.Timestamp = 10;
 }
 
@@ -38,6 +38,26 @@ void tearDown(void)
     sensorModuleMock.Reset();
 }
 
+void test_stops_when_sensor_result_out_of_date(void)
+{
+    When(Method(ArduinoFake(), millis)).Return(5000, 5500, 7000);
+
+    When(Method(drivingModuleMock, stop)).AlwaysReturn();
+
+    When(Method(sensorModuleMock, scan))
+        .Do([](SensorResult *r) -> bool
+            {
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
+            r->Front.Timestamp = 5;
+            r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
+            r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
+            return true; });
+
+    target->handle();
+
+    Verify(Method(drivingModuleMock, stop)).Once();
+}
+
 void test_stops_when_trapped(void)
 {
     When(Method(ArduinoFake(), millis)).Return(10, 30, 35);
@@ -47,8 +67,8 @@ void test_stops_when_trapped(void)
     When(Method(sensorModuleMock, scan))
         .Do([](SensorResult *r) -> bool
             {
-            r->Front.Distance = 6;
-            r->Front.Timestamp = 20;
+            r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
+            r->Front.Timestamp = 5;
             r->Left.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
             r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
             return true; });
@@ -238,8 +258,8 @@ void test_bear_right_when_space_ahead_more_space_on_right(void)
     When(Method(sensorModuleMock, scan))
         .Do([](SensorResult *r) -> bool
             {
-            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
-            r->Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
+            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 50;
+            r->Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 20;
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
@@ -257,8 +277,8 @@ void test_bear_left_when_space_ahead_more_space_on_left(void)
     When(Method(sensorModuleMock, scan))
         .Do([](SensorResult *r) -> bool
             {
-            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 2;
-            r->Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 5;
+            r->Left.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 20;
+            r->Right.Distance = SIDE_SENSOR_CLEAR_THRESHOLD - 50;
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
@@ -271,6 +291,7 @@ int main(int argc, char **argv)
 {
     UNITY_BEGIN();
 
+    RUN_TEST(test_stops_when_sensor_result_out_of_date);
     RUN_TEST(test_stops_when_trapped);
     RUN_TEST(test_turns_right_when_no_space_ahead);
     RUN_TEST(test_turns_left_when_no_space_ahead);

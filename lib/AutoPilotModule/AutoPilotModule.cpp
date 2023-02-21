@@ -39,6 +39,7 @@ void AutoPilotModule::handle()
     
     if (outOfDate())
     {
+        debugPrintln(F("Sensor result is out of date"));
         _drivingModule->stop();
         return;
     }
@@ -112,9 +113,20 @@ void AutoPilotModule::handle()
 
 bool AutoPilotModule::outOfDate()
 {
-    unsigned long sensorResultAge = millis() - _sensorResult->Front.Timestamp;
+    unsigned long now = millis();
+    unsigned long sensorResultAge = now - _sensorResult->Front.Timestamp;
 
-    return (sensorResultAge > _maxSensorResultAge);
+    if (sensorResultAge > _maxSensorResultAge)
+    {
+        debugPrintf("** Sensor result is out of date\n");
+        debugPrintf("** Result: %lu\n", _sensorResult->Front.Timestamp);
+        debugPrintf("** Now: %d\n", now);
+        debugPrintf("** Max Age: %lu\n", _maxSensorResultAge);
+        debugPrintf("** Age: %lu\n", sensorResultAge);
+        return true;
+    }
+
+    return false;
 }
 
 unsigned short AutoPilotModule::maxSensorResultAge()

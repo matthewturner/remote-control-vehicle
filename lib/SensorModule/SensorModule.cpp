@@ -1,4 +1,5 @@
 #include "SensorModule.h"
+#include "Debug.h"
 
 SensorModule::SensorModule(byte i2cAddress, byte servoControlPin,
                            Stream *stream)
@@ -39,6 +40,14 @@ bool SensorModule::request(SensorResult *r, Direction direction)
 {
     unsigned long now = millis();
 
+    unsigned long elapsed = now - _lastChange;
+
+    if (elapsed > POSITION_DELAY && elapsed <= POSITION_DELAY + 10)
+    {
+        // wait until distance has been measured
+        return false;
+    }
+
     Direction currentDirection = _sequence[_currentSequenceIndex];
 
     if (direction != currentDirection)
@@ -49,8 +58,6 @@ bool SensorModule::request(SensorResult *r, Direction direction)
         _lastChange = now;
         return false;
     }
-
-    unsigned long elapsed = now - _lastChange;
 
     if (elapsed <= POSITION_DELAY)
     {
@@ -81,10 +88,11 @@ bool SensorModule::detect(SensorResult *r)
 {
     _sensor.rangingTest(&_measure, false);
 
-    if (_measure.RangeStatus == 4)
+    uint16_t distanceMillimeter = 800;
+
+    if (_measure.RangeStatus != 4)
     {
-        // out of range
-        return true;
+        distanceMillimeter = _measure.RangeMilliMeter - OFFSET;
     }
 
     Direction desiredDirection = _sequence[_desiredSequenceIndex];
@@ -92,16 +100,18 @@ bool SensorModule::detect(SensorResult *r)
     switch(desiredDirection)
     {
         case Direction::LEFT:
-            r->Left.Distance = _measure.RangeMilliMeter - OFFSET;
+            r->Left.Distance = distanceMillimeter;
             r->Left.Timestamp = millis();
             break;
         case Direction::RIGHT:
-            r->Right.Distance = _measure.RangeMilliMeter - OFFSET;
+            r->Right.Distance = distanceMillimeter;
             r->Right.Timestamp = millis();
             break;
         default:
-            r->Front.Distance = _measure.RangeMilliMeter - OFFSET;
+            r->Front.Distance = distanceMillimeter;
             r->Front.Timestamp = millis();
+            debugPrint(F("Front Distance: "));
+            debugPrintln(r->Front.Distance);
             break;
     }
 
