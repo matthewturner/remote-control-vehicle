@@ -27,10 +27,6 @@ const byte RIGHT_BUMPER_PIN = 12;
 
 const byte SENSOR_SERVO_PIN = 5;
 
-BumperModule bumperModule(LEFT_BUMPER_PIN, RIGHT_BUMPER_PIN, &Serial);
-
-SensorModule sm((byte)0x30, SENSOR_SERVO_PIN, &Serial);
-
 SoftwareSerial bluetoothSerial(RECEIVE_PIN, TRANSMIT_PIN);
 
 DrivingModule dm(MOTOR_LEFT_ENABLE_PIN, MOTOR_LEFT_DIRECTION_PIN,
@@ -45,10 +41,13 @@ RudderModule rm(rudderPin, &Serial);
 BoatDrivingModule bdm(&dm, &rm);
 IDrivingModule *drivingModule = &bdm;
 #else
+SensorModule sm((byte)0x30, SENSOR_SERVO_PIN, &Serial);
+BumperModule bm(LEFT_BUMPER_PIN, RIGHT_BUMPER_PIN, &Serial);
+IBumperModule *bumperModule = &bm;
 SensorResult sensorResult;
 IDrivingModule *drivingModule = &dm;
 ISensorModule *sensorModule = &sm;
-AutoPilotModule autoPilotModule(&Serial, drivingModule, sensorModule, &sensorResult);
+AutoPilotModule autoPilotModule(&Serial, drivingModule, bumperModule, sensorModule, &sensorResult);
 #endif
 
 EvtManager mgr;
@@ -69,5 +68,3 @@ bool setSpeed(EvtListener *, EvtContext *, long data);
 void selfDriveIfEnabled();
 bool enableAutoPilot();
 bool disableAutoPilot();
-
-bool handleBumperEvent();
