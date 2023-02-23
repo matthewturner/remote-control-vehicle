@@ -29,10 +29,6 @@ const byte SENSOR_SERVO_PIN = 5;
 
 SoftwareSerial bluetoothSerial(RECEIVE_PIN, TRANSMIT_PIN);
 
-DrivingModule dm(MOTOR_LEFT_ENABLE_PIN, MOTOR_LEFT_DIRECTION_PIN,
-                 MOTOR_RIGHT_ENABLE_PIN, MOTOR_RIGHT_DIRECTION_PIN,
-                 &Serial);
-
 #ifdef BOAT
 #include "RudderModule.h"
 #include "BoatDrivingModule.h"
@@ -41,12 +37,12 @@ RudderModule rm(rudderPin, &Serial);
 BoatDrivingModule bdm(&dm, &rm);
 IDrivingModule *drivingModule = &bdm;
 #else
-SensorModule sm((byte)0x30, SENSOR_SERVO_PIN, &Serial);
-BumperModule bm(LEFT_BUMPER_PIN, RIGHT_BUMPER_PIN, &Serial);
-IBumperModule *bumperModule = &bm;
+IBumperModule *bumperModule = new BumperModule(LEFT_BUMPER_PIN, RIGHT_BUMPER_PIN, &Serial);
+IDrivingModule *drivingModule = new DrivingModule(MOTOR_LEFT_ENABLE_PIN, MOTOR_LEFT_DIRECTION_PIN,
+                 MOTOR_RIGHT_ENABLE_PIN, MOTOR_RIGHT_DIRECTION_PIN,
+                 &Serial);
 SensorResult sensorResult;
-IDrivingModule *drivingModule = &dm;
-ISensorModule *sensorModule = &sm;
+ISensorModule *sensorModule = new SensorModule((byte)0x30, SENSOR_SERVO_PIN, &Serial);
 AutoPilotModule autoPilotModule(&Serial, drivingModule, bumperModule, sensorModule, &sensorResult);
 #endif
 
