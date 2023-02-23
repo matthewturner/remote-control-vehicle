@@ -53,7 +53,7 @@ void test_stops_when_sensor_result_out_of_date(void)
             r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, stop)).Once();
 }
@@ -73,7 +73,7 @@ void test_stops_when_trapped(void)
             r->Right.Distance = SIDE_SENSOR_COLLISION_THRESHOLD;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, stop)).Once();
 }
@@ -92,7 +92,7 @@ void test_turns_right_when_no_space_ahead(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, turnRight)).Once();
 }
@@ -111,7 +111,7 @@ void test_turns_left_when_no_space_ahead(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, turnLeft)).Once();
 }
@@ -130,7 +130,7 @@ void test_turns_right_preferentially_when_no_space_ahead(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, turnRight)).Once();
 }
@@ -149,7 +149,7 @@ void test_turns_right_when_space_ahead_and_no_space_on_left(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, turnRight)).Once();
 }
@@ -168,7 +168,7 @@ void test_turns_left_when_space_ahead_and_no_space_on_right(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, turnLeft)).Once();
 }
@@ -187,7 +187,7 @@ void test_bear_right_when_space_ahead_warning_on_left(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, bearRight).Using(DIR_FORWARD)).Once();
 }
@@ -206,7 +206,7 @@ void test_bear_left_when_space_ahead_warning_on_right(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, bearLeft).Using(DIR_FORWARD)).Once();
 }
@@ -225,7 +225,7 @@ void test_move_forward_when_centered(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, moveForward)).Once();
 }
@@ -244,7 +244,7 @@ void test_move_forward_when_one_side_clear(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, moveForward)).Once();
 }
@@ -263,7 +263,7 @@ void test_bear_right_when_space_ahead_more_space_on_right(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, bearRight).Using(DIR_FORWARD)).Once();
 }
@@ -282,7 +282,7 @@ void test_bear_left_when_space_ahead_more_space_on_left(void)
             r->Front.Distance = FRONT_SENSOR_COLLISION_THRESHOLD + 1;
             return true; });
 
-    target->handle();
+    target->handle2();
 
     Verify(Method(drivingModuleMock, bearLeft).Using(DIR_FORWARD)).Once();
 }

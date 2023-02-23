@@ -16,9 +16,11 @@ class SensorModule : public ISensorModule
 public:
     SensorModule(byte i2cAddress, byte servoControlPin, Stream *stream);
     void begin() override;
+    void reset() override;
     bool detect(SensorResult *r) override;
     bool signalled() override;
     bool scan(SensorResult *r) override;
+    bool scanOnce(SensorResult *r) override;
     bool request(SensorResult *r, Direction direction) override;
 
 private:

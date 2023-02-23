@@ -14,7 +14,17 @@ const byte CENTER_TOLERANCE = 20;
 const byte MAX_SENSOR_AGE_FOR_TURN = 100;
 const byte MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR = 10;
 const byte MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD = 10;
-const short MAX_SENSOR_RESULT_AGE = 2000;
+const uint16_t MAX_FRONT_SENSOR_RESULT_AGE = 2000;
+const uint16_t MAX_SIDE_SENSOR_RESULT_AGE = 10000;
+
+enum class State : byte
+{
+    DISABLED = 0,
+    RESETTING = 1,
+    SCANNING = 2,
+    DECIDING = 3,
+    REQUESTING = 4
+};
 
 class AutoPilotModule
 {
@@ -28,6 +38,7 @@ public:
     void enable();
     void disable();
     void handle();
+    void handle2();
     bool isCentered();
     bool spaceAhead();
     bool isTrapped();
@@ -39,10 +50,13 @@ private:
     IDrivingModule *_drivingModule;
     ISensorModule *_sensorModule;
     SensorResult *_sensorResult;
-    unsigned short _maxSensorResultAge;
-    bool _enabled = false;
+    State _state = State::DISABLED;
 
     bool outOfDate();
+    void handleResetting();
+    void handleScanning();
+    void handleDeciding();
+    void handleRequesting();
 };
 
 #endif
