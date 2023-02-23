@@ -244,7 +244,7 @@ bool AutoPilotModule::outOfDate()
         debugPrintf("** Sensor result is out of date\n");
         debugPrintf("** Result: %lu\n", _sensorResult->Front.Timestamp);
         debugPrintf("** Now: %lu\n", now);
-        debugPrintf("** Max Age: %lu\n", _maxSensorResultAge);
+        debugPrintf("** Max Age: %lu\n", MAX_FRONT_SENSOR_RESULT_AGE);
         debugPrintf("** Age: %lu\n", frontSensorResultAge);
         return true;
     }
