@@ -3,11 +3,13 @@
 
 AutoPilotModule::AutoPilotModule(Stream *stream,
                                  IDrivingModule *drivingModule,
+                                 IBumperModule *bumperModule,
                                  ISensorModule *sensorModule,
                                  SensorResult* sensorResult)
 {
     _stream = stream;
     _drivingModule = drivingModule;
+    _bumperModule = bumperModule;
     _sensorModule = sensorModule;
     _sensorResult = sensorResult;
 }
@@ -32,6 +34,7 @@ void AutoPilotModule::handle()
     switch (_state)
     {
         case State::DISABLED:
+            handleDisabled();
             return;
         case State::RESETTING:
             handleResetting();
@@ -45,6 +48,14 @@ void AutoPilotModule::handle()
         case State::REQUESTING:
             handleRequesting();
             return;
+    }
+}
+
+void AutoPilotModule::handleDisabled()
+{
+    if (hasCollided())
+    {
+        _drivingModule->stop();
     }
 }
 
@@ -73,6 +84,12 @@ void AutoPilotModule::handleScanning()
 
 void AutoPilotModule::handleDeciding()
 {
+    if (hasCollided())
+    {
+        _state = State::RESETTING;
+        return;
+    }
+
     if (outOfDate())
     {
         _state = State::RESETTING;
@@ -143,6 +160,12 @@ void AutoPilotModule::handleDeciding()
 
 void AutoPilotModule::handleRequesting()
 {
+    if (hasCollided())
+    {
+        _state = State::RESETTING;
+        return;
+    }
+
     if (!_sensorModule->request(_sensorResult, Direction::FRONT))
     {
         return;
@@ -306,4 +329,9 @@ bool AutoPilotModule::isTrapped()
         return false;
     }
     return true;
+}
+
+bool AutoPilotModule::hasCollided()
+{
+    return _bumperModule->hasCollided(5) != Sides::NONE;
 }

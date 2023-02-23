@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "ISensorModule.h"
 #include "IDrivingModule.h"
+#include "BumperModule.h"
 
 const byte SIDE_SENSOR_PADDING = 60;
 const byte SIDE_SENSOR_COLLISION_THRESHOLD = 70 + SIDE_SENSOR_PADDING;
@@ -31,6 +32,7 @@ class AutoPilotModule
 public:
     AutoPilotModule(Stream *stream,
                     IDrivingModule *drivingModule,
+                    IBumperModule *bumperModule,
                     ISensorModule *sensorModule,
                     SensorResult *sensorResult);
 
@@ -48,11 +50,14 @@ public:
 private:
     Stream *_stream;
     IDrivingModule *_drivingModule;
+    IBumperModule *_bumperModule;
     ISensorModule *_sensorModule;
     SensorResult *_sensorResult;
     State _state = State::DISABLED;
 
     bool outOfDate();
+    bool hasCollided();
+    void handleDisabled();
     void handleResetting();
     void handleScanning();
     void handleDeciding();

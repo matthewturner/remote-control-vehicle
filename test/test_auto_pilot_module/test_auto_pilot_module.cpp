@@ -9,6 +9,7 @@ Stream *stream;
 AutoPilotModule *target;
 Mock<ISensorModule> sensorModuleMock;
 Mock<IDrivingModule> drivingModuleMock;
+Mock<IBumperModule> bumperModuleMock;
 SensorResult result;
 
 void setUp(void)
@@ -18,7 +19,10 @@ void setUp(void)
     stream = ArduinoFakeMock(Stream);
     ISensorModule &sensorModule = sensorModuleMock.get();
     IDrivingModule &drivingModule = drivingModuleMock.get();
-    target = new AutoPilotModule(stream, &drivingModule, &sensorModule, &result);
+    IBumperModule &bumperModule = bumperModuleMock.get();
+    target = new AutoPilotModule(stream, &drivingModule, &bumperModule, &sensorModule, &result);
+
+    When(Method(bumperModuleMock, hasCollided).Using(5)).Return(Sides::NONE);
 
     result.Front.Distance = 10;
     result.Front.Timestamp = 10;
@@ -34,6 +38,7 @@ void tearDown(void)
     delete stream;
     drivingModuleMock.Reset();
     sensorModuleMock.Reset();
+    bumperModuleMock.Reset();
 }
 
 void test_disabled_by_default(void)

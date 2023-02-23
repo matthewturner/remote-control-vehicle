@@ -2,24 +2,17 @@
 #define BumperModule_h
 
 #include <Arduino.h>
+#include "IBumperModule.h"
 
-enum class Sides : byte
-{
-    NONE = 0,
-    LEFT = 1,
-    RIGHT = 2,
-    BOTH = LEFT | RIGHT
-};
-
-class BumperModule
+class BumperModule : public IBumperModule
 {
 public:
     BumperModule(byte leftSensorPin, byte rightSensorPin,
                   Stream *stream);
 
-    void begin();
+    void begin() override;
 
-    Sides hasCollided(unsigned short sinceMs = 0);
+    Sides hasCollided(unsigned short sinceMs = 0) override;
 
 private:
     byte _leftSensorPin;

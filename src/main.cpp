@@ -4,7 +4,7 @@ void setup()
 {
   Serial.begin(9600);
 
-  bumperModule.begin();
+  bumperModule->begin();
 
   sensorModule->begin();
 
@@ -34,8 +34,6 @@ void loop()
   mgr.loopIteration();
 
   selfDriveIfEnabled();
-  
-  handleBumperEvent();
 }
 
 void selfDriveIfEnabled()
@@ -59,15 +57,6 @@ bool disableAutoPilot()
 bool stop()
 {
   drivingModule->stop();
-  return true;
-}
-  
-bool handleBumperEvent()
-{
-  if (bumperModule.hasCollided(5) != Sides::NONE)
-  {
-    drivingModule->stop();
-  }
   return true;
 }
 
