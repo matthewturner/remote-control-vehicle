@@ -14,7 +14,8 @@ const byte CENTER_TOLERANCE = 20;
 const byte MAX_SENSOR_AGE_FOR_TURN = 100;
 const byte MAX_SENSOR_AGE_MULTIPLIER_FOR_BEAR = 10;
 const byte MAX_SENSOR_AGE_MULTIPLIER_FOR_FORWARD = 10;
-const short MAX_SENSOR_RESULT_AGE = 2000;
+const short MAX_FRONT_SENSOR_RESULT_AGE = 2000;
+const short MAX_SIDE_SENSOR_RESULT_AGE = 10000;
 
 enum class State : byte
 {
@@ -49,7 +50,6 @@ private:
     IDrivingModule *_drivingModule;
     ISensorModule *_sensorModule;
     SensorResult *_sensorResult;
-    unsigned short _maxSensorResultAge;
     State _state = State::DISABLED;
 
     bool outOfDate();

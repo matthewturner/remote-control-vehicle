@@ -9,7 +9,6 @@ AutoPilotModule::AutoPilotModule(Stream *stream,
     _stream = stream;
     _drivingModule = drivingModule;
     _sensorModule = sensorModule;
-    _maxSensorResultAge = MAX_SENSOR_RESULT_AGE;
     _sensorResult = sensorResult;
 }
 
@@ -74,6 +73,12 @@ void AutoPilotModule::handleScanning()
 
 void AutoPilotModule::handleDeciding()
 {
+    if (outOfDate())
+    {
+        _state = State::RESETTING;
+        return;
+    }
+
     _state = State::REQUESTING;
 
     if (!spaceAhead())
@@ -138,12 +143,6 @@ void AutoPilotModule::handleDeciding()
 
 void AutoPilotModule::handleRequesting()
 {
-    if (outOfDate())
-    {
-        _state = State::RESETTING;
-        return;
-    }
-
     if (!_sensorModule->request(_sensorResult, Direction::FRONT))
     {
         return;
@@ -238,24 +237,31 @@ void AutoPilotModule::handle2()
 bool AutoPilotModule::outOfDate()
 {
     unsigned long now = millis();
-    unsigned long sensorResultAge = now - _sensorResult->Front.Timestamp;
+    unsigned long frontSensorResultAge = now - _sensorResult->Front.Timestamp;
 
-    if (sensorResultAge > _maxSensorResultAge)
+    if (frontSensorResultAge > MAX_FRONT_SENSOR_RESULT_AGE)
     {
         debugPrintf("** Sensor result is out of date\n");
         debugPrintf("** Result: %lu\n", _sensorResult->Front.Timestamp);
         debugPrintf("** Now: %d\n", now);
         debugPrintf("** Max Age: %lu\n", _maxSensorResultAge);
-        debugPrintf("** Age: %lu\n", sensorResultAge);
+        debugPrintf("** Age: %lu\n", frontSensorResultAge);
+        return true;
+    }
+
+    unsigned long leftSensorResultAge = now - _sensorResult->Left.Timestamp;
+    if (leftSensorResultAge > MAX_SIDE_SENSOR_RESULT_AGE)
+    {
+        return true;
+    }
+
+    unsigned long rightSensorResultAge = now - _sensorResult->Right.Timestamp;
+    if (rightSensorResultAge > MAX_SIDE_SENSOR_RESULT_AGE)
+    {
         return true;
     }
 
     return false;
-}
-
-unsigned short AutoPilotModule::maxSensorResultAge()
-{
-    return _maxSensorResultAge;
 }
 
 bool AutoPilotModule::isCentered()
