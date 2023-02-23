@@ -21,6 +21,26 @@ bool SensorModule::signalled()
     return false;
 }
 
+void SensorModule::reset()
+{
+    _desiredSequenceIndex = 0;
+}
+
+bool SensorModule::scanOnce(SensorResult *r)
+{
+    Direction direction = _sequence[_desiredSequenceIndex];
+
+    if (request(r, direction))
+    {
+        _desiredSequenceIndex++;
+        _desiredSequenceIndex %= 4;
+
+        return _desiredSequenceIndex == 0;
+    }
+
+    return false;
+}
+
 bool SensorModule::scan(SensorResult *r)
 {
   Direction direction = _sequence[_desiredSequenceIndex];

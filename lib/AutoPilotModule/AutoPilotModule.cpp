@@ -15,20 +15,145 @@ AutoPilotModule::AutoPilotModule(Stream *stream,
 
 bool AutoPilotModule::enabled()
 {
-    return _enabled;
+    return _state != State::DISABLED;
 }
 
 void AutoPilotModule::enable()
 {
-    _enabled = true;
+    _state = State::RESETTING;
 }
 
 void AutoPilotModule::disable()
 {
-    _enabled = false;
+    _state = State::DISABLED;
 }
 
 void AutoPilotModule::handle()
+{
+    switch (_state)
+    {
+        case State::DISABLED:
+            return;
+        case State::RESETTING:
+            handleResetting();
+            return;
+        case State::SCANNING:
+            handleScanning();
+            return;
+        case State::DECIDING:
+            handleDeciding();
+            return;
+        case State::REQUESTING:
+            handleRequesting();
+            return;
+    }
+}
+
+void AutoPilotModule::handleResetting()
+{
+    _sensorModule->reset();
+    _state = State::SCANNING;
+}
+
+void AutoPilotModule::handleScanning()
+{
+    _drivingModule->stop();
+
+    if (!_sensorModule->scanOnce(_sensorResult))
+    {
+        return;
+    }
+    
+    if (isTrapped())
+    {
+        _state = State::RESETTING;
+        return;
+    }
+
+    _state = State::DECIDING;
+}
+
+void AutoPilotModule::handleDeciding()
+{
+    _state = State::REQUESTING;
+
+    if (!spaceAhead())
+    {
+        if (_sensorResult->Right.Distance > _sensorResult->Left.Distance)
+        {
+            _drivingModule->turnRight();
+            return;
+        }
+        if (_sensorResult->Left.Distance > _sensorResult->Right.Distance)
+        {
+            _drivingModule->turnLeft();
+            return;
+        }
+        // if equal, bias for right
+        _drivingModule->turnRight();
+        return;
+    }
+
+    if (_sensorResult->Left.Distance < SIDE_SENSOR_COLLISION_THRESHOLD)
+    {
+        _drivingModule->turnRight();
+        return;
+    }
+    if (_sensorResult->Right.Distance < SIDE_SENSOR_COLLISION_THRESHOLD)
+    {
+        _drivingModule->turnLeft();
+        return;
+    }
+
+    if (_sensorResult->Left.Distance < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
+    {
+        _drivingModule->bearRight(DIR_FORWARD);
+        return;
+    }
+    if (_sensorResult->Right.Distance < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
+    {
+        _drivingModule->bearLeft(DIR_FORWARD);
+        return;
+    }
+
+    if (isCentered())
+    {
+        _drivingModule->moveForward();
+        return;
+    }
+
+    if (isOneSideClear())
+    {
+        _drivingModule->moveForward();
+        return;
+    }
+
+    if (_sensorResult->Left.Distance < _sensorResult->Right.Distance)
+    {
+        _drivingModule->bearRight(DIR_FORWARD);
+        return;
+    }
+
+    _drivingModule->bearLeft(DIR_FORWARD);
+}
+
+void AutoPilotModule::handleRequesting()
+{
+    if (outOfDate())
+    {
+        _state = State::RESETTING;
+        return;
+    }
+
+    if (!_sensorModule->request(_sensorResult, Direction::FRONT))
+    {
+        return;
+    }
+
+    _state = State::DECIDING;
+}
+
+void AutoPilotModule::handle2()
 {
     if (!enabled())
     {
