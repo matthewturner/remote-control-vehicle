@@ -26,7 +26,8 @@ void setup()
   commandListener.when("aof", (EvtCommandAction)disableAutoPilot);
   mgr.addListener(&commandListener);
 
-  autoPilotModule.enable();
+  // autoPilotModule.enable();
+  
   Serial.println(F("Setup complete, continuing..."));
 }
 
