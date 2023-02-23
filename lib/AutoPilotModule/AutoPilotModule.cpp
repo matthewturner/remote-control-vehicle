@@ -51,14 +51,13 @@ void AutoPilotModule::handle()
 
 void AutoPilotModule::handleResetting()
 {
+    _drivingModule->stop();
     _sensorModule->reset();
     _state = State::SCANNING;
 }
 
 void AutoPilotModule::handleScanning()
 {
-    _drivingModule->stop();
-
     if (!_sensorModule->scanOnce(_sensorResult))
     {
         return;
