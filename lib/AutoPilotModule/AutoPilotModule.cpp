@@ -100,6 +100,7 @@ void AutoPilotModule::handleDeciding()
 
     if (!spaceAhead())
     {
+        _drivingModule->setSpeed(TURNING_SPEED);
         if (_sensorResult->Right.Distance > _sensorResult->Left.Distance)
         {
             _drivingModule->turnRight();
@@ -117,13 +118,24 @@ void AutoPilotModule::handleDeciding()
 
     if (_sensorResult->Left.Distance < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
+        _drivingModule->setSpeed(TURNING_SPEED);
         _drivingModule->turnRight();
         return;
     }
     if (_sensorResult->Right.Distance < SIDE_SENSOR_COLLISION_THRESHOLD)
     {
+        _drivingModule->setSpeed(TURNING_SPEED);
         _drivingModule->turnLeft();
         return;
+    }
+
+    if (_sensorResult->Front.Distance > FRONT_SENSOR_COLLISION_WARNING_THRESHOLD)
+    {
+        _drivingModule->setSpeed(CLEAR_SPEED);
+    }
+    else if (_sensorResult->Front.Distance > FRONT_SENSOR_COLLISION_THRESHOLD)
+    {
+        _drivingModule->setSpeed(WARNING_SPEED);
     }
 
     if (_sensorResult->Left.Distance < SIDE_SENSOR_COLLISION_WARNING_THRESHOLD)
